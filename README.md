@@ -1,4 +1,4 @@
-# Medical AMR generation.
+# Medical AMR generation
 
 [![PyPI][pypi-badge]][pypi-link]
 [![Python 3.9][python39-badge]][python39-link]
