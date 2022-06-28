@@ -63,14 +63,6 @@ class Application(object):
         self = sec
         paras = self._create_paragraphs()
 
-        # nlp = self._doc_parser.model
-        # from pprint import pprint
-        # pprint(nlp.pipeline)
-        # names = tuple(map(lambda x: x[0], filter(
-        #     lambda x: x[1].__class__.__module__.startswith('spacy'),
-        #     nlp.pipeline)))
-        # print(names)
-
         para: FeatureDocument
         for para in it.islice(paras, 1):
             doc: Doc = self._doc_parser.to_spacy_doc(
@@ -84,8 +76,6 @@ class Application(object):
                     if pos > -1:
                         t.lemma_ = t.lemma_[:pos]
 
-            # with nlp.select_pipes(enable=names):
-            #     doc = nlp(doc)
             print(doc.text)
             self._amr_parser(doc)
             sent: FeatureSentence
