@@ -8,11 +8,12 @@ import logging
 from spacy.tokens import Doc
 from penman.graph import Graph
 from penman import constant
+from zensols.persist import Stash
 from zensols.nlp import (
     FeatureToken, FeatureSentence, FeatureDocument, SpacyFeatureDocumentParser
 )
 from zensols.amr import (
-    AmrError, AmrParser, AmrSentence, AmrFeatureSentence, AmrFeatureDocument
+    AmrError, AmrParser, AmrDocument, AmrSentence, AmrFeatureSentence, AmrFeatureDocument,
 )
 from zensols.mimic import NoteEvent, Note, ParagraphFactory, Section
 from zensols.mimicsid import AnnotationNoteFactory
@@ -24,38 +25,71 @@ logger = logging.getLogger(__name__)
 class ClinicAmrParagraphFactory(ParagraphFactory):
     amr_parser: AmrParser = field()
     doc_parser: SpacyFeatureDocumentParser = field()
+    sec_para_stash: Stash = field()
+
+    def _create_amr_doc(self, para: FeatureDocument) -> AmrDocument:
+        for t in para.token_iter():
+            pos = t.norm.find(' ')
+            if pos > -1:
+                t.norm = t.norm[:pos]
+        # create a spacy doc from our feature document
+        doc: Doc = self.doc_parser.to_spacy_doc(
+            para, add_features=set('pos tag lemma ent'.split()))
+        for t in doc:
+            # the token normalization process splits on newlines, but the
+            # new lines also pop up in the lemmas
+            if t.lemma_.find('\n') > -1:
+                t.lemma_ = t.orth_
+            else:
+                pos = t.lemma_.find(' ')
+                if pos > -1:
+                    t.lemma_ = t.lemma_[:pos]
+        self.amr_parser(doc)
+        return doc._.amr
+
+    def _create_amr_docs(self, paras: List[FeatureDocument]) -> \
+            List[AmrDocument]:
+        import itertools as it
+        amr_docs: List[AmrDocument] = []
+        para: FeatureDocument
+        for para in it.islice(paras, 2):
+            amr_docs.append(self._create_amr_doc(para))
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'returning {len(amr_docs)} paragraph documents')
+        return amr_docs
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
-        paras = super().__call__(sec)
-        amr_paras: List[FeatureDocument] = []
+        if 0:
+            self.sec_para_stash.clear()
+        key = f'{sec._row_id}-{sec.id}'
+        paras: List[FeatureDocument] = super().__call__(sec)
+        amr_paras: List[AmrFeatureDocument] = []
+        amr_docs: List[AmrDocument] = self.sec_para_stash.load(key)
+        if amr_docs is None:
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f'parsing {len(paras)}')
+            amr_docs = self._create_amr_docs(paras)
+            self.sec_para_stash.dump(key, amr_docs)
+        amr_doc: AmrDocument
         para: FeatureDocument
-        for para in paras:
-            # create a spacy doc from our feature document
-            doc: Doc = self.doc_parser.to_spacy_doc(
-                para, add_features=set('pos tag lemma ent'.split()))
-            for t in doc:
-                # the token normalization process splits on newlines, but the
-                # new lines also pop up in the lemmas
-                if t.lemma_.find('\n') > -1:
-                    t.lemma_ = t.orth_
-                else:
-                    pos = t.lemma_.find(' ')
-                    if pos > -1:
-                        t.lemma_ = t.lemma_[:pos]
-            self.amr_parser(doc)
-            amr_paras.append(self.doc_parser.from_spacy_doc(doc))
-            # for sent, span in zip(para, doc.sents):
-            #     print(span._.amr.graph_string)
-        for p in amr_paras:
-            print('PAR', p)
+        for amr_doc, para in zip(amr_docs, paras):
+            fsents: List[AmrFeatureSentence] = []
+            for amr_sent, psent in zip(amr_doc.sents, para.sents):
+                amr_fsent = psent.clone(AmrFeatureSentence, amr=amr_sent)
+                fsents.append(amr_fsent)
+            amr_fdoc = para.clone(AmrFeatureDocument, amr=amr_doc)
+            amr_paras.append(amr_fdoc)
         return amr_paras
 
 
 # @dataclass
 # class ClinicAmrAnnotationNoteFactory(AnnotationNoteFactory):
 #     def __call__(self, note_event: NoteEvent) -> Note:
+#         print('HERE')
 #         note: Note = super().__call__(note_event)
-#         note.paragraph_factory = ClinicAmrParagraphFactory
+#         for sec in note.sections.values():
+#             sec.paragraphs
+#             print('AMRS', sec._amrs)
 #         return note
 
 

@@ -54,39 +54,7 @@ class Application(object):
             print(f'<{sent.text}>')
             print(sent.amr)
             print('-' * 100)
-
-    def _create_paragraphs(self, sec):# -> List[FeatureDocument]:
-        import itertools as it
-        from spacy.tokens import Doc
-        from zensols.nlp import FeatureDocument, FeatureSentence
-
-        self = sec
-        print('T', type(self))
-        paras: List[FeatureDocument] = self.paragraphs
-
-        para: FeatureDocument
-        for para in it.islice(paras, 1):
-            # create a spacy doc from our feature document
-            doc: Doc = self._doc_parser.to_spacy_doc(
-                para, add_features=set('pos tag lemma ent'.split()))
-            for t in doc:
-                # the token normalization process splits on newlines, but the
-                # new lines also pop up in the lemmas
-                if t.lemma_.find('\n') > -1:
-                    t.lemma_ = t.orth_
-                else:
-                    pos = t.lemma_.find(' ')
-                    if pos > -1:
-                        t.lemma_ = t.lemma_[:pos]
-
-            print(doc.text)
-            self._amr_parser(doc)
-            sent: FeatureSentence
-            for sent, span in zip(para, doc.sents):
-                #print('S', sent)
-                print(span._.amr.graph_string)
-                print('-' * 80)
-            
+           
     def proto(self):
         hadm_id = '119960'
         stash: Stash = self.corpus.hospital_adm_stash
@@ -94,4 +62,11 @@ class Application(object):
         note = adm.notes_by_category['Discharge summary'][0]
         sec = note.sections['history-of-present-illness']
         for para in sec.paragraphs:
-            print(type(para.amr))
+            print(type(para), type(para.amr))
+            print(para.amr)
+            if 0:
+                for s in para.amr.sents:
+                    print(type(s), s)
+                    print(s.graph_string)
+                print('-' * 80)
+            #para.amr.plot()
