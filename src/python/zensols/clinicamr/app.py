@@ -61,14 +61,17 @@ class Application(object):
         from zensols.nlp import FeatureDocument, FeatureSentence
 
         self = sec
-        paras = self._create_paragraphs()
+        print('T', type(self))
+        paras: List[FeatureDocument] = self.paragraphs
 
         para: FeatureDocument
         for para in it.islice(paras, 1):
+            # create a spacy doc from our feature document
             doc: Doc = self._doc_parser.to_spacy_doc(
-                para, add_features=set('pos tag lemma'.split()))
-
+                para, add_features=set('pos tag lemma ent'.split()))
             for t in doc:
+                # the token normalization process splits on newlines, but the
+                # new lines also pop up in the lemmas
                 if t.lemma_.find('\n') > -1:
                     t.lemma_ = t.orth_
                 else:
@@ -80,22 +83,15 @@ class Application(object):
             self._amr_parser(doc)
             sent: FeatureSentence
             for sent, span in zip(para, doc.sents):
-                print('S', sent)
+                #print('S', sent)
                 print(span._.amr.graph_string)
                 print('-' * 80)
             
     def proto(self):
-        import amrlib
         hadm_id = '119960'
         stash: Stash = self.corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         note = adm.notes_by_category['Discharge summary'][0]
         sec = note.sections['history-of-present-illness']
-        sec._doc_parser = self.doc_parser
-        sec._amr_parser = self.config_factory('amr_parser')
-        self._create_paragraphs(sec)
-        return
-        doc = self.doc_parser.parse_spacy_doc("""AFib not on coumadin , mild AS , stage IV CKD , and HTN , who presented from acute rehab after falling at his nursing home .""")
-        gr = amrlib.spacy_stog_span(doc)
-        print(len(gr))
-        print(gr[0])
+        for para in sec.paragraphs:
+            print(type(para.amr))

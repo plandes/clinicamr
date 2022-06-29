@@ -5,14 +5,58 @@ __author__ = 'Paul Landes'
 from typing import List, Tuple
 from dataclasses import dataclass, field
 import logging
+from spacy.tokens import Doc
 from penman.graph import Graph
 from penman import constant
-from zensols.nlp import FeatureToken, FeatureSentence
-from zensols.amr import (
-    AmrError, AmrSentence, AmrFeatureSentence, AmrFeatureDocument
+from zensols.nlp import (
+    FeatureToken, FeatureSentence, FeatureDocument, SpacyFeatureDocumentParser
 )
+from zensols.amr import (
+    AmrError, AmrParser, AmrSentence, AmrFeatureSentence, AmrFeatureDocument
+)
+from zensols.mimic import NoteEvent, Note, ParagraphFactory, Section
+from zensols.mimicsid import AnnotationNoteFactory
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ClinicAmrParagraphFactory(ParagraphFactory):
+    amr_parser: AmrParser = field()
+    doc_parser: SpacyFeatureDocumentParser = field()
+
+    def __call__(self, sec: Section) -> List[FeatureDocument]:
+        paras = super().__call__(sec)
+        amr_paras: List[FeatureDocument] = []
+        para: FeatureDocument
+        for para in paras:
+            # create a spacy doc from our feature document
+            doc: Doc = self.doc_parser.to_spacy_doc(
+                para, add_features=set('pos tag lemma ent'.split()))
+            for t in doc:
+                # the token normalization process splits on newlines, but the
+                # new lines also pop up in the lemmas
+                if t.lemma_.find('\n') > -1:
+                    t.lemma_ = t.orth_
+                else:
+                    pos = t.lemma_.find(' ')
+                    if pos > -1:
+                        t.lemma_ = t.lemma_[:pos]
+            self.amr_parser(doc)
+            amr_paras.append(self.doc_parser.from_spacy_doc(doc))
+            # for sent, span in zip(para, doc.sents):
+            #     print(span._.amr.graph_string)
+        for p in amr_paras:
+            print('PAR', p)
+        return amr_paras
+
+
+# @dataclass
+# class ClinicAmrAnnotationNoteFactory(AnnotationNoteFactory):
+#     def __call__(self, note_event: NoteEvent) -> Note:
+#         note: Note = super().__call__(note_event)
+#         note.paragraph_factory = ClinicAmrParagraphFactory
+#         return note
 
 
 @dataclass

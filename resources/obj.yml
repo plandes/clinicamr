@@ -7,3 +7,18 @@ mednlp_doc_parserX:
       components: "instance: list: ${clinicamr_default:doc_parser_components}, amr_add_toki_component"
     else:
       components: "instance: list: ${clinicamr_default:doc_parser_components}"
+
+# note_factory:
+#   class_name: 'zensols.clinicamr.ClinicAmrAnnotationNoteFactory'
+#anon_resource = instance: mimicsid_anon_resource
+#annotated_note_section = mimicsid_default_note
+
+#doc_parser: 'instance: ${clinicamr_default:doc_parser}'
+# note_context:
+#   amr_parser: 'instance: amr_parser'
+#   doc_parser: 'instance: amr_doc_parser'
+
+note_paragraph_factory:
+  class_name: zensols.clinicamr.ClinicAmrParagraphFactory
+  amr_parser: 'instance: amr_parser'
+  doc_parser: 'instance: amr_doc_parser'
