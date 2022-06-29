@@ -29,10 +29,10 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     """Parses, populates and caches AMR graphs in feature documents."""
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
-        import itertools as it
+        nasc_paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
         para: FeatureDocument
-        for pix, para in enumerate(it.islice(super().__call__(sec), 2)):
+        for pix, para in enumerate(nasc_paras):
             key = f'{sec._row_id}-{sec.id}-{pix}'
             amr_paras.append(self.amr_annotator(para, key))
         return amr_paras

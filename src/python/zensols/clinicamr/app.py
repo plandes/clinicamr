@@ -11,7 +11,6 @@ from zensols.persist import Stash
 from zensols.nlp import FeatureToken, FeatureDocumentParser
 from zensols.mimic import Corpus, HospitalAdmission
 from zensols.mimicsid import AnnotationResource
-from zensols.amr import AmrError
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +53,5 @@ class Application(object):
         note = adm.notes_by_category['Discharge summary'][0]
         sec = note.sections['history-of-present-illness']
         for para in sec.paragraphs:
-            print(type(para), type(para.amr))
-            print(para.amr.graph_string)
-            if 0:
-                for s in para.amr.sents:
-                    print(type(s), s)
-                    print(s.graph_string)
-                print('-' * 80)
-            if 0:
-                para.amr.plot()
+            print(para)
+            para.amr.plot()
