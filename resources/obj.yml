@@ -13,13 +13,13 @@ token_index_mapper:
   index_type: doc
 
 token_ent_populator:
-  class_name: zensols.clinicamr.TokenFeaturePopulator
+  class_name: zensols.amr.TokenFeaturePopulator
   role: ent
   feature_id: ent_
   remove_indexes: false
 
 token_cui_populator:
-  class_name: zensols.clinicamr.TokenFeaturePopulator
+  class_name: zensols.amr.TokenFeaturePopulator
   role: cui
   feature_id: cui_
   remove_indexes: true

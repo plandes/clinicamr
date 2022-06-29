@@ -5,18 +5,14 @@ from __future__ import annotations
 """
 __author__ = 'Paul Landes'
 
-from typing import List, Tuple, Type, Set, Any
+from typing import List, Tuple, Type
 from dataclasses import dataclass, field
 import logging
-from penman.graph import Graph
-from penman import constant
 from zensols.persist import Stash
-from zensols.nlp import (
-    FeatureToken, FeatureDocument, SpacyFeatureDocumentParser
-)
+from zensols.nlp import FeatureDocument, SpacyFeatureDocumentParser
 from zensols.amr import (
-    AmrParser, AmrDocument, AmrSentence,
-    AmrFeatureSentence, AmrFeatureDocument, TokenIndexMapper,
+    AmrParser, AmrDocument, AmrFeatureSentence, AmrFeatureDocument,
+    TokenIndexMapper, TokenFeaturePopulator,
 )
 from zensols.mimic import ParagraphFactory, Section
 from . import SpacyDocAdapter
@@ -115,77 +111,3 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
                 self.sec_para_stash.dump(key, amr_docs)
             amr_paras.append(amr_fdoc)
         return amr_paras
-
-
-@dataclass
-class TokenFeaturePopulator(object):
-    """Populate features in AMR sentence graphs from indexes populated from
-    :class:`.TokenIndexMapper`.
-
-    """
-    role: str = field()
-    """The triple role used to label the edge between the token and the feature.
-
-    """
-    feature_id: str = field()
-    """The :class:`~zensols.nlp.FeatureToken` ID (attribute) to populate in the
-    AMR graph.
-
-    """
-    token_index_role: str = field(
-        default=TokenIndexMapper.DEFAULT_TOKEN_INDEX_ROLE)
-    """The token index role (edge) that has the token index, which is token
-    character offset added by :class:`.TokenIndexMapper`.
-
-    """
-    remove_indexes: bool = field(default=True)
-    """Whether to remove the :obj:`token_index_role` edges after processing."""
-
-    def __call__(self, doc: AmrFeatureDocument):
-        updates: List[AmrSentence] = []
-        sent: AmrSentence
-        for sent in doc.sents:
-            updates.append(self._populate_sentence(sent, doc))
-        doc.amr.sents = updates
-
-    def _populate_sentence(self, sent: AmrFeatureSentence,
-                           doc: AmrFeatureDocument):
-        token_index_role = self.token_index_role
-        tokens_by_idx = doc.tokens_by_idx
-        graph: Graph = sent.amr.graph
-        feat_trips: Set[Tuple[str, str, str]] = set()
-        trip_remove_ixs: List[int] = []
-        # find triples that identify token index positions
-        tix: int
-        src_trip: Tuple[str, str, Any]
-        for tix, src_trip in enumerate(graph.triples):
-            source, rel, target = src_trip
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug(f'triple: {src_trip}')
-            # match on role name
-            if rel.startswith(token_index_role):
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug(f'found relation: {rel}, target: {target}')
-                # list indexes are comma separated
-                for ix in map(int, constant.evaluate(target).split(',')):
-                    td: FeatureToken = tokens_by_idx[ix]
-                    if logger.isEnabledFor(logging.DEBUG):
-                        logger.debug(f'token: {ix} -> {td}')
-                    # when we find a concept, add in the CUI if the token is a
-                    # concept
-                    if td.is_concept:
-                        val = constant.quote(getattr(td, self.feature_id))
-                        triple = (source, self.role, val)
-                        if logger.isEnabledFor(logging.DEBUG):
-                            logger.debug(f'adding: {triple}')
-                            logger.debug(f'to rm: {src_trip} at index={tix}')
-                        # add the faeture as a triple to graph
-                        feat_trips.add(triple)
-                    # remove the token index relation later
-                    trip_remove_ixs.append(tix)
-        if self.remove_indexes:
-            trip_remove_ixs = sorted(set(trip_remove_ixs), reverse=True)
-            for tix in trip_remove_ixs:
-                del graph.triples[tix]
-        graph.triples.extend(feat_trips)
-        return AmrSentence(graph)
