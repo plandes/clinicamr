@@ -8,38 +8,38 @@ sec_para_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para'
 
-token_index_mapper:
-  class_name: zensols.amr.TokenIndexMapper
+token_index_annotator:
+  class_name: zensols.amr.TokenIndexAnnotator
   index_type: doc
 
 token_ent_populator:
-  class_name: zensols.amr.TokenFeaturePopulator
+  class_name: zensols.amr.TokenFeatureAnnotator
   role: ent
   feature_id: ent_
   remove_indexes: false
 
 token_cui_populator:
-  class_name: zensols.amr.TokenFeaturePopulator
+  class_name: zensols.amr.TokenFeatureAnnotator
   role: cui
   feature_id: cui_
   remove_indexes: true
 
 amr_annotator:
-  class_name: zensols.clinicamr.AmrDocumentAnnotator
+  class_name: zensols.amr.AmrDocumentAnnotator
   amr_parser: 'instance: amr_parser'
   stash: 'instance: sec_para_stash'
   0.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_index_mapper: 'instance: token_index_mapper'
+      token_index_annotator: 'instance: token_index_annotator'
     else:
-      token_index_mapper: null
+      token_index_annotator: null
   1.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_feature_populators: 'instance: tuple: token_ent_populator, token_cui_populator'
+      token_feature_annotator: 'instance: tuple: token_ent_populator, token_cui_populator'
     else:
-      token_feature_populators: []
+      token_feature_annotator: []
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory
