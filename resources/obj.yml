@@ -24,11 +24,10 @@ token_cui_populator:
   feature_id: cui_
   remove_indexes: true
 
-note_paragraph_factory:
-  class_name: zensols.clinicamr.ClinicAmrParagraphFactory
+amr_annotator:
+  class_name: zensols.clinicamr.AmrDocumentAnnotator
   amr_parser: 'instance: amr_parser'
-  doc_parser: 'instance: amr_doc_parser'
-  sec_para_stash: 'instance: sec_para_stash'
+  stash: 'instance: sec_para_stash'
   0.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
@@ -41,3 +40,7 @@ note_paragraph_factory:
       token_feature_populators: 'instance: tuple: token_ent_populator, token_cui_populator'
     else:
       token_feature_populators: []
+
+note_paragraph_factory:
+  class_name: zensols.clinicamr.ClinicAmrParagraphFactory
+  amr_annotator: 'instance: amr_annotator'
