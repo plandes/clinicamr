@@ -46,10 +46,10 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     sec_para_stash: Stash = field()
     """Used to store the :class:`~zensols.amr.AmrDocument` instances."""
 
-    token_index_mapper: TokenIndexMapper = field(default=None)
+    token_index_mapper: Tuple[TokenIndexMapper] = field(default=None)
     """Adds token indicies to the AMR."""
 
-    token_feature_populator: TokenFeaturePopulator = field(default=None)
+    token_feature_populators: Tuple[TokenFeaturePopulator] = field(default=())
     """Populates the AMR graph with a feature."""
 
     doc_class: Type[AmrFeatureDocument] = field(default=AmrFeatureDocument)
@@ -110,8 +110,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
                 fsents.append(amr_fsent)
             amr_fdoc = para.clone(self.doc_class, sents=fsents, amr=amr_doc)
             if stash_miss:
-                if self.token_feature_populator is not None:
-                    self.token_feature_populator(amr_fdoc)
+                for pop in self.token_feature_populators:
+                    pop(amr_fdoc)
                 self.sec_para_stash.dump(key, amr_docs)
             amr_paras.append(amr_fdoc)
         return amr_paras
@@ -138,6 +138,9 @@ class TokenFeaturePopulator(object):
     character offset added by :class:`.TokenIndexMapper`.
 
     """
+    remove_indexes: bool = field(default=True)
+    """Whether to remove the :obj:`token_index_role` edges after processing."""
+
     def __call__(self, doc: AmrFeatureDocument):
         updates: List[AmrSentence] = []
         sent: AmrSentence
@@ -151,7 +154,7 @@ class TokenFeaturePopulator(object):
         tokens_by_idx = doc.tokens_by_idx
         graph: Graph = sent.amr.graph
         feat_trips: Set[Tuple[str, str, str]] = set()
-        trip_graph_ixs: List[int] = []
+        trip_remove_ixs: List[int] = []
         # find triples that identify token index positions
         tix: int
         src_trip: Tuple[str, str, Any]
@@ -179,9 +182,10 @@ class TokenFeaturePopulator(object):
                         # add the faeture as a triple to graph
                         feat_trips.add(triple)
                     # remove the token index relation later
-                    trip_graph_ixs.append(tix)
-        trip_graph_ixs = sorted(set(trip_graph_ixs), reverse=True)
-        for tix in trip_graph_ixs:
-            del graph.triples[tix]
+                    trip_remove_ixs.append(tix)
+        if self.remove_indexes:
+            trip_remove_ixs = sorted(set(trip_remove_ixs), reverse=True)
+            for tix in trip_remove_ixs:
+                del graph.triples[tix]
         graph.triples.extend(feat_trips)
         return AmrSentence(graph)

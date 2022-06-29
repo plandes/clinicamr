@@ -12,10 +12,17 @@ token_index_mapper:
   class_name: zensols.amr.TokenIndexMapper
   index_type: doc
 
-token_feature_populator:
+token_ent_populator:
   class_name: zensols.clinicamr.TokenFeaturePopulator
   role: ent
   feature_id: ent_
+  remove_indexes: false
+
+token_cui_populator:
+  class_name: zensols.clinicamr.TokenFeaturePopulator
+  role: cui
+  feature_id: cui_
+  remove_indexes: true
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory
@@ -31,6 +38,6 @@ note_paragraph_factory:
   1.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_feature_populator: 'instance: token_feature_populator'
+      token_feature_populators: 'instance: tuple: token_ent_populator, token_cui_populator'
     else:
-      token_feature_populator: null
+      token_feature_populators: []
