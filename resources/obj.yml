@@ -8,9 +8,6 @@ mednlp_doc_parserX:
     else:
       components: "instance: list: ${clinicamr_default:doc_parser_components}"
 
-# note_factory:
-#   class_name: 'zensols.clinicamr.ClinicAmrAnnotationNoteFactory'
-
 sec_para_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para'
@@ -20,3 +17,21 @@ note_paragraph_factory:
   amr_parser: 'instance: amr_parser'
   doc_parser: 'instance: amr_doc_parser'
   sec_para_stash: 'instance: sec_para_stash'
+  0.condition:
+    if: "eval: '${amr_default:parse_model}' == 't5'"
+    then:
+      token_index_mapper: 'object: zensols.clinicamr.TokenIndexMapper'
+    else:
+      token_index_mapper: null
+  1.condition:
+    if: "eval: '${amr_default:parse_model}' == 't5'"
+    then:
+      doc_class: 'class: zensols.clinicamr.CuiAmrFeatureDocument'
+    else:
+      doc_class: 'class: zensols.amr.AmrFeatureDocument'
+  2.condition:
+    if: "eval: '${amr_default:parse_model}' == 't5'"
+    then:
+      sent_class: 'class: zensols.clinicamr.CuiAmrFeatureSentence'
+    else:
+      sent_class: 'class: zensols.amr.AmrFeatureSentence'

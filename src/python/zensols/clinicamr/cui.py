@@ -4,7 +4,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import List, Tuple
+from typing import List, Tuple, Type
 from dataclasses import dataclass, field
 import logging
 from spacy.tokens import Doc
@@ -16,7 +16,7 @@ from zensols.nlp import (
 )
 from zensols.amr import (
     AmrError, AmrParser, AmrDocument, AmrSentence,
-    AmrFeatureSentence, AmrFeatureDocument,
+    AmrFeatureSentence, AmrFeatureDocument, TokenIndexMapper,
 )
 from zensols.mimic import ParagraphFactory, Section
 
@@ -45,35 +45,46 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     sec_para_stash: Stash = field()
     """Used to store the :class:`~zensols.amr.AmrDocument` instances."""
 
+    token_index_mapper: TokenIndexMapper = field(default=None)
+
+    doc_class: Type[AmrFeatureDocument] = field(default=AmrFeatureDocument)
+
+    sent_class: Type[AmrFeatureSentence] = field(default=AmrFeatureSentence)
+
     def _create_amr_doc(self, para: FeatureDocument) -> AmrDocument:
         # (at least) gsii models can't handle tokens with spaces, which happens
         # in multi-word entries, so chop them
         #
         # TODO: add a whitespace split token normalizer
-        for t in para.token_iter():
-            pos = t.norm.find(' ')
-            if pos > -1:
-                t.norm = t.norm[:pos]
+
+        # for t in para.token_iter():
+        #     pos = t.norm.find(' ')
+        #     if pos > -1:
+        #         t.norm = t.norm[:pos]
+
         # create a spacy doc from our feature document
         doc: Doc = self.doc_parser.to_spacy_doc(
             para, add_features=set('pos tag lemma ent'.split()))
         for t in doc:
             # the token normalization process splits on newlines, but the
             # new lines also pop up in the lemmas
-            if t.lemma_.find('\n') > -1:
+            if t.lemma_.find('\n') > -1 or True:
                 t.lemma_ = t.orth_
             else:
                 pos = t.lemma_.find(' ')
                 if pos > -1:
                     t.lemma_ = t.lemma_[:pos]
         self.amr_parser(doc)
+        if self.token_index_mapper is not None:
+            self.token_index_mapper(doc)
         return doc._.amr
 
     def _create_amr_docs(self, paras: List[FeatureDocument]) -> \
             List[AmrDocument]:
+        import itertools as it
         amr_docs: List[AmrDocument] = []
         para: FeatureDocument
-        for para in paras:
+        for para in it.islice(paras, 1):
             amr_docs.append(self._create_amr_doc(para))
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'returning {len(amr_docs)} paragraph documents')
@@ -82,6 +93,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     def __call__(self, sec: Section) -> List[FeatureDocument]:
         key = f'{sec._row_id}-{sec.id}'
         paras: List[FeatureDocument] = super().__call__(sec)
+        paras = paras[:1]
         amr_paras: List[AmrFeatureDocument] = []
         amr_docs: List[AmrDocument] = self.sec_para_stash.load(key)
         if amr_docs is None:
@@ -94,15 +106,22 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         for amr_doc, para in zip(amr_docs, paras):
             fsents: List[AmrFeatureSentence] = []
             for amr_sent, psent in zip(amr_doc.sents, para.sents):
-                amr_fsent = psent.clone(AmrFeatureSentence, amr=amr_sent)
+                #amr_fsent = psent.clone(self.sent_class, amr=amr_sent)
+                amr_fsent = self.sent_class(psent.sent_tokens, psent.text, amr=amr_sent)
                 fsents.append(amr_fsent)
-            amr_fdoc = para.clone(AmrFeatureDocument, amr=amr_doc)
+            #amr_fdoc = para.clone(self.doc_class, sents=fsents, amr=amr_doc)
+            amr_fdoc = self.doc_class(
+                sents=fsents,
+                text=para.text,
+                amr=amr_doc)
             amr_paras.append(amr_fdoc)
         return amr_paras
 
 
 @dataclass
 class CuiAmrFeatureSentence(AmrFeatureSentence):
+    # token_index_role: str = field(
+    #     default=TokenIndexMapper.DEFAULT_TOKEN_INDEX_ROLE)
     token_index_role: str = field(default='toki')
     cui_role: str = field(default='cui')
     cui_attribute: str = field(default='cui_')
@@ -149,7 +168,9 @@ class CuiAmrFeatureSentence(AmrFeatureSentence):
 class CuiAmrFeatureDocument(AmrFeatureDocument):
     def __post_init__(self):
         super().__post_init__()
-        fs: FeatureSentence
-        for fs in self.sents:
-            if not isinstance(fs.amr, AmrError):
-                fs._populate_cuis()
+        from zensols.util import loglevel
+        with loglevel(__name__):
+            fs: FeatureSentence
+            for fs in self.sents:
+                if not isinstance(fs.amr, AmrError):
+                    fs._populate_cuis()
