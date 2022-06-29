@@ -1,16 +1,26 @@
-mednlp_doc_parserX:
-  doc_class: 'class: zensols.clinicamr.CuiAmrFeatureDocument'
-  sent_class: 'class: zensols.clinicamr.CuiAmrFeatureSentence'
-  condition:
-    if: "eval: '${amr_default:parse_model}' == 't5'"
-    then:
-      components: "instance: list: ${clinicamr_default:doc_parser_components}, amr_add_toki_component"
-    else:
-      components: "instance: list: ${clinicamr_default:doc_parser_components}"
+# mednlp_doc_parser:
+#   doc_class: 'class: zensols.clinicamr.CuiAmrFeatureDocument'
+#   sent_class: 'class: zensols.clinicamr.CuiAmrFeatureSentence'
+#   condition:
+#     if: "eval: '${amr_default:parse_model}' == 't5'"
+#     then:
+#       components: "instance: list: ${clinicamr_default:doc_parser_components}, amr_add_toki_component"
+#     else:
+#       components: "instance: list: ${clinicamr_default:doc_parser_components}"
+
+newline_split_token_mapper:
+  regex: "r'[\\s\\n]'"
+
+mednlp_combine_doc_parser:
+  overwrite_features: 'list: ent, ent_, lemma, lemma_'
 
 sec_para_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para'
+
+token_index_mapper:
+  class_name: zensols.clinicamr.TokenIndexMapper
+  index_type: doc
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory
@@ -18,9 +28,9 @@ note_paragraph_factory:
   doc_parser: 'instance: amr_doc_parser'
   sec_para_stash: 'instance: sec_para_stash'
   0.condition:
-    if: "eval: '${amr_default:parse_model}' == 't5'"
+    if: "eval: True or '${amr_default:parse_model}' == 't5'"
     then:
-      token_index_mapper: 'object: zensols.clinicamr.TokenIndexMapper'
+      token_index_mapper: 'instance: token_index_mapper'
     else:
       token_index_mapper: null
   1.condition:

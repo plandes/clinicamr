@@ -63,10 +63,11 @@ class Application(object):
         sec = note.sections['history-of-present-illness']
         for para in sec.paragraphs:
             print(type(para), type(para.amr))
-            print(para.amr)
+            print(para.amr.graph_string)
             if 0:
                 for s in para.amr.sents:
                     print(type(s), s)
                     print(s.graph_string)
                 print('-' * 80)
-            para.amr.plot()
+            if 0:
+                para.amr.plot()

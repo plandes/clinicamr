@@ -19,6 +19,7 @@ from zensols.amr import (
     AmrFeatureSentence, AmrFeatureDocument, TokenIndexMapper,
 )
 from zensols.mimic import ParagraphFactory, Section
+from . import SpacyDocAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -51,30 +52,23 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
 
     sent_class: Type[AmrFeatureSentence] = field(default=AmrFeatureSentence)
 
+    def __post_init__(self):
+        if 0:
+            self.doc_class = CuiAmrFeatureDocument
+            self.sent_class = CuiAmrFeatureSentence
+        else:
+            self.doc_class = AmrFeatureDocument
+            self.sent_class = AmrFeatureSentence
+
     def _create_amr_doc(self, para: FeatureDocument) -> AmrDocument:
-        # (at least) gsii models can't handle tokens with spaces, which happens
-        # in multi-word entries, so chop them
-        #
-        # TODO: add a whitespace split token normalizer
-
-        # for t in para.token_iter():
-        #     pos = t.norm.find(' ')
-        #     if pos > -1:
-        #         t.norm = t.norm[:pos]
-
-        # create a spacy doc from our feature document
-        doc: Doc = self.doc_parser.to_spacy_doc(
-            para, add_features=set('pos tag lemma ent'.split()))
-        for t in doc:
-            # the token normalization process splits on newlines, but the
-            # new lines also pop up in the lemmas
-            if t.lemma_.find('\n') > -1 or True:
-                t.lemma_ = t.orth_
-            else:
-                pos = t.lemma_.find(' ')
-                if pos > -1:
-                    t.lemma_ = t.lemma_[:pos]
+        doc = SpacyDocAdapter(para)
         self.amr_parser(doc)
+        for i, t in doc._i_to_tok().items():
+            print(i, t, t._ftok.idx, t._ftok.i, t._ftok.lemma_)
+        print(para.text)
+        print(para.norm)
+        for sa, sd in zip(doc.sents, doc.sents):
+            sa._.amr = sd._.amr
         if self.token_index_mapper is not None:
             self.token_index_mapper(doc)
         return doc._.amr
@@ -93,9 +87,11 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     def __call__(self, sec: Section) -> List[FeatureDocument]:
         key = f'{sec._row_id}-{sec.id}'
         paras: List[FeatureDocument] = super().__call__(sec)
-        paras = paras[:1]
         amr_paras: List[AmrFeatureDocument] = []
         amr_docs: List[AmrDocument] = self.sec_para_stash.load(key)
+        if 1:
+            paras = paras[:1]
+            paras[0].sents = paras[0].sents[1:2]
         if amr_docs is None:
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(f'parsing {len(paras)}')
@@ -106,28 +102,25 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         for amr_doc, para in zip(amr_docs, paras):
             fsents: List[AmrFeatureSentence] = []
             for amr_sent, psent in zip(amr_doc.sents, para.sents):
-                #amr_fsent = psent.clone(self.sent_class, amr=amr_sent)
-                amr_fsent = self.sent_class(psent.sent_tokens, psent.text, amr=amr_sent)
+                amr_fsent = psent.clone(self.sent_class, amr=amr_sent)
                 fsents.append(amr_fsent)
-            #amr_fdoc = para.clone(self.doc_class, sents=fsents, amr=amr_doc)
-            amr_fdoc = self.doc_class(
-                sents=fsents,
-                text=para.text,
-                amr=amr_doc)
+            amr_fdoc = para.clone(self.doc_class, sents=fsents, amr=amr_doc)
             amr_paras.append(amr_fdoc)
         return amr_paras
 
 
 @dataclass
 class CuiAmrFeatureSentence(AmrFeatureSentence):
-    # token_index_role: str = field(
-    #     default=TokenIndexMapper.DEFAULT_TOKEN_INDEX_ROLE)
-    token_index_role: str = field(default='toki')
+    token_index_role: str = field(
+        default=TokenIndexMapper.DEFAULT_TOKEN_INDEX_ROLE)
     cui_role: str = field(default='cui')
     cui_attribute: str = field(default='cui_')
 
     def _populate_cuis(self):
+        token_index_role = self.token_index_role
         amr: AmrSentence = self.amr
+        for i, t in self.tokens_by_idx.items():
+            print(f'{i} -> {t}')
         graph: Graph = amr.graph
         cuis: List[Tuple[str, str, str]] = []
         tirs: List[int] = []
@@ -137,7 +130,7 @@ class CuiAmrFeatureSentence(AmrFeatureSentence):
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(f'triple: {src_trip}')
             # match on role name
-            if rel.startswith(self.token_index_role):
+            if rel.startswith(token_index_role):
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.debug(f'found relation: {rel}, target: {target}')
                 # list indexes are comma separated
