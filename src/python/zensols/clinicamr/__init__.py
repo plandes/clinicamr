@@ -1,2 +1,2 @@
-from .cui import *
+from .paragraph import *
 from .app import *
