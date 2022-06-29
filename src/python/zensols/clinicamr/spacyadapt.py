@@ -19,13 +19,18 @@ class SpacyTokenAdapter(object):
         self.sent = sent
 
     def __getattr__(self, attr, default=None):
+        v = None
         if attr == 'text':
-            return self._ftok.norm
+            v = self._ftok.norm
         elif attr == 'ent_type_':
-            return self._ftok.ent_
+            v = self._ftok.ent_
+            if v == FeatureToken.NONE:
+                v = ''
         elif attr == 'doc':
-            return self.sent._doc
-        return getattr(self._ftok, attr)
+            v = self.sent._doc
+        else:
+            v = getattr(self._ftok, attr)
+        return v
 
     def __str__(self):
         return self._ftok.norm

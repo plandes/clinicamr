@@ -71,3 +71,10 @@ class Application(object):
                 print('-' * 80)
             if 0:
                 para.amr.plot()
+
+    def protoX(self):
+        doc = self.config_factory('doc_parser').parse_spacy_doc('I am Paul Landes.')
+        for t in doc:
+            print(f'{t} <{t.ent_type_}> {type(t.ent_type_)}')
+        for e in doc.ents:
+            print(e)
