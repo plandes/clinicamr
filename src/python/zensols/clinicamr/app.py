@@ -69,4 +69,4 @@ class Application(object):
                     print(type(s), s)
                     print(s.graph_string)
                 print('-' * 80)
-            #para.amr.plot()
+            para.amr.plot()

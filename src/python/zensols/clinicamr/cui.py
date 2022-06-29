@@ -1,4 +1,6 @@
-"""
+"""Parse paragraph AMR graphs and cache using a
+:class:`~zensols.persist.Stash`.
+
 """
 __author__ = 'Paul Landes'
 
@@ -13,21 +15,41 @@ from zensols.nlp import (
     FeatureToken, FeatureSentence, FeatureDocument, SpacyFeatureDocumentParser
 )
 from zensols.amr import (
-    AmrError, AmrParser, AmrDocument, AmrSentence, AmrFeatureSentence, AmrFeatureDocument,
+    AmrError, AmrParser, AmrDocument, AmrSentence,
+    AmrFeatureSentence, AmrFeatureDocument,
 )
-from zensols.mimic import NoteEvent, Note, ParagraphFactory, Section
-from zensols.mimicsid import AnnotationNoteFactory
+from zensols.mimic import ParagraphFactory, Section
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ClinicAmrParagraphFactory(ParagraphFactory):
+    """Parse paragraph AMR graphs by using the super class paragraph factory.  Then
+    each document is given an AMR graph using a
+    :class:`~zensols.amr.AmrDocument` at the document level and a
+    :class:`~zensols.amr.AmrSentence` at the sentence level, which are are
+    cached using a :class:`~zensols.persist.Stash`.
+
+    A list of :class:`~zensols.amr.AmrFeatureDocument` are returned.
+
+    """
     amr_parser: AmrParser = field()
+    """The AMR parser used to induce the graphs."""
+
     doc_parser: SpacyFeatureDocumentParser = field()
+    """The parser used to convert super class (see class docs) documents back in
+    spaCy :class:`~spacy.tokens.Doc` instances.
+
+    """
     sec_para_stash: Stash = field()
+    """Used to store the :class:`~zensols.amr.AmrDocument` instances."""
 
     def _create_amr_doc(self, para: FeatureDocument) -> AmrDocument:
+        # (at least) gsii models can't handle tokens with spaces, which happens
+        # in multi-word entries, so chop them
+        #
+        # TODO: add a whitespace split token normalizer
         for t in para.token_iter():
             pos = t.norm.find(' ')
             if pos > -1:
@@ -49,18 +71,15 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
 
     def _create_amr_docs(self, paras: List[FeatureDocument]) -> \
             List[AmrDocument]:
-        import itertools as it
         amr_docs: List[AmrDocument] = []
         para: FeatureDocument
-        for para in it.islice(paras, 2):
+        for para in paras:
             amr_docs.append(self._create_amr_doc(para))
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'returning {len(amr_docs)} paragraph documents')
         return amr_docs
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
-        if 0:
-            self.sec_para_stash.clear()
         key = f'{sec._row_id}-{sec.id}'
         paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
@@ -80,17 +99,6 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
             amr_fdoc = para.clone(AmrFeatureDocument, amr=amr_doc)
             amr_paras.append(amr_fdoc)
         return amr_paras
-
-
-# @dataclass
-# class ClinicAmrAnnotationNoteFactory(AnnotationNoteFactory):
-#     def __call__(self, note_event: NoteEvent) -> Note:
-#         print('HERE')
-#         note: Note = super().__call__(note_event)
-#         for sec in note.sections.values():
-#             sec.paragraphs
-#             print('AMRS', sec._amrs)
-#         return note
 
 
 @dataclass
