@@ -33,28 +33,20 @@ class Application(object):
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
 
-    def proto(self):
-        """Prototype test."""
-        if logger.isEnabledFor(logging.INFO):
-            logger.info('do something more')
-        print(type(self.doc_parser.target_parser))
-        doc = self.doc_parser('He died of liver failure.')
-        sent = doc.sents[0]
-        sent.write(n_tokens=1000)
-        print(doc.amr)
-        doc.amr.plot(Path('/d/amr'))
+    def parse(self, text: str = None):
+        """Parse a MIMIC-III string.
 
-    def protoX(self):
-        hadm_id = '119960'
-        stash: Stash = self.corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        note = adm.notes_by_category['Discharge summary'][0]
-        hpi = note.sections['history-of-present-illness']
-        for sent in hpi.body_doc:
-            print(f'<{sent.text}>')
-            print(sent.amr)
-            print('-' * 100)
-           
+        :param text: the text to parse
+
+        """
+        text = 'He died of liver failure.' if text is None else text
+        doc = self.doc_parser(text)
+        doc.sents[0].write()
+        sent = doc.sents[0]
+        if hasattr(sent, 'amr'):
+            print(doc.amr)
+            doc.amr.plot(Path('/d/amr'))
+
     def proto(self):
         hadm_id = '119960'
         stash: Stash = self.corpus.hospital_adm_stash
@@ -71,10 +63,3 @@ class Application(object):
                 print('-' * 80)
             if 0:
                 para.amr.plot()
-
-    def protoX(self):
-        doc = self.config_factory('doc_parser').parse_spacy_doc('I am Paul Landes.')
-        for t in doc:
-            print(f'{t} <{t.ent_type_}> {type(t.ent_type_)}')
-        for e in doc.ents:
-            print(e)
