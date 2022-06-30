@@ -77,7 +77,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         para: FeatureDocument
         for pix, para in enumerate(it.islice(paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
-            amr_fdoc: AmrFeatureDocument = self.amr_annotator(para)
+            amr_fdoc: AmrFeatureDocument = self.amr_annotator(para, key)
             ad: AmrDocument = amr_fdoc.amr
             amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, key)
             amr_paras.append(amr_fdoc)
