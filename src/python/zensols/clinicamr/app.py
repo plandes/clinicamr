@@ -56,7 +56,6 @@ class Application(object):
     def proto(self):
         """Used for rapid prototyping."""
         hadm_id = '119960'
-        base_path = Path('amr-doc')
         stash: Stash = self.corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         note = adm.notes_by_category['Discharge summary'][0]
@@ -64,8 +63,9 @@ class Application(object):
         #print(sec.body)
         if 1:
             for para in sec.paragraphs:
-                print(para.amr)
-                para.amr.plot(base_path / para.key)
+                print('T2', type(para))
+                #print(para.amr)
+                para.amr.plot()
         else:
             print(note.doc.norm)
             return

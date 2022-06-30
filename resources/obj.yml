@@ -19,6 +19,7 @@ amr_paragraph_stash:
   path: 'path: ${mimic_default:shared_data_dir}/sec-para'
 
 amr_annotator:
+  stash: 'instance: amr_paragraph_stash'
   0.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
@@ -32,7 +33,6 @@ amr_annotator:
       token_feature_annotator: 'instance: tuple: amr_token_cui_populator'
     else:
       token_feature_annotator: []
-  stash: 'instance: amr_paragraph_stash'
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory

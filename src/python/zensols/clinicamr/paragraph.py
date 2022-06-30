@@ -1,4 +1,4 @@
-"""Parse paragraph AMR graphs and cache using a
+"""Parse clinical medical note paragraph AMR graphs and cache using a
 :class:`~zensols.persist.Stash`.
 
 """
@@ -8,10 +8,12 @@ from typing import List, Set, Tuple
 from dataclasses import dataclass, field
 import sys
 import logging
+from pathlib import Path
 import itertools as it
 from zensols.nlp import FeatureDocument, FeatureToken
 from zensols.amr import (
-    AmrFeatureDocument, AmrDocumentAnnotator, TokenFeatureAnnotator
+    AmrFeatureDocument, AmrDocument,
+    AmrDocumentAnnotator, TokenFeatureAnnotator,
 )
 from zensols.mimic import ParagraphFactory, Section
 
@@ -33,6 +35,23 @@ class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
         # concept
         if tok.is_concept:
             super()._annotate_token(tok, source, feature_triples)
+
+
+@dataclass
+class ClinicAmrDocument(AmrDocument):
+    """An AMR document that comes from a paragraph with a unique key used when
+    generating diagram plots.
+
+    :see: :class:`.ClinicAmrParagraphFactory`
+
+    """
+    key: str = field(default=None)
+
+    def _get_plot_dir(self, base_path: Path) -> Path:
+        if self.key is None:
+            return base_path
+        else:
+            return base_path / self.key
 
 
 @dataclass
@@ -58,7 +77,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         para: FeatureDocument
         for pix, para in enumerate(it.islice(paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
-            amr_doc: AmrFeatureDocument = self.amr_annotator(para, key)
-            amr_doc.key = key
-            amr_paras.append(amr_doc)
+            amr_fdoc: AmrFeatureDocument = self.amr_annotator(para)
+            ad: AmrDocument = amr_fdoc.amr
+            amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, key)
+            amr_paras.append(amr_fdoc)
         return amr_paras
