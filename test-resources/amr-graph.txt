@@ -1,0 +1,17 @@
+# ::snt Mr . LASTNAME is an 87 yo male with a of diastolic CHF ( EF 65 % 1/10 ) .
+# ::tokens ["Mr", ".", "LASTNAME", "is", "an", "87", "yo", "male", "with", "a", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
+# ::ner_tags ["O", "O", "PERSON", "O", "O", "DATE", "O", "concept", "O", "O", "concept", "concept", "ORG", "O", "GPE", "PERCENT", "O", "CARDINAL", "O", "O"]
+# ::ner_iob ["O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "B", "B", "O", "B", "O", "O", "O", "O", "O"]
+# ::pos_tags ["UH", ".", "DT", "VBZ", "DT", "CD", "NN", "NN", "IN", "DT", "NN", "JJ", "NN", "-LRB-", "NN", "CD", "NN", "CD", "-RRB-", "."]
+# ::lemmas ["mr.", ".", "LASTNAME", "be", "an", "87", "yo", "male", "with", "a", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
+(h0 / have-03
+    :ARG0 (m0 / male
+              :quant 87
+              :mod (a1 / at-most)
+              :cui "Males (C0086582)")
+    :ARG1 (s0 / small-molecule
+              :ARG0-of (a0 / at-most
+                           :op1 (p0 / percentage-entity
+                                    :value 65))
+              :name (n0 / name
+                        :op1 "LASTNAME")))
