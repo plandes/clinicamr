@@ -6,7 +6,9 @@ __author__ = 'Paul Landes'
 
 from typing import List
 from dataclasses import dataclass, field
+import sys
 import logging
+import itertools as it
 from zensols.nlp import FeatureDocument
 from zensols.amr import AmrFeatureDocument, AmrDocumentAnnotator
 from zensols.mimic import ParagraphFactory, Section
@@ -28,11 +30,15 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     amr_annotator: AmrDocumentAnnotator = field()
     """Parses, populates and caches AMR graphs in feature documents."""
 
+    limit: int = field(default=sys.maxsize)
+
     def __call__(self, sec: Section) -> List[FeatureDocument]:
         nasc_paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
         para: FeatureDocument
-        for pix, para in enumerate(nasc_paras):
+        for pix, para in enumerate(it.islice(nasc_paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
-            amr_paras.append(self.amr_annotator(para, key))
+            amr_doc: AmrFeatureDocument = self.amr_annotator(para, key)
+            amr_doc.key = key
+            amr_paras.append(amr_doc)
         return amr_paras
