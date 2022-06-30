@@ -4,16 +4,35 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import List
+from typing import List, Set, Tuple
 from dataclasses import dataclass, field
 import sys
 import logging
 import itertools as it
-from zensols.nlp import FeatureDocument
-from zensols.amr import AmrFeatureDocument, AmrDocumentAnnotator
+from zensols.nlp import FeatureDocument, FeatureToken
+from zensols.amr import (
+    AmrFeatureDocument, AmrDocumentAnnotator, TokenFeatureAnnotator
+)
 from zensols.mimic import ParagraphFactory, Section
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
+    """Override token feature annotation by adding CUI data.
+
+    """
+    def _format_feature_value(self, tok: FeatureToken) -> str:
+        return f'{tok.pref_name_} ({tok.cui_})'
+        return getattr(tok, self.feature_id)
+
+    def _annotate_token(self, tok: FeatureToken, source: str,
+                        feature_triples: Set[Tuple[str, str, str]]):
+        # when we find a concept, add in the CUI if the token is a
+        # concept
+        if tok.is_concept:
+            super()._annotate_token(tok, source, feature_triples)
 
 
 @dataclass
@@ -31,6 +50,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     """Parses, populates and caches AMR graphs in feature documents."""
 
     limit: int = field(default=sys.maxsize)
+    """Limit on number of paragraphs to process and useful for prototyping."""
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
         paras: List[FeatureDocument] = super().__call__(sec)

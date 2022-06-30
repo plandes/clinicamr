@@ -1,49 +1,40 @@
 ## Language
 #
+# map lemmas (in addition to named entities) as well since gsii needs them and
+# MedCAT's version of the lemmas do not appear to be useful
 mednlp_combine_doc_parser:
   overwrite_features: 'list: ent, ent_, lemma, lemma_'
 
 
 ## Paragraph
 #
-token_index_annotator:
-  class_name: zensols.amr.TokenIndexAnnotator
-  index_type: doc
-
-token_ent_populator:
-  class_name: zensols.amr.TokenFeatureAnnotator
-  role: ent
-  feature_id: ent_
-  remove_indexes: false
-
-token_cui_populator:
-  class_name: zensols.amr.TokenFeatureAnnotator
+amr_token_cui_populator:
+  class_name: zensols.clinicamr.ClinicTokenFeatureAnnotator
   role: cui
   feature_id: cui_
   remove_indexes: true
 
-sec_para_stash:
+amr_paragraph_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para'
 
 amr_annotator:
-  class_name: zensols.amr.AmrDocumentAnnotator
-  amr_parser: 'instance: amr_parser'
   0.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_index_annotator: 'instance: token_index_annotator'
+      token_index_annotator: 'instance: amr_token_index_annotator'
     else:
       token_index_annotator: null
   1.condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_feature_annotator: 'instance: tuple: token_ent_populator, token_cui_populator'
+#      token_feature_annotator: 'instance: tuple: amr_token_ent_populator, amr_token_cui_populator'
+      token_feature_annotator: 'instance: tuple: amr_token_cui_populator'
     else:
       token_feature_annotator: []
-  stash: 'instance: sec_para_stash'
+  stash: 'instance: amr_paragraph_stash'
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory
   amr_annotator: 'instance: amr_annotator'
-  limit: 3
+#  limit: 3

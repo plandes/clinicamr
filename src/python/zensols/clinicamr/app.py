@@ -56,7 +56,7 @@ class Application(object):
     def proto(self):
         """Used for rapid prototyping."""
         hadm_id = '119960'
-        base_path = Path('amr_doc')
+        base_path = Path('amr-doc')
         stash: Stash = self.corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         note = adm.notes_by_category['Discharge summary'][0]
@@ -75,15 +75,6 @@ class Application(object):
 
     def protoX(self):
         s = """Mr. [**Known lastname **] is an 87 yo male with a history of diastolic CHF (EF\n65% 1/10)."""
-        #doc_parser = self.config_factory('doc_parser')
-        doc_parser = self.doc_parser
-        if 0:
-            doc = doc_parser.parse_spacy_doc(s)
-            for t in doc:
-                print(t, t.ent_type_)
-            print('_' * 120)
-        else:
-            doc = doc_parser(s)
-            for t in doc.token_iter():
-                #print(t, t.ent_)
-                t.write()
+        ann = self.config_factory('amr_annotator')
+        doc = self.doc_parser(s)
+        print(ann(doc).amr.graph_string)
