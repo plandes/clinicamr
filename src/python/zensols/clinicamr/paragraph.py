@@ -33,10 +33,10 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     limit: int = field(default=sys.maxsize)
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
-        nasc_paras: List[FeatureDocument] = super().__call__(sec)
+        paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
         para: FeatureDocument
-        for pix, para in enumerate(it.islice(nasc_paras, self.limit)):
+        for pix, para in enumerate(it.islice(paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
             amr_doc: AmrFeatureDocument = self.amr_annotator(para, key)
             amr_doc.key = key
