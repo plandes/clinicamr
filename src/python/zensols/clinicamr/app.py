@@ -21,7 +21,7 @@ class Application(object):
     """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
-    CLI_META = {'option_includes': set('text'.split())}
+    CLI_META = {'option_includes': set('text hadm_id'.split())}
 
     config_factory: ConfigFactory = field()
     """For prototyping."""
@@ -58,7 +58,7 @@ class Application(object):
             print(doc.amr)
             doc.amr.plot(Path('/d/amr'))
 
-    def clear_cache(self):
+    def clear(self):
         """Clear the paragraph AMR cache."""
         logger.info(f'removing files in: {self.amr_paragraph_stash.path}')
         self.amr_paragraph_stash.clear()
@@ -73,7 +73,7 @@ class Application(object):
         for para in sec.paragraphs:
             para.amr.plot(self.plot_path / f'{adm.hadm_id}-{note.row_id}')
 
-    def plot(self, hadm_id: int = '119960'):
+    def plot(self, hadm_id: str = '119960'):
         """Create plots for an admission."""
         parser_model: str = self.config_factory.config.get_option(
             'parse_model', section='amr_default')

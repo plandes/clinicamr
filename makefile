@@ -12,3 +12,8 @@ include ./zenbuild/main.mk
 .PHONY:			appinfo
 appinfo:
 			@echo "app-resources-dir: $(RESOURCES_DIR)"
+
+.PHONY:			plot
+plot:
+			./clinicamr clearcache
+			./clinicamr plot --override='amr_default.parse_model=gsii'
