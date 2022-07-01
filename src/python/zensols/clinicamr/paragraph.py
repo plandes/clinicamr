@@ -39,19 +39,18 @@ class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
 
 @dataclass
 class ClinicAmrDocument(AmrDocument):
-    """An AMR document that comes from a paragraph with a unique key used when
-    generating diagram plots.
+    """An AMR document with a sub pat used when generating diagram plots.
 
     :see: :class:`.ClinicAmrParagraphFactory`
 
     """
-    key: str = field(default=None)
+    sub_path: Path = field(default=None)
 
     def _get_plot_dir(self, base_path: Path) -> Path:
-        if self.key is None:
+        if self.sub_path is None:
             return base_path
         else:
-            return base_path / self.key
+            return base_path / self.sub_path
 
 
 @dataclass
@@ -77,8 +76,9 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         para: FeatureDocument
         for pix, para in enumerate(it.islice(paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
+            sub_path = Path(f'{sec.id}-{pix}')
             amr_fdoc: AmrFeatureDocument = self.amr_annotator(para, key)
             ad: AmrDocument = amr_fdoc.amr
-            amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, key)
+            amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, sub_path)
             amr_paras.append(amr_fdoc)
         return amr_paras

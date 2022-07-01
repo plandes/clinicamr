@@ -1,4 +1,4 @@
 *.pyc
 *_flymake.py
 /target
-/amr-doc
+/amr-plot

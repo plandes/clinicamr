@@ -5,6 +5,13 @@
 mednlp_combine_doc_parser:
   overwrite_features: 'list: ent, ent_, lemma, lemma_'
 
+amr_parser:
+  condition:
+    if: "eval: '${amr_default:parse_model}' == 't5'"
+    then:
+      alternate_path: '${env:home}/.cache/zensols/amr/t5-bio'
+    else:
+      alternate_path: null
 
 ## Paragraph
 #

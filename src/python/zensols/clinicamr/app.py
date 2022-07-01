@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Application(object):
-    """Clincial Domain Abstract Meaning Representation Graphs
+    """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
     CLI_META = {
@@ -25,8 +25,8 @@ class Application(object):
         set('config_factory doc_parser corpus anon_resource'.split())}
 
     config_factory: ConfigFactory = field()
-    """
-    """
+    """For prototyping."""
+
     doc_parser: FeatureDocumentParser = field()
     """The document parser used for the :meth:`parse` action."""
 
@@ -35,6 +35,8 @@ class Application(object):
 
     anon_resource: AnnotationResource = field()
     """Contains resources to acces the MIMIC-III MedSecId annotations."""
+
+    plot_path: Path = field()
 
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
@@ -60,21 +62,19 @@ class Application(object):
         adm: HospitalAdmission = stash[hadm_id]
         note = adm.notes_by_category['Discharge summary'][0]
         sec = note.sections['history-of-present-illness']
-        #print(sec.body)
-        if 1:
-            for para in sec.paragraphs:
-                print('T2', type(para))
-                #print(para.amr)
-                para.amr.plot()
-        else:
-            print(note.doc.norm)
-            return
-            for para in sec.paragraphs:
-                print(para.norm)
-                print('--')
+        for para in sec.paragraphs:
+            para.amr.plot(self.plot_path / f'{adm.hadm_id}-{note.row_id}')
 
     def protoX(self):
-        s = """Mr. [**Known lastname **] is an 87 yo male with a history of diastolic CHF (EF\n65% 1/10)."""
+        hadm_id = '119960'
+        stash: Stash = self.corpus.hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
+        note = adm.notes_by_category['Discharge summary'][0]
+        sec = note.sections['history-of-present-illness']
+        doc = sec.body_doc
+        doc = doc.combine_sentences()
+        print(doc.text)
         ann = self.config_factory('amr_annotator')
-        doc = self.doc_parser(s)
-        print(ann(doc).amr.graph_string)
+        amr_doc = ann(doc)
+        print(amr_doc.amr.graph_string)
+        amr_doc.amr.plot()
