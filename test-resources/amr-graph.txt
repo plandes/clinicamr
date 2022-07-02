@@ -1,17 +1,23 @@
-# ::snt Mr . LASTNAME is an 87 yo male with a of diastolic CHF ( EF 65 % 1/10 ) .
-# ::tokens ["Mr", ".", "LASTNAME", "is", "an", "87", "yo", "male", "with", "a", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
-# ::ner_tags ["O", "O", "PERSON", "O", "O", "DATE", "O", "concept", "O", "O", "concept", "concept", "ORG", "O", "GPE", "PERCENT", "O", "CARDINAL", "O", "O"]
-# ::ner_iob ["O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "B", "B", "O", "B", "O", "O", "O", "O", "O"]
-# ::pos_tags ["UH", ".", "DT", "VBZ", "DT", "CD", "NN", "NN", "IN", "DT", "NN", "JJ", "NN", "-LRB-", "NN", "CD", "NN", "CD", "-RRB-", "."]
-# ::lemmas ["mr.", ".", "LASTNAME", "be", "an", "87", "yo", "male", "with", "a", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
-(h0 / have-03
-    :ARG0 (m0 / male
-              :quant 87
-              :mod (a1 / at-most)
-              :cui "Males (C0086582)")
-    :ARG1 (s0 / small-molecule
-              :ARG0-of (a0 / at-most
-                           :op1 (p0 / percentage-entity
-                                    :value 65))
-              :name (n0 / name
-                        :op1 "LASTNAME")))
+# ::snt Mr . LASTNAME is an 87 yo male with a history of diastolic CHF ( EF 65 % 1/10 ) .
+# ::tokens ["Mr", ".", "LASTNAME", "is", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
+# ::ner_tags ["O", "O", "PERSON", "O", "O", "DATE", "O", "concept", "O", "O", "concept", "concept", "concept", "ORG", "O", "GPE", "PERCENT", "O", "CARDINAL", "O", "O"]
+# ::ner_iob ["O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "B", "B", "B", "O", "B", "O", "O", "O", "O", "O"]
+# ::pos_tags ["UH", ".", "DT", "VBZ", "DT", "CD", "NN", "NN", "IN", "DT", "NN", "NN", "JJ", "NN", "-LRB-", "NN", "CD", "NN", "CD", "-RRB-", "."]
+# ::lemmas ["mr.", ".", "LASTNAME", "be", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
+(m0 / multi-sentence
+    :snt2 (e0 / equal-01
+              :ARG2 (p2 / percentage-entity
+                        :value 65)
+              :ARG1 (p1 / percentage-entity
+                        :value 65))
+    :snt1 (m1 / male
+              :domain (p0 / person
+                          :name (n0 / name
+                                    :op1 "LASTNAME"))
+              :quant (m2 / mr.)
+              :ARG0-of (h0 / have-03
+                           :ARG1 (h1 / history
+                                     :mod (d0 / diastolic
+                                              :cui "Diastole (C0012000)")
+                                     :cui "Medical History (C0262926)"))
+              :cui "Males (C0086582)"))
