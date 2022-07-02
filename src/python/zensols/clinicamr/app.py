@@ -24,7 +24,7 @@ class Application(object):
     """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
-    CLI_META = {'option_includes': set('text hadm_id'.split())}
+    CLI_META = {'option_includes': set('text hadm_id limit'.split())}
 
     config_factory: ConfigFactory = field()
     """For prototyping."""
@@ -105,45 +105,34 @@ class Application(object):
                         for para in sec.paragraphs:
                             para.amr.plot(note_path)
                     except Exception as e:
-                        logger.warning(f'Error creating plot: {e}--skipping')
+                        logger.warning('Error creating plot for note ' +
+                                       f'{note.row_id}: {e}--skipping')
 
     def _tmp(self):
+        sec_name = 'history-of-present-illness'
         stash: Stash = self.corpus.hospital_adm_stash
         adm: HospitalAdmission = stash['119960']
-        note = adm.notes_by_category['Physician'][0]
-        #print(note.text)
-        sec = note.sections['review-of-systems']
-        print(f'header: <{sec.header}>')
-        print(f'body: <{sec.body}>')
-        print(f'norm: <{sec.body_doc.norm}>')
-        sec.body_doc.write()
-        for t in sec.body_doc.tokens:
-            print('T', t)
-        ann = self.config_factory('amr_annotator')
-        from zensols.util import loglevel
-        with loglevel('zensols.amr'):
-            doc = ann(sec.body_doc)
-        doc.write()
+        note = adm.notes_by_id[532411]
+        sec = note.sections[sec_name]
+        for p in sec.paragraphs:
+            print(type(p))
+            print(p)
         return
-        para = sec.paragraphs[0]
-        para.write()
-        #print(para.amr.graph_string)
-        #para.amr.plot()
-
-    def _tmp(self):
-        #doc = self.doc_parser('he had no changes')
-        text = """Mr. [**Known lastname **] is an 87 yo male with a
-history of diastolic CHF (EF\n65% 1/10)."""
-        doc = self.doc_parser(text)
-        doc.write()
-        ann = self.config_factory('amr_annotator')
-        doc = ann(doc)
-        #doc.write()
-        print(doc.amr.graph_string)
+        for note in adm.notes_by_category['Physician']:
+            if sec_name in note.sections:
+                print(note)
+                norm = note.doc.norm
+                found_unmatch_tok = norm.find('**') > -1
+                found_unmatch_ent = norm.find('<UNKNOWN>') > -1
+                if found_unmatch_tok or found_unmatch_ent:
+                    print('original:')
+                    print(note.doc.text)
+                    print('norm:')
+                    print(norm)
+                print('_' * 120)
+        return
 
     def proto(self):
         """Used for rapid prototyping."""
-        if 0:
-            self.clear()
         #self.plot(limit=1)
         self._tmp()

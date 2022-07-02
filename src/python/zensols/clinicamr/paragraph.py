@@ -15,7 +15,7 @@ from zensols.amr import (
     AmrFeatureDocument, AmrDocument,
     AmrDocumentAnnotator, TokenFeatureAnnotator,
 )
-from zensols.mimic import ParagraphFactory, Section
+from zensols.mimic import ParagraphFactory, Section, MimicTokenDecorator
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +70,16 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     limit: int = field(default=sys.maxsize)
     """Limit on number of paragraphs to process and useful for prototyping."""
 
+    def _fix_lemmas(self, doc: FeatureDocument):
+        """Assume this document has been unpersisted from the file system so modify in
+        place.
+
+        """
+        for tok in doc.token_iter():
+            mimic_tok_feat = getattr(tok, MimicTokenDecorator.TOKEN_FEATURE_ID)
+            if mimic_tok_feat == MimicTokenDecorator.PSEUDO_TOKEN_FEATURE:
+                tok.lemma_ = tok.norm
+
     def __call__(self, sec: Section) -> List[FeatureDocument]:
         paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
@@ -77,6 +87,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         for pix, para in enumerate(it.islice(paras, self.limit)):
             key = f'{sec._row_id}-{sec.id}-{pix}'
             sub_path = Path(f'{sec.id}-{pix}')
+            self._fix_lemmas(para)
             amr_fdoc: AmrFeatureDocument = self.amr_annotator(para, key)
             ad: AmrDocument = amr_fdoc.amr
             amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, sub_path)
