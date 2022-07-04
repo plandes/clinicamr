@@ -100,10 +100,13 @@ class Application(object):
             logger.info(f'creating plots for note: {note}')
             for sec in note.sections.values():
                 if len(sec.body_doc.norm) > 0:
-                    logger.info(f'creating plots for section: {sec}')
+                    front_text = (f'[Hadm ID: {adm.hadm_id}, ' +
+                                  f'Note ID: {note.row_id}]')
+                    if logger.isEnabledFor(logging.INFO):
+                        logger.info(f'creating plots for section: {sec}')
                     try:
                         for para in sec.paragraphs:
-                            para.amr.plot(note_path)
+                            para.amr.plot(note_path, front_text=front_text)
                     except Exception as e:
                         logger.warning('Error creating plot for note ' +
                                        f'{note.row_id}: {e}--skipping')
@@ -114,25 +117,10 @@ class Application(object):
         adm: HospitalAdmission = stash['119960']
         note = adm.notes_by_id[532411]
         sec = note.sections[sec_name]
-        for p in sec.paragraphs:
-            print(type(p))
-            print(p)
-        return
-        for note in adm.notes_by_category['Physician']:
-            if sec_name in note.sections:
-                print(note)
-                norm = note.doc.norm
-                found_unmatch_tok = norm.find('**') > -1
-                found_unmatch_ent = norm.find('<UNKNOWN>') > -1
-                if found_unmatch_tok or found_unmatch_ent:
-                    print('original:')
-                    print(note.doc.text)
-                    print('norm:')
-                    print(norm)
-                print('_' * 120)
-        return
+        for p in sec.paragraphs[0:1]:
+            p.amr.plot(top_to_bottom=False, front_text='Testing')
 
     def proto(self):
         """Used for rapid prototyping."""
-        #self.plot(limit=1)
-        self._tmp()
+        self.plot(limit=1)
+        #self._tmp()
