@@ -103,6 +103,7 @@ class Application(object):
                             pix = len(rows)
                             target_file_name = f'{pix}.pdf'
                             pdf_file = note_path / target_file_name
+                            pdf_file = Path(*pdf_file.parts[1:])
                             rows.append((
                                 pix, None, None, str(pdf_file), sent.text))
                             sent.amr.plot(
@@ -153,9 +154,14 @@ class Application(object):
                 for sec in note.sections.values():
                     self._plot_section(sec, note, mode, note_path, rows)
         if mode == PlotMode.by_paragraph:
+            out_file = self.plot_path / f'{parser_model}.xlsx'
             df = pd.DataFrame(
                 rows, columns='id correct issues file sent'.split())
-            df.to_csv(self.plot_path / f'{parser_model}.csv')
+            df["file"] = '=HYPERLINK("'+df["file"]+'","'+df["file"]+'")'
+            with pd.ExcelWriter(out_file) as writer:
+                df.to_excel(writer, index=False,
+                            sheet_name='{parser_model} plots')
+            logger.info(f'wrote: {out_file}')
 
     def _tmp(self):
         sec_name = 'history-of-present-illness'
@@ -174,6 +180,6 @@ class Application(object):
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: lambda: self.plot(limit=2, mode=PlotMode.by_paragraph),
+        {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          1: self._tmp,
          }[run]()
