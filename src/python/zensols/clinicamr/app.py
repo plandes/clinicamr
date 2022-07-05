@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Iterable, List, Tuple
+from typing import Iterable, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import sys
@@ -33,7 +33,8 @@ class Application(object):
     """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
-    CLI_META = {'option_includes': set('text hadm_id limit run'.split())}
+    CLI_META = {'option_includes':
+                set('text hadm_ids limit mode delete run'.split())}
 
     config_factory: ConfigFactory = field()
     """For prototyping."""
@@ -102,7 +103,8 @@ class Application(object):
                             pix = len(rows)
                             target_file_name = f'{pix}.pdf'
                             pdf_file = note_path / target_file_name
-                            rows.append((pix, str(pdf_file), sent.text))
+                            rows.append((
+                                pix, None, None, str(pdf_file), sent.text))
                             sent.amr.plot(
                                 note_path,
                                 target_file_name=target_file_name,
@@ -151,7 +153,8 @@ class Application(object):
                 for sec in note.sections.values():
                     self._plot_section(sec, note, mode, note_path, rows)
         if mode == PlotMode.by_paragraph:
-            df = pd.DataFrame(rows, columns='id file sent'.split())
+            df = pd.DataFrame(
+                rows, columns='id correct issues file sent'.split())
             df.to_csv(self.plot_path / f'{parser_model}.csv')
 
     def _tmp(self):
