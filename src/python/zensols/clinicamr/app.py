@@ -120,7 +120,7 @@ class Application(object):
                                f'{note.row_id}: {e}--skipping')
 
     def plot(self, hadm_ids: str = None, limit: int = None,
-             mode: PlotMode = PlotMode.by_admission, delete: bool = True,
+             mode: PlotMode = PlotMode.by_admission, delete: bool = False,
              annotators: str = 'kunal,adam,paul'):
         """Create plots for an admission.
 

@@ -2,6 +2,6 @@
 
 ./clinicamr clean --clevel 2
 ./clinicamr clear
-./clinicamr plot --mode by_paragraph --override='amr_default.parse_model=gsii'
+./clinicamr plot --mode by_paragraph --override='amr_default.parse_model=gsii' --delete
 ./clinicamr clear
 ./clinicamr plot --mode by_paragraph --override='amr_default.parse_model=t5'

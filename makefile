@@ -28,3 +28,7 @@ push:
 			hostcon push -n nlproot --delete \
 				--localdir '$(HOME)/view/nlp/med/clinicamr/amr-plot/' \
 				--remotedir view/rgh/apache-amr/site/proofing
+
+.PHONY:			stop
+stop:
+			ps -eaf | grep clinic | grep -v grep | awk '{print $2}' | xargs kill
