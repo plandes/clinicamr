@@ -137,7 +137,7 @@ class Application(object):
 
         """
         if hadm_ids is None:
-            hadm_ids = '119960,118659,118760,120842'
+            hadm_ids = '119960,118659,118760,120842,108346,109181,110002,146230'
         annotators: List[str] = re.split(r'\s*,\s*', annotators)
         limit = sys.maxsize if limit is None else limit
         parser_model: str = self.config_factory.config.get_option(
