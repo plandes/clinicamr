@@ -17,8 +17,9 @@ appinfo:
 .PHONY:			plot
 plot:
 			./clinicamr clear
-			./clinicamr plot
 			./clinicamr plot --override='amr_default.parse_model=gsii'
+			./clinicamr clear
+			./clinicamr plot --override='amr_default.parse_model=t5'
 
 .PHONY:			cleanplots
 cleanplots:

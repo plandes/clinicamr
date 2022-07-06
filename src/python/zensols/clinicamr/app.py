@@ -34,7 +34,7 @@ class Application(object):
 
     """
     CLI_META = {'option_includes':
-                set('text hadm_ids limit mode delete run'.split())}
+                set('text hadm_ids annotators limit mode delete run'.split())}
 
     config_factory: ConfigFactory = field()
     """For prototyping."""
@@ -95,7 +95,7 @@ class Application(object):
                 para: AmrFeatureDocument
                 for para in sec.paragraphs:
                     if mode == PlotMode.by_admission:
-                        front_text = f'Note IDX: {note.row_id}, sec: {sec.id};'
+                        front_text = f'Note: {note.row_id}, sec: {sec.id};'
                         para.amr.plot(note_path, front_text=front_text)
                     else:
                         sent: AmrFeatureSentence
@@ -119,7 +119,7 @@ class Application(object):
                 logger.warning('Error creating plot for note ' +
                                f'{note.row_id}: {e}--skipping')
 
-    def plot(self, hadm_ids: str = '119960', limit: int = None,
+    def plot(self, hadm_ids: str = None, limit: int = None,
              mode: PlotMode = PlotMode.by_admission, delete: bool = True,
              annotators: str = 'kunal,adam,paul'):
         """Create plots for an admission.
@@ -136,6 +136,8 @@ class Application(object):
                            sheets
 
         """
+        if hadm_ids is None:
+            hadm_ids = '119960,118659,118760,120842'
         annotators: List[str] = re.split(r'\s*,\s*', annotators)
         limit = sys.maxsize if limit is None else limit
         parser_model: str = self.config_factory.config.get_option(
