@@ -9,7 +9,6 @@ from enum import Enum, auto
 import sys
 import logging
 import re
-import shutil
 from pathlib import Path
 import itertools as it
 import pandas as pd
@@ -120,7 +119,7 @@ class Application(object):
                                f'{note.row_id}: {e}--skipping')
 
     def plot(self, hadm_ids: str = None, limit: int = None,
-             mode: PlotMode = PlotMode.by_admission, delete: bool = False,
+             mode: PlotMode = PlotMode.by_admission,
              annotators: str = 'kunal,adam,paul'):
         """Create plots for an admission.
 
@@ -129,8 +128,6 @@ class Application(object):
         :param limit: the max number of notes to plot
 
         :param mode: the plot file system and tracking strategy
-
-        :param delete: delete any previous plots if they exist
 
         :param annotators: the human annotators used to divide the work in
                            sheets
@@ -145,9 +142,6 @@ class Application(object):
         df: pd.DataFrame = self.anon_resource.note_ids
         stash: Stash = self.corpus.hospital_adm_stash
         rows: List = []
-        if self.plot_path.is_dir():
-            logger.info(f'removing previous plots: {self.plot_path}')
-            shutil.rmtree(self.plot_path)
         for hadm_id in re.split(r'\s*,\s*', hadm_ids):
             adm: HospitalAdmission = stash[hadm_id]
             anon_row_ids = df[df['hadm_id'] == hadm_id]['row_id'].\
@@ -172,7 +166,7 @@ class Application(object):
                                'note_id category section').split())
             df["file"] = '=HYPERLINK("http://nlpdeep.cs.uic.edu:8080/proofing/'+df["file"]+'","'+df["file"]+'")'
             df.to_csv(csv_file)
-            logger.info('wrote: {csv_file}')
+            logger.info(f'wrote: {csv_file}')
             dfs: List[pd.DataFrame]
             if annotators is None:
                 dfs = [df]
