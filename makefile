@@ -24,3 +24,9 @@ plot:
 cleanplots:
 			./clinicamr clean --clevel 2
 			./clinicamr clear
+
+.PHONY:			push
+push:
+			hostcon push -n nlproot --delete \
+				--localdir '$(HOME)/view/nlp/med/clinicamr/amr-plot/' \
+				--remotedir view/rgh/apache-amr/site/proofing

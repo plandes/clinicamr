@@ -100,12 +100,16 @@ class Application(object):
                     else:
                         sent: AmrFeatureSentence
                         for sent in para.sents:
-                            pix = len(rows)
+                            pix = int(len(rows) / 2)
                             target_file_name = f'{pix}.pdf'
-                            pdf_file = note_path / target_file_name
-                            pdf_file = Path(*pdf_file.parts[1:])
-                            rows.append((
-                                pix, None, None, str(pdf_file), sent.text))
+                            t_file = f't5/{target_file_name}'
+                            g_file = f'gsii/{target_file_name}'
+                            rows.append((pix, None, None, t_file, sent.text,
+                                         note.hadm_id, note.row_id,
+                                         note.category, sec.id))
+                            rows.append((pix, None, None, g_file, sent.text,
+                                         note.hadm_id, note.row_id,
+                                         note.category, sec.id))
                             sent.amr.plot(
                                 note_path,
                                 target_file_name=target_file_name,
@@ -116,18 +120,23 @@ class Application(object):
                                f'{note.row_id}: {e}--skipping')
 
     def plot(self, hadm_ids: str = '119960', limit: int = None,
-             mode: PlotMode = PlotMode.by_admission, delete: bool = True):
+             mode: PlotMode = PlotMode.by_admission, delete: bool = True,
+             annotators: str = 'kunal,adam,paul'):
         """Create plots for an admission.
 
         :param hadm_id: the admission ID
 
-        :param limit: the max number of plots to create
+        :param limit: the max number of notes to plot
 
         :param mode: the plot file system and tracking strategy
 
         :param delete: delete any previous plots if they exist
 
+        :param annotators: the human annotators used to divide the work in
+                           sheets
+
         """
+        annotators: List[str] = re.split(r'\s*,\s*', annotators)
         limit = sys.maxsize if limit is None else limit
         parser_model: str = self.config_factory.config.get_option(
             'parse_model', section='amr_default')
@@ -154,14 +163,31 @@ class Application(object):
                 for sec in note.sections.values():
                     self._plot_section(sec, note, mode, note_path, rows)
         if mode == PlotMode.by_paragraph:
-            out_file = self.plot_path / f'{parser_model}.xlsx'
+            csv_file = self.plot_path / 'proofing.csv'
+            excel_file = self.plot_path / 'proofing.xlsx'
             df = pd.DataFrame(
-                rows, columns='id correct issues file sent'.split())
-            df["file"] = '=HYPERLINK("'+df["file"]+'","'+df["file"]+'")'
-            with pd.ExcelWriter(out_file) as writer:
-                df.to_excel(writer, index=False,
-                            sheet_name='{parser_model} plots')
-            logger.info(f'wrote: {out_file}')
+                rows, columns=('id correct issues file sent hadm_id ' +
+                               'note_id category section').split())
+            df["file"] = '=HYPERLINK("http://nlpdeep.cs.uic.edu:8080/proofing/'+df["file"]+'","'+df["file"]+'")'
+            df.to_csv(csv_file)
+            logger.info('wrote: {csv_file}')
+            dfs: List[pd.DataFrame]
+            if annotators is None:
+                dfs = [df]
+                annotators = ['None']
+            else:
+                dfs = []
+                alen = len(annotators)
+                chunk_size = int(len(df) / alen)
+                start = 0
+                for sl in range(alen):
+                    end = start + chunk_size
+                    dfs.append(df[start:end])
+                    start = end
+            with pd.ExcelWriter(excel_file) as writer:
+                for ann, df in zip(annotators, dfs):
+                    df.to_excel(writer, index=False, sheet_name=f'{ann} plots')
+            logger.info(f'wrote: {excel_file}')
 
     def _tmp(self):
         sec_name = 'history-of-present-illness'
@@ -180,6 +206,6 @@ class Application(object):
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
+        {0: lambda: self.plot(limit=2, mode=PlotMode.by_paragraph),
          1: self._tmp,
          }[run]()
