@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Iterable, List
+from typing import Iterable, List, Set
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import sys
@@ -92,27 +92,25 @@ class Application(object):
                 logger.info(f'creating plots for section: {sec}')
             try:
                 para: AmrFeatureDocument
-                for para in sec.paragraphs:
+                for pix, para in enumerate(sec.paragraphs):
                     if mode == PlotMode.by_admission:
                         front_text = f'Note: {note.row_id}, sec: {sec.id};'
                         para.amr.plot(note_path, front_text=front_text)
                     else:
                         sent: AmrFeatureSentence
                         for sent in para.sents:
-                            pix = int(len(rows) / 2)
-                            target_file_name = f'{pix}.pdf'
+                            gix = f'{note.row_id}-{sec.id}-{pix}'
+                            target_file_name = f'{gix}.pdf'
                             t_file = f't5/{target_file_name}'
                             g_file = f'gsii/{target_file_name}'
-                            rows.append((pix, None, None, t_file, sent.text,
-                                         note.hadm_id, note.row_id,
-                                         note.category, sec.id))
-                            rows.append((pix, None, None, g_file, sent.text,
-                                         note.hadm_id, note.row_id,
-                                         note.category, sec.id))
+                            for fpath in (t_file, g_file):
+                                rows.append((gix, None, None, fpath,
+                                             note.hadm_id, note.row_id,
+                                             note.category, sec.id, sent.text))
                             sent.amr.plot(
                                 note_path,
                                 target_file_name=target_file_name,
-                                front_text=f'[{pix}]',
+                                front_text=f'[{gix}]',
                                 write_text=False)
             except Exception as e:
                 logger.warning('Error creating plot for note ' +
@@ -134,7 +132,7 @@ class Application(object):
 
         """
         if hadm_ids is None:
-            hadm_ids = '119960,118659,118760,120842,108346,109181,110002,146230'
+            hadm_ids = '119960'#,118659,118760,120842,108346,109181,110002,146230'
         annotators: List[str] = re.split(r'\s*,\s*', annotators)
         limit = sys.maxsize if limit is None else limit
         parser_model: str = self.config_factory.config.get_option(
@@ -148,7 +146,11 @@ class Application(object):
                 astype(int).tolist()
             notes: Iterable[Note] = it.islice(
                 map(lambda i: adm.notes_by_id[i], anon_row_ids), limit)
+            cats: Set[str] = set()
             for note in notes:
+                if note.category in cats:
+                    continue
+                cats.add(note.category)
                 id_dir: str = f'{adm.hadm_id}-{note.row_id}'
                 note_path: Path = self.plot_path / parser_model
                 if mode == PlotMode.by_admission:
@@ -162,8 +164,8 @@ class Application(object):
             csv_file = self.plot_path / 'proofing.csv'
             excel_file = self.plot_path / 'proofing.xlsx'
             df = pd.DataFrame(
-                rows, columns=('id correct issues file sent hadm_id ' +
-                               'note_id category section').split())
+                rows, columns=('id how_correct issues file hadm_id ' +
+                               'note_id category section sent').split())
             df["file"] = '=HYPERLINK("http://nlpdeep.cs.uic.edu:8080/proofing/'+df["file"]+'","'+df["file"]+'")'
             df.to_csv(csv_file)
             logger.info(f'wrote: {csv_file}')
@@ -202,6 +204,6 @@ class Application(object):
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: lambda: self.plot(limit=2, mode=PlotMode.by_paragraph),
+        {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          1: self._tmp,
          }[run]()

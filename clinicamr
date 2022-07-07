@@ -7,7 +7,7 @@ if (__name__ == '__main__'):
         src_dir_name='src/python',
         package_resource='zensols.clinicamr',
         config_path='etc/clinicamr.conf',
-        proto_args='proto',
+        proto_args='proto --override amr_default.parse_model=gsii',
         proto_factory_kwargs={'reload_pattern': r'^zensols.clinicamr'},
     )
     harness.run()
