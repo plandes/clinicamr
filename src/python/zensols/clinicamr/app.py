@@ -106,7 +106,7 @@ class Application(object):
                             for fpath in (t_file, g_file):
                                 rows.append((gix, None, None, fpath,
                                              note.hadm_id, note.row_id,
-                                             note.category, sec.id, sent.text))
+                                             note.category, sec.id, sent.norm))
                             logger.info(f'plotting {target_file_name}')
                             sent.amr.plot(
                                 note_path,
@@ -199,7 +199,37 @@ class Application(object):
             for sent in doc.sents:
                 print('-', sent.text)
 
-    def proto(self, run: int = 0):
+    def _tmp(self):
+        hadm_id = '120842'
+        k = '523069-24-hour-events-0-0'
+        #k = '522936-disposition-0-0'
+        #k = '522936-communication-0-0'
+        m = re.match(r'^(\d+)-(.+)-\d+-\d+$', k)
+        row_id, sec_id = m.groups()
+        stash: Stash = self.corpus.hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
+        note: Note = adm[int(row_id)]
+        sec: Section = note.sections[sec_id]
+        if 0:
+            print(note.text)
+            print('_' * 120)
+        print(sec.header)
+        print('-' * 80)
+        print(sec.body)
+        print('-' * 80)
+        print(sec.body_doc.text)
+        print('-' * 80)
+        print(sec.body_doc.norm)
+        print('-' * 80)
+        for para in sec.paragraphs:
+            print(para.norm)
+            print('sents:')
+            for sent in para.sents:
+                print(sent.norm)
+                print('-' * 20)
+            print('-' * 30)
+
+    def proto(self, run: int = 1):
         """Used for rapid prototyping."""
         {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          1: self._tmp,
