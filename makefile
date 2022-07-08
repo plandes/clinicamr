@@ -31,4 +31,4 @@ push:
 
 .PHONY:			stop
 stop:
-			ps -eaf | grep clinic | grep -v grep | awk '{print $2}' | xargs kill
+			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill

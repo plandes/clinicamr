@@ -23,7 +23,7 @@ amr_token_cui_populator:
 
 amr_paragraph_stash:
   class_name: zensols.persist.DirectoryStash
-  path: 'path: ${mimic_default:shared_data_dir}/sec-para'
+  path: 'path: ${mimic_default:shared_data_dir}/sec-para/${amr_default:parse_model}'
 
 amr_annotator:
   stash: 'instance: amr_paragraph_stash'

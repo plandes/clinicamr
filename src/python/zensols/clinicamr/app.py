@@ -98,8 +98,8 @@ class Application(object):
                         para.amr.plot(note_path, front_text=front_text)
                     else:
                         sent: AmrFeatureSentence
-                        for sent in para.sents:
-                            gix = f'{note.row_id}-{sec.id}-{pix}'
+                        for six, sent in enumerate(para.sents):
+                            gix = f'{note.row_id}-{sec.id}-{pix}-{six}'
                             target_file_name = f'{gix}.pdf'
                             t_file = f't5/{target_file_name}'
                             g_file = f'gsii/{target_file_name}'
@@ -107,6 +107,7 @@ class Application(object):
                                 rows.append((gix, None, None, fpath,
                                              note.hadm_id, note.row_id,
                                              note.category, sec.id, sent.text))
+                            logger.info(f'plotting {target_file_name}')
                             sent.amr.plot(
                                 note_path,
                                 target_file_name=target_file_name,
@@ -132,7 +133,7 @@ class Application(object):
 
         """
         if hadm_ids is None:
-            hadm_ids = '119960'#,118659,118760,120842,108346,109181,110002,146230'
+            hadm_ids = '119960,118659,118760,120842,108346,109181,110002,146230'
         annotators: List[str] = re.split(r'\s*,\s*', annotators)
         limit = sys.maxsize if limit is None else limit
         parser_model: str = self.config_factory.config.get_option(
@@ -146,11 +147,7 @@ class Application(object):
                 astype(int).tolist()
             notes: Iterable[Note] = it.islice(
                 map(lambda i: adm.notes_by_id[i], anon_row_ids), limit)
-            cats: Set[str] = set()
             for note in notes:
-                if note.category in cats:
-                    continue
-                cats.add(note.category)
                 id_dir: str = f'{adm.hadm_id}-{note.row_id}'
                 note_path: Path = self.plot_path / parser_model
                 if mode == PlotMode.by_admission:
