@@ -9,7 +9,7 @@ from pathlib import Path
 from zensols.config import ConfigFactory
 from zensols.persist import Stash
 from zensols.nlp import FeatureToken, FeatureDocumentParser
-from zensols.mimic import Note, Section, HospitalAdmission
+from zensols.mimic import HospitalAdmission
 from . import PlotMode, Plotter
 
 logger = logging.getLogger(__name__)
@@ -20,8 +20,10 @@ class Application(object):
     """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
-    CLI_META = {'option_includes':
-                set('text hadm_ids annotators limit mode delete run'.split())}
+    CLI_META = {'option_excludes':
+                set('config_factory doc_parser plotter'.split()),
+                'option_overrides': {'output_path': {'long_name': 'output'}},
+                'mnemonic_overrides': {'write_proof_report': 'proofrep'}}
 
     config_factory: ConfigFactory = field()
     """For prototyping."""
@@ -31,9 +33,6 @@ class Application(object):
 
     plotter: Plotter = field()
     """Creates PDF plots of the AMR graphs."""
-
-    amr_paragraph_stash: Stash = field()
-    """The stash that caches paragraph AMR graphs."""
 
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
@@ -69,22 +68,39 @@ class Application(object):
         """
         self.plotter.plot(hadm_ids, limit, mode, annotators)
 
+    def write_proof_report(self, output_path: Path = Path('proof-report.csv')):
+        """Write the feasibility proof report, which writes only the analyzed AMR
+        graphs.
+
+        :param output_path: the path to write the report
+
+        """
+        df = self.plotter.get_feasibility_report(
+            Path('feasibility/proofing.xlsx'), 'paul plots')
+        df.to_csv(output_path)
+        logger.info(f'wrote: {output_path}')
+
     def clear(self):
         """Clear the paragraph AMR cache."""
-        logger.info(f'removing files in: {self.amr_paragraph_stash.path}')
-        self.amr_paragraph_stash.clear()
+        amr_paragraph_stash: Stash = self.config_factory('amr_paragraph_stash')
+        logger.info(f'removing files in: {amr_paragraph_stash.path}')
+        amr_paragraph_stash.clear()
 
     def _test_paragraphs(self):
         sec_name = 'history-of-present-illness'
-        stash: Stash = self.corpus.hospital_adm_stash
+        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash['119960']
         note = adm.notes_by_id[532411]
         sec = note.sections[sec_name]
         for p in sec.paragraphs[0:1]:
             p.amr.plot(top_to_bottom=False, front_text='Testing')
 
-    def proto(self, run: int = 1):
+    def _tmp(self):
+        self._test_paragraphs()
+
+    def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
-         1: self._tmp,
+        {0: self._tmp,
+         1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
+         2: self.write_proof_report,
          }[run]()

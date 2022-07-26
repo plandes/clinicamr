@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import sys
@@ -12,8 +12,10 @@ import re
 from pathlib import Path
 import itertools as it
 import pandas as pd
+from zensols.util import APIError
 from zensols.config import Configurable
 from zensols.persist import Stash
+from zensols.nlp import FeatureSentence, FeatureDocument
 from zensols.amr import AmrFeatureSentence, AmrFeatureDocument
 from zensols.mimic import Corpus, Note, Section, HospitalAdmission
 from zensols.mimicsid import AnnotationResource
@@ -138,3 +140,50 @@ class Plotter(object):
                 for ann, df in zip(annotators, dfs):
                     df.to_excel(writer, index=False, sheet_name=f'{ann} plots')
             logger.info(f'wrote: {excel_file}')
+
+    def get_sent(self, hadm_id: str, sent_id: str) -> FeatureSentence:
+        """Return a the sentence that was used to create an entry in the plot
+        feasibility proofing Excel file.
+
+        :param hadm_id: the hospital admission ID
+
+        :param sent_id:
+
+             the sentence ID string, which has the form:
+             ``<note row_id>-<section id>-<paragraph idx>-<sentence idx>``
+
+        """
+        m: re.Match = re.match(r'^(\d+)-(.+)-(\d+)-(\d+)$', sent_id)
+        row_id, sec_id, par_id, sent_id = m.groups()
+        row_id, par_id, sent_id = int(row_id), int(par_id), int(sent_id)
+        adm: HospitalAdmission = self.corpus.hospital_adm_stash[hadm_id]
+        note: Note = adm[row_id]
+        sec: Section = note[sec_id]
+        para: FeatureDocument = sec.paragraphs[par_id]
+        sent: FeatureSentence = para[sent_id]
+        return sent
+
+    def get_feasibility_report(self, feas_excel_path: Path, sheet_name: str):
+        assert_len = 20
+        df = pd.read_excel(feas_excel_path, sheet_name=sheet_name)
+        df = df.rename(columns={'how correct': 'correctness'})
+        df = df[~df['correctness'].isnull()]
+        rows: List[Tuple] = []
+        for _, row in df.iterrows():
+            sid = row['id']
+            try:
+                sent = self.get_sent(row['hadm_id'], sid)
+            except Exception as e:
+                logger.error(f'Could not get sentence: {sid}: {e}')
+                continue
+            org_sent = str(row['sent'])[:assert_len]
+            match_sent = sent.text[:assert_len]
+            if org_sent != match_sent:
+                raise APIError(f'Sentences mismatch: {org_sent} != ' +
+                               f'{match_sent} for {sid}')
+            nrow = [row[k] for k in 'id correctness issues '.split()]
+            nrow.append(re.match(r'^([^\/]+)', row['file']).group(1))
+            nrow.append(sent.norm)
+            rows.append(nrow)
+        cols = 'id correctness issues model sent'.split()
+        return pd.DataFrame(rows, columns=cols)

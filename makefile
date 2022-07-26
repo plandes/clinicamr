@@ -7,6 +7,7 @@ PROJ_TYPE =		python
 PROJ_MODULES =		git python-resources python-cli python-doc python-doc-deploy
 INFO_TARGETS +=		appinfo
 CLEAN_ALL_DEPS +=	cleanplots
+ENTRY=			./clinicamr
 
 include ./zenbuild/main.mk
 
@@ -20,8 +21,8 @@ plot:
 
 .PHONY:			cleanplots
 cleanplots:
-			./clinicamr clean --clevel 2
-			./clinicamr clear
+			$(ENTRY) clean --clevel 2
+			$(ENTRY) clear
 
 .PHONY:			push
 push:
@@ -32,3 +33,8 @@ push:
 .PHONY:			stop
 stop:
 			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
+
+.PHONY:			proofrep
+proofrep:
+			$(ENTRY) proofrep --output /d/proof.csv \
+				--override amr_default.parse_model=gsii
