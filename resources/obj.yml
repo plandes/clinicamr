@@ -45,3 +45,9 @@ note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory
   amr_annotator: 'instance: amr_annotator'
 #  limit: 3
+
+amr_plotter:
+  class_name: zensols.clinicamr.Plotter
+  corpus: 'instance: mimic_corpus'
+  anon_resource: 'instance: mimicsid_anon_resource'
+  plot_path: 'path: ${clinicamr_default:amr_plot_path}'
