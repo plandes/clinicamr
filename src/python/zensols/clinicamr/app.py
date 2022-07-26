@@ -5,7 +5,6 @@ __author__ = 'Paul Landes'
 
 from dataclasses import dataclass, field
 import logging
-import re
 from pathlib import Path
 from zensols.config import ConfigFactory
 from zensols.persist import Stash
@@ -75,17 +74,7 @@ class Application(object):
         logger.info(f'removing files in: {self.amr_paragraph_stash.path}')
         self.amr_paragraph_stash.clear()
 
-    def _tmp1(self):
-        """Used for rapid prototyping."""
-        hadm_id = '119960'
-        stash: Stash = self.corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        note = adm.notes_by_category['Discharge summary'][0]
-        sec = note.sections['history-of-present-illness']
-        for para in sec.paragraphs:
-            para.amr.plot(self.plot_path / f'{adm.hadm_id}-{note.row_id}')
-
-    def _tmp(self):
+    def _test_paragraphs(self):
         sec_name = 'history-of-present-illness'
         stash: Stash = self.corpus.hospital_adm_stash
         adm: HospitalAdmission = stash['119960']
@@ -94,43 +83,7 @@ class Application(object):
         for p in sec.paragraphs[0:1]:
             p.amr.plot(top_to_bottom=False, front_text='Testing')
 
-    def _tmp(self):
-        stash = self.amr_paragraph_stash
-        for doc in stash.values():
-            for sent in doc.sents:
-                print('-', sent.text)
-
-    def _tmp(self):
-        hadm_id = '120842'
-        k = '523069-24-hour-events-0-0'
-        #k = '522936-disposition-0-0'
-        #k = '522936-communication-0-0'
-        m = re.match(r'^(\d+)-(.+)-\d+-\d+$', k)
-        row_id, sec_id = m.groups()
-        stash: Stash = self.corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        note: Note = adm[int(row_id)]
-        sec: Section = note.sections[sec_id]
-        if 0:
-            print(note.text)
-            print('_' * 120)
-        print(sec.header)
-        print('-' * 80)
-        print(sec.body)
-        print('-' * 80)
-        print(sec.body_doc.text)
-        print('-' * 80)
-        print(sec.body_doc.norm)
-        print('-' * 80)
-        for para in sec.paragraphs:
-            print(para.norm)
-            print('sents:')
-            for sent in para.sents:
-                print(sent.norm)
-                print('-' * 20)
-            print('-' * 30)
-
-    def proto(self, run: int = 0):
+    def proto(self, run: int = 1):
         """Used for rapid prototyping."""
         {0: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          1: self._tmp,
