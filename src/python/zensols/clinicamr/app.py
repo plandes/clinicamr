@@ -6,6 +6,8 @@ __author__ = 'Paul Landes'
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
+import pandas as pd
+import numpy as np
 from zensols.config import ConfigFactory
 from zensols.persist import Stash
 from zensols.nlp import FeatureToken, FeatureDocumentParser
@@ -68,6 +70,10 @@ class Application(object):
         """
         self.plotter.plot(hadm_ids, limit, mode, annotators)
 
+    def _get_feasibility_report(self) -> pd.DataFrame:
+        return self.plotter.get_feasibility_report(
+            Path('feasibility/proofing.xlsx'), 'paul plots')
+
     def write_proof_report(self, output_path: Path = Path('proof-report.csv')):
         """Write the feasibility proof report, which writes only the analyzed AMR
         graphs.
@@ -75,10 +81,18 @@ class Application(object):
         :param output_path: the path to write the report
 
         """
-        df = self.plotter.get_feasibility_report(
-            Path('feasibility/proofing.xlsx'), 'paul plots')
+        df = self._get_feasibility_report()
         df.to_csv(output_path)
         logger.info(f'wrote: {output_path}')
+
+    def report_stats(self):
+        """Print feasibility report stats."""
+        df = self._get_feasibility_report()
+        dfg = df.groupby('model')['correctness']
+        print('mean:')
+        print(dfg.agg('mean'))
+        print('\nstandard deviation:')
+        print(dfg.agg(np.std))
 
     def clear(self):
         """Clear the paragraph AMR cache."""
@@ -96,7 +110,8 @@ class Application(object):
             p.amr.plot(top_to_bottom=False, front_text='Testing')
 
     def _tmp(self):
-        self._test_paragraphs()
+        #self._test_paragraphs()
+        self.report_stats()
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
