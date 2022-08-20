@@ -4,6 +4,7 @@
 # MedCAT's version of the lemmas do not appear to be useful
 mednlp_combine_doc_parser:
   overwrite_features: 'list: ent, ent_, lemma, lemma_'
+  source_parsers: 'instance: list: ${amr_default:doc_parser}'
 
 amr_parser:
   condition:
@@ -13,13 +14,13 @@ amr_parser:
     else:
       alternate_path: null
 
+
 ## Paragraph
 #
 amr_token_cui_populator:
   class_name: zensols.clinicamr.ClinicTokenFeatureAnnotator
-  role: cui
+  role: :cui
   feature_id: cui_
-  remove_indexes: true
 
 amr_paragraph_stash:
   class_name: zensols.persist.DirectoryStash
@@ -27,19 +28,12 @@ amr_paragraph_stash:
 
 amr_annotator:
   stash: 'instance: amr_paragraph_stash'
-  0.condition:
+  condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      token_index_annotator: 'instance: amr_token_index_annotator'
+      token_feature_annotators: 'instance: tuple: amr_token_cui_populator'
     else:
-      token_index_annotator: null
-  1.condition:
-    if: 'eval: ${clinicamr_default:map_cuis}'
-    then:
-#      token_feature_annotator: 'instance: tuple: amr_token_ent_populator, amr_token_cui_populator'
-      token_feature_annotator: 'instance: tuple: amr_token_cui_populator'
-    else:
-      token_feature_annotator: []
+      token_feature_annotators: []
 
 note_paragraph_factory:
   class_name: zensols.clinicamr.ClinicAmrParagraphFactory

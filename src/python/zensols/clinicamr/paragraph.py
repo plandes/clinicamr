@@ -10,6 +10,7 @@ import sys
 import logging
 from pathlib import Path
 import itertools as it
+from penman import Graph
 from zensols.nlp import FeatureDocument, FeatureToken
 from zensols.amr import (
     AmrFeatureDocument, AmrDocument,
@@ -30,11 +31,13 @@ class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
         return getattr(tok, self.feature_id)
 
     def _annotate_token(self, tok: FeatureToken, source: str,
-                        feature_triples: Set[Tuple[str, str, str]]):
+                        feature_triples: Set[Tuple[str, str, str]],
+                        graph: Graph):
         # when we find a concept, add in the CUI if the token is a
         # concept
+        tok.write()
         if tok.is_concept:
-            super()._annotate_token(tok, source, feature_triples)
+            super()._annotate_token(tok, source, feature_triples, graph)
 
 
 @dataclass

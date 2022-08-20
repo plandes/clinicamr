@@ -111,7 +111,12 @@ class Application(object):
 
     def _tmp(self):
         #self._test_paragraphs()
-        self.report_stats()
+        #self.report_stats()
+        sent = '73-year-old female with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
+        doc_parser = self.doc_parser
+        #doc_parser.write()
+        doc = doc_parser(sent)
+        #doc.write()
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
