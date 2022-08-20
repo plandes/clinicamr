@@ -58,8 +58,8 @@ class ClinicAmrDocument(AmrDocument):
 
 @dataclass
 class ClinicAmrParagraphFactory(ParagraphFactory):
-    """Parse paragraph AMR graphs by using the super class paragraph factory.  Then
-    each document is given an AMR graph using a
+    """Parse paragraph AMR graphs by using the super class paragraph factory.
+    Then each document is given an AMR graph using a
     :class:`~zensols.amr.AmrDocument` at the document level and a
     :class:`~zensols.amr.AmrSentence` at the sentence level, which are are
     cached using a :class:`~zensols.persist.Stash`.
@@ -74,8 +74,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     """Limit on number of paragraphs to process and useful for prototyping."""
 
     def _fix_lemmas(self, doc: FeatureDocument):
-        """Assume this document has been unpersisted from the file system so modify in
-        place.
+        """Assume this document has been unpersisted from the file system so
+        modify in place.
 
         """
         for tok in doc.token_iter():
