@@ -4,39 +4,17 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import List, Set, Tuple
+from typing import List
 from dataclasses import dataclass, field
 import sys
 import logging
 from pathlib import Path
 import itertools as it
-from penman import Graph
-from zensols.nlp import FeatureDocument, FeatureToken, FeatureDocumentParser
-from zensols.amr import (
-    AmrFeatureDocument, AmrDocument, TokenAnnotationFeatureDocumentDecorator
-)
+from zensols.nlp import FeatureDocument, FeatureDocumentParser
+from zensols.amr import AmrFeatureDocument, AmrDocument
 from zensols.mimic import ParagraphFactory, Section, MimicTokenDecorator
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ClinicTokenAnnotationFeatureDocumentDecorator(
-        TokenAnnotationFeatureDocumentDecorator):
-    """Override token feature annotation by adding CUI data.
-
-    """
-    def _format_feature_value(self, tok: FeatureToken) -> str:
-        return f'{tok.pref_name_} ({tok.cui_})'
-        return getattr(tok, self.feature_id)
-
-    def _annotate_token(self, tok: FeatureToken, source: str,
-                        feature_triples: Set[Tuple[str, str, str]],
-                        graph: Graph):
-        # when we find a concept, add in the CUI if the token is a
-        # concept
-        if tok.is_concept:
-            super()._annotate_token(tok, source, feature_triples, graph)
 
 
 @dataclass
@@ -89,7 +67,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         for pix, para in enumerate(it.islice(paras, self.limit)):
             sub_path = Path(f'{sec.id}-{pix}')
             self._fix_lemmas(para)
-            amr_fdoc: AmrFeatureDocument = self.amr_annotator(para, key)
+            amr_fdoc: AmrFeatureDocument = self.amr_annotator(para)
             ad: AmrDocument = amr_fdoc.amr
             amr_fdoc.amr = ClinicAmrDocument(ad.sents, ad.path, sub_path)
             amr_paras.append(amr_fdoc)

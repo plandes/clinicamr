@@ -1,5 +1,6 @@
 # @meta {desc: 'application object config', date: '2024-01-11'}
 
+
 ## Language
 #
 camr_doc_base_parser:
@@ -12,31 +13,27 @@ camr_doc_base_parser:
   # add the FeatureToken attribute regardless
   overwrite_nones: true
 
+camr_token_cui_doc_decorator:
+  class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
+  role: :cui
+  feature_id: cui_
+
 camr_doc_parser:
   class_name: zensols.nlp.DecoratedFeatureDocumentParser
   delegate: 'instance: camr_doc_base_parser'
-  document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
+  condition:
+    if: 'eval: ${clinicamr_default:map_cuis}'
+    then:
+      document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
+    else:
+      document_decorators: []
 
 
 ## Paragraph
 #
-camr_token_cui_doc_decorator:
-  class_name: zensols.clinicamr.paragraph.ClinicTokenAnnotationFeatureDocumentDecorator
-  role: :cui
-  feature_id: cui_
-
 camr_paragraph_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para/${amr_default:parse_model}'
-
-amr_anon_doc_parser:
-  stash: 'instance: camr_paragraph_stash'
-  condition:
-    if: 'eval: ${clinicamr_default:map_cuis}'
-    then:
-      token_feature_annotators: 'instance: tuple: camr_token_cui_populator'
-    else:
-      token_feature_annotators: []
 
 camr_note_paragraph_factory:
   class_name: zensols.clinicamr.paragraph.ClinicAmrParagraphFactory
