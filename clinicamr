@@ -3,13 +3,7 @@
 from zensols.cli import ConfigurationImporterCliHarness
 
 
-def turn_off_huggingface_downloads():
-    import os
-    os.environ['TRANSFORMERS_OFFLINE'] = '1'
-
-
 if (__name__ == '__main__'):
-    turn_off_huggingface_downloads()
     harness = ConfigurationImporterCliHarness(
         src_dir_name='src/python',
         package_resource='zensols.clinicamr',
