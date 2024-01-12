@@ -1,14 +1,7 @@
+# @meta {desc: 'application object config', date: '2024-01-11'}
+
 ## Language
 #
-# map lemmas (in addition to named entities) as well since gsii needs them and
-# MedCAT's version of the lemmas do not appear to be useful
-# mednlp_combine_doc_parser:
-#   overwrite_features: 'list: ent, ent_, lemma, lemma_'
-#   source_parsers: 'instance: list: ${amr_default:doc_parser}'
-
-#amr_pipline_doc_parser:
-#  document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
-
 camr_doc_base_parser:
   class_name: zensols.nlp.MappingCombinerFeatureDocumentParser
   target_parser: 'instance: amr_pipline_doc_parser'
@@ -24,14 +17,6 @@ camr_doc_parser:
   delegate: 'instance: camr_doc_base_parser'
   document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
 
-amr_parser:
-  condition:
-    if: "eval: '${amr_default:parse_model}' == 't5'"
-    then:
-      alternate_path: '${env:home}/.cache/zensols/amr/t5-bio'
-    else:
-      alternate_path: null
-
 
 ## Paragraph
 #
@@ -44,7 +29,6 @@ camr_paragraph_stash:
   class_name: zensols.persist.DirectoryStash
   path: 'path: ${mimic_default:shared_data_dir}/sec-para/${amr_default:parse_model}'
 
-#amr_annotator:
 amr_anon_doc_parser:
   stash: 'instance: camr_paragraph_stash'
   condition:
@@ -56,10 +40,12 @@ amr_anon_doc_parser:
 
 camr_note_paragraph_factory:
   class_name: zensols.clinicamr.paragraph.ClinicAmrParagraphFactory
-  #amr_annotator: 'instance: amr_annotator'
   doc_parser: 'instance: amr_anon_doc_parser'
 #  limit: 3
 
+
+## Plot
+#
 amr_plotter:
   class_name: zensols.clinicamr.Plotter
   corpus: 'instance: mimic_corpus'
