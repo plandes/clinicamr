@@ -75,8 +75,8 @@ class Application(object):
             Path('feasibility/proofing.xlsx'), 'paul plots')
 
     def write_proof_report(self, output_path: Path = Path('proof-report.csv')):
-        """Write the feasibility proof report, which writes only the analyzed AMR
-        graphs.
+        """Write the feasibility proof report, which writes only the analyzed
+        AMR graphs.
 
         :param output_path: the path to write the report
 
@@ -110,13 +110,25 @@ class Application(object):
             p.amr.plot(top_to_bottom=False, front_text='Testing')
 
     def _tmp(self):
+        from zensols.amr import AmrFeatureDocument
         #self._test_paragraphs()
         #self.report_stats()
         sent = '73-year-old female with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
-        doc_parser = self.doc_parser
-        #doc_parser.write()
-        doc = doc_parser(sent)
-        #doc.write()
+        doc: AmrFeatureDocument = self.doc_parser(sent)
+        #doc: AmrFeatureDocument = self.config_factory('mednlp_combine_doc_parser')(sent)
+        #doc: AmrFeatureDocument = self.config_factory('camr_doc_base_parser')(sent)
+        for t in doc.tokens:
+            print(t, t.ent_, t.cui_, t.is_concept)
+        if 1:
+            print(isinstance(doc, AmrFeatureDocument))
+            doc.amr.write()
+            dumper = self.config_factory('amr_dumper')
+            dumper.render(doc.amr)
+
+    def _tmp_(self):
+        sent = '73-year-old female with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
+        fac = self.config_factory('camr_note_paragraph_factory')
+        fac = fac(sent)
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""

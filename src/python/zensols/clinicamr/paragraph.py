@@ -11,10 +11,9 @@ import logging
 from pathlib import Path
 import itertools as it
 from penman import Graph
-from zensols.nlp import FeatureDocument, FeatureToken
+from zensols.nlp import FeatureDocument, FeatureToken, FeatureDocumentParser
 from zensols.amr import (
-    AmrFeatureDocument, AmrDocument,
-    AmrDocumentAnnotator, TokenFeatureAnnotator,
+    AmrFeatureDocument, AmrDocument, TokenAnnotationFeatureDocumentDecorator
 )
 from zensols.mimic import ParagraphFactory, Section, MimicTokenDecorator
 
@@ -22,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
+class ClinicTokenAnnotationFeatureDocumentDecorator(
+        TokenAnnotationFeatureDocumentDecorator):
     """Override token feature annotation by adding CUI data.
 
     """
@@ -35,7 +35,6 @@ class ClinicTokenFeatureAnnotator(TokenFeatureAnnotator):
                         graph: Graph):
         # when we find a concept, add in the CUI if the token is a
         # concept
-        tok.write()
         if tok.is_concept:
             super()._annotate_token(tok, source, feature_triples, graph)
 
@@ -67,7 +66,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     A list of :class:`~zensols.amr.AmrFeatureDocument` are returned.
 
     """
-    amr_annotator: AmrDocumentAnnotator = field()
+    doc_parser: FeatureDocumentParser = field()
     """Parses, populates and caches AMR graphs in feature documents."""
 
     limit: int = field(default=sys.maxsize)
@@ -88,7 +87,6 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         amr_paras: List[AmrFeatureDocument] = []
         para: FeatureDocument
         for pix, para in enumerate(it.islice(paras, self.limit)):
-            key = f'{sec._row_id}-{sec.id}-{pix}'
             sub_path = Path(f'{sec.id}-{pix}')
             self._fix_lemmas(para)
             amr_fdoc: AmrFeatureDocument = self.amr_annotator(para, key)
