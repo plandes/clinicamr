@@ -61,6 +61,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
                 tok.lemma_ = tok.norm
 
     def __call__(self, sec: Section) -> List[FeatureDocument]:
+        print('CAPF')
         paras: List[FeatureDocument] = super().__call__(sec)
         amr_paras: List[AmrFeatureDocument] = []
         para: FeatureDocument

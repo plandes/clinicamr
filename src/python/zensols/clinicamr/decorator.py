@@ -4,10 +4,10 @@
 __author__ = 'Paul Landes'
 
 from typing import Set, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from penman import Graph
 from zensols.nlp import FeatureToken
-from zensols.amr import TokenAnnotationFeatureDocumentDecorator
+from zensols.amr.docparser import TokenAnnotationFeatureDocumentDecorator
 
 
 @dataclass
@@ -16,8 +16,11 @@ class ClinicTokenAnnotationFeatureDocumentDecorator(
     """Override token feature annotation by adding CUI data.
 
     """
+    feature_format: str = field(default='{pref_name_} ({cui_})')
+
     def _format_feature_value(self, tok: FeatureToken) -> str:
-        return f'{tok.pref_name_} ({tok.cui_})'
+        if tok.is_concept and self.feature_format is not None:
+            return self.feature_format.format(**tok.asdict())
         return getattr(tok, self.feature_id)
 
     def _annotate_token(self, tok: FeatureToken, source: str,

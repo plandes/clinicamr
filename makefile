@@ -1,28 +1,27 @@
 ## makefile automates the build and deployment for python projects
 
-## build config
 
-# type of project
+## Build system
+#
 PROJ_TYPE =		python
 PROJ_MODULES =		git python-resources python-cli python-doc python-doc-deploy
-INFO_TARGETS +=		appinfo
-CLEAN_ALL_DEPS +=	cleanplots
+CLEAN_ALL +=		amr_graph
+
+## Project
+#
 ENTRY=			./clinicamr
 
+
+## Includes
+#
 include ./zenbuild/main.mk
 
-.PHONY:			appinfo
-appinfo:
-			@echo "app-resources-dir: $(RESOURCES_DIR)"
 
+## Targets
+#
 .PHONY:			plot
 plot:
 			nohup ./src/bin/plot.sh > plot.log 2>&1 &
-
-.PHONY:			cleanplots
-cleanplots:
-			$(ENTRY) clean --clevel 2
-			$(ENTRY) clear
 
 .PHONY:			push
 push:

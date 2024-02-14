@@ -4,14 +4,17 @@
 ## Language
 #
 camr_doc_base_parser:
-  class_name: zensols.nlp.MappingCombinerFeatureDocumentParser
-  target_parser: 'instance: amr_pipline_doc_parser'
-  source_parsers: 'instance: tuple: mednlp_combine_doc_parser'
-  overwrite_features: ${mednlp_combine_doc_parser:overwrite_features}
+  class_name: zensols.nlp.combine.MappingCombinerFeatureDocumentParser
+  target_parser: 'instance: ${amr_default:doc_parser}'
+  source_parsers: 'instance: tuple: mednlp_combine_biomed_doc_parser'
   # only map token level instead of sentence
   merge_sentences: false
   # add the FeatureToken attribute regardless
   overwrite_nones: true
+  # use all scispacy/biomed features
+  overwrite_features: >-
+    eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
+    (n.FeatureToken.FEATURE_IDS | m.MedicalFeatureToken.FEATURE_IDS)
 
 camr_token_cui_doc_decorator:
   class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
@@ -39,6 +42,14 @@ camr_note_paragraph_factory:
   class_name: zensols.clinicamr.paragraph.ClinicAmrParagraphFactory
   doc_parser: 'instance: amr_anon_doc_parser'
 #  limit: 3
+
+
+## Section
+#
+mimicsid_section_predictor:
+  section_filter_type: >-
+    eval({'import': ['zensols.mimicsid as m']}):
+      m.SectionFilterType.keep_non_empty
 
 
 ## Plot

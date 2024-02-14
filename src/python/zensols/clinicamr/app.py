@@ -12,7 +12,7 @@ from zensols.config import ConfigFactory
 from zensols.persist import Stash
 from zensols.nlp import FeatureToken, FeatureDocumentParser
 from zensols.mimic import HospitalAdmission
-from . import PlotMode, Plotter
+from . import ClinicalAmrError, PlotMode, Plotter
 
 logger = logging.getLogger(__name__)
 
@@ -109,30 +109,45 @@ class Application(object):
         for p in sec.paragraphs[0:1]:
             p.amr.plot(top_to_bottom=False, front_text='Testing')
 
-    def _tmp(self):
+    def _test_parse(self):
         from zensols.amr import AmrFeatureDocument
         #self._test_paragraphs()
         #self.report_stats()
-        sent = '73-year-old female with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
+        sent = '73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
         doc: AmrFeatureDocument = self.doc_parser(sent)
-        #doc: AmrFeatureDocument = self.config_factory('mednlp_combine_doc_parser')(sent)
-        #doc: AmrFeatureDocument = self.config_factory('camr_doc_base_parser')(sent)
-        for t in doc.tokens:
-            print(t, t.ent_, t.cui_, t.is_concept)
+        if 1:
+            for t in doc.tokens:
+                print(t, t.is_concept, t.ent_, t.cui_, t.is_concept)
         if 1:
             print(isinstance(doc, AmrFeatureDocument))
             doc.amr.write()
             dumper = self.config_factory('amr_dumper')
             dumper.render(doc.amr)
 
-    def _tmp_(self):
-        sent = '73-year-old female with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
-        fac = self.config_factory('camr_note_paragraph_factory')
-        fac = fac(sent)
+    def _tmp(self):
+        from typing import Dict, Tuple
+        from zensols.mimic import Section, Note
+        from zensols.mimic.regexnote import DischargeSummaryNote
+
+        hadm_id: str = '134891'
+        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
+        by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
+        ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
+        if len(ds_notes) == 0:
+            raise ClinicalAmrError(
+                f'No discharge sumamries for admission: {hadm_id}')
+        ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
+        ds_note: Note = ds_notes[0]
+        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        sec.write(par_limit=99, sent_limit=99)
+        print(sec.body_doc)
+        print(hasattr(ds_note, 'amr'))
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          2: self.write_proof_report,
+         3: self._test_parse,
          }[run]()
