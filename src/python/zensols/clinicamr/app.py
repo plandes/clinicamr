@@ -111,11 +111,7 @@ class Application(object):
 
     def _test_parse(self):
         from zensols.amr import AmrFeatureDocument
-        #self._test_paragraphs()
-        #self.report_stats()
         sent = '73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
-        #print(id(self.config_factory('camr_doc_parser')) == id(self.doc_parser))
-        #return
         doc: AmrFeatureDocument = self.doc_parser(sent)
         if 1:
             for t in doc.tokens:
@@ -155,7 +151,7 @@ class Application(object):
                 for t in paras[0][1]:
                     print(t, t.cui_, t.ent_, t.is_concept)
 
-    def proto(self, run: int = 0):
+    def proto(self, run: int = 3):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
