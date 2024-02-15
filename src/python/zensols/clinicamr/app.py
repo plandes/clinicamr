@@ -114,6 +114,8 @@ class Application(object):
         #self._test_paragraphs()
         #self.report_stats()
         sent = '73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
+        #print(id(self.config_factory('camr_doc_parser')) == id(self.doc_parser))
+        #return
         doc: AmrFeatureDocument = self.doc_parser(sent)
         if 1:
             for t in doc.tokens:
@@ -128,6 +130,7 @@ class Application(object):
         from typing import Dict, Tuple
         from zensols.mimic import Section, Note
         from zensols.mimic.regexnote import DischargeSummaryNote
+        from zensols.amr import AmrFeatureDocument
 
         hadm_id: str = '134891'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
@@ -140,9 +143,17 @@ class Application(object):
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
         sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
-        sec.write(par_limit=99, sent_limit=99)
-        print(sec.body_doc)
-        print(hasattr(ds_note, 'amr'))
+        if 0:
+            print(sec.text)
+            print('_' * 80)
+        if 1:
+            paras = tuple(sec.paragraphs)
+            para: AmrFeatureDocument
+            for para in paras[0:1]:
+                para.write(sent_kwargs=dict(include_metadata=True))
+            if 1:
+                for t in paras[0][1]:
+                    print(t, t.cui_, t.ent_, t.is_concept)
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
