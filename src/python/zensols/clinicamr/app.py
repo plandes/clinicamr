@@ -3,6 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
+from typing import Tuple, Any
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
@@ -22,11 +23,6 @@ class Application(object):
     """Clincial Domain Abstract Meaning Representation Graphs.
 
     """
-    CLI_META = {'option_excludes':
-                set('config_factory doc_parser plotter'.split()),
-                'option_overrides': {'output_path': {'long_name': 'output'}},
-                'mnemonic_overrides': {'write_proof_report': 'proofrep'}}
-
     config_factory: ConfigFactory = field()
     """For prototyping."""
 
@@ -39,13 +35,12 @@ class Application(object):
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
 
-    def parse(self, text: str = None):
-        """Parse a MIMIC-III string.
+    def predict(self, text: str):
+        """Predict clinical text.
 
         :param text: the text to parse
 
         """
-        text = 'He died of liver failure.' if text is None else text
         doc = self.doc_parser(text)
         doc.sents[0].write()
         sent = doc.sents[0]
@@ -94,35 +89,39 @@ class Application(object):
         print('\nstandard deviation:')
         print(dfg.agg(np.std))
 
-    def clear(self):
-        """Clear the paragraph AMR cache."""
-        amr_paragraph_stash: Stash = self.config_factory('amr_paragraph_stash')
-        logger.info(f'removing files in: {amr_paragraph_stash.path}')
-        amr_paragraph_stash.clear()
-
-    def _test_paragraphs(self):
-        sec_name = 'history-of-present-illness'
-        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
-        adm: HospitalAdmission = stash['119960']
-        note = adm.notes_by_id[532411]
-        sec = note.sections[sec_name]
-        for p in sec.paragraphs[0:1]:
-            p.amr.plot(top_to_bottom=False, front_text='Testing')
-
     def _test_parse(self):
+        if 0:
+            self.config_factory.config['map_filter_token_normalizer'].write()
+            return
         from zensols.amr import AmrFeatureDocument
-        sent = '73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia.'
-        doc: AmrFeatureDocument = self.doc_parser(sent)
+        sent = 'Pt is a 73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia, perscribe paxil 2/day.'
+        #parser = self.doc_parser
+        #parser = self.config_factory('doc_parser')
+        parser = self.config_factory('mednlp_combine_biomed_doc_parser')
+        #parser = self.config_factory('mednlp_biomed_parser')
+        if 0:
+            from scispacy.abbreviation import AbbreviationDetector
+            parser.model.add_pipe("abbreviation_detector")
+        if 0:
+            print(parser.model.name)
+        doc: AmrFeatureDocument = parser(sent)
+        if 0:
+            self.config_factory.config['mednlp_combine_biomed_doc_parser'].write()
+        if 0:
+            for t in doc.tokens:
+                print(t, t.ent_, t.pos_, t.tag_)
+            return
         if 1:
             for t in doc.tokens:
                 print(t, t.is_concept, t.ent_, t.cui_, t.is_concept)
+            return
         if 1:
             print(isinstance(doc, AmrFeatureDocument))
             doc.amr.write()
             dumper = self.config_factory('amr_dumper')
             dumper.render(doc.amr)
 
-    def _tmp(self):
+    def _test_paragraphs(self):
         from typing import Dict, Tuple
         from zensols.mimic import Section, Note
         from zensols.mimic.regexnote import DischargeSummaryNote
@@ -151,10 +150,15 @@ class Application(object):
                 for t in paras[0][1]:
                     print(t, t.cui_, t.ent_, t.is_concept)
 
+    def _tmp(self):
+        #self.config_factory('clear_cli').clear()
+        self.config_factory.config.write()
+
     def proto(self, run: int = 3):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          2: self.write_proof_report,
          3: self._test_parse,
+         4: self._test_paragraphs,
          }[run]()

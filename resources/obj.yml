@@ -1,37 +1,6 @@
 # @meta {desc: 'application object config', date: '2024-01-11'}
 
 
-## Language
-#
-camr_doc_base_parser:
-  class_name: zensols.nlp.combine.MappingCombinerFeatureDocumentParser
-  target_parser: 'instance: ${amr_default:doc_parser}'
-  source_parsers: 'instance: tuple: ${mednlp_default:doc_parser}'
-  # only map token level instead of sentence
-  merge_sentences: false
-  # add the FeatureToken attribute regardless
-  overwrite_nones: true
-  # use all scispacy/biomed features
-  overwrite_features: >-
-    eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
-    (n.FeatureToken.FEATURE_IDS | m.MedicalFeatureToken.FEATURE_IDS)
-
-camr_token_cui_doc_decorator:
-  class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
-  role: :cui
-  feature_id: cui_
-
-camr_doc_parser:
-  class_name: zensols.nlp.DecoratedFeatureDocumentParser
-  delegate: 'instance: camr_doc_base_parser'
-  condition:
-    if: 'eval: ${clinicamr_default:map_cuis}'
-    then:
-      document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
-    else:
-      document_decorators: []
-
-
 ## Paragraph
 #
 camr_paragraph_stash:
@@ -39,7 +8,7 @@ camr_paragraph_stash:
   path: 'path: ${mimic_default:shared_data_dir}/sec-para/${amr_default:parse_model}.sqlite3'
 
 camr_paragraph_factory:
-  class_name: zensols.clinicamr.paragraph.ClinicAmrParagraphFactory
+  class_name: zensols.clinicamr.parafac.ClinicAmrParagraphFactory
   delegate: 'instance: mimic_chunker_paragraph_factory'
   amr_annotator: 'instance: amr_anon_doc_parser'
   stash: 'instance: camr_paragraph_stash'
