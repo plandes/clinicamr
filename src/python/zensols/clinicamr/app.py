@@ -168,8 +168,8 @@ presenting with acute onset of CP and liver failure"""
         doc = dp(s)
         print(s)
         for i, t in enumerate(doc.tokens):
-            print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_})>')
-            #print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+            #print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_})>')
+            print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
         doc.amr.write()
 
     def proto(self, run: int = 0):
