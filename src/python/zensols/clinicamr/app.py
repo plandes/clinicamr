@@ -156,17 +156,20 @@ presenting with acute onset of CP"""
             if p.is_dir():
                 import shutil
                 shutil.rmtree(p)
+            #return
         s = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
 presenting with acute onset of CP and liver failure"""
         parser_name = 'amr_anon_doc_parser'
         parser_name = 'amr_base_doc_parser'
         parser_name = 'mednlp_combine_biomed_doc_parser'
         parser_name = 'camr_doc_parser'
-        dp = self.config_factory(parser_name)
+        #dp = self.config_factory(parser_name)
+        dp = self.doc_parser
         doc = dp(s)
         print(s)
-        for t in doc.tokens:
-            print(f'<{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+        for i, t in enumerate(doc.tokens):
+            print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_})>')
+            #print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
         doc.amr.write()
 
     def proto(self, run: int = 0):

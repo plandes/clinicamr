@@ -18,9 +18,4 @@ camr_doc_parser:
   class_name: zensols.nlp.DecoratedFeatureDocumentParser
   #delegate: 'instance: camr_doc_base_parser'
   delegate: ${camr_paragraph_factory:amr_annotator}
-  condition:
-    if: 'eval: ${clinicamr_default:map_cuis}'
-    then:
-      document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
-    else:
-      document_decorators: []
+  document_decorators: ${camr_paragraph_factory:document_decorators}

@@ -8,8 +8,10 @@
 amr_base_doc_parser:
   components: 'instance: list: mimic_component, mimic_tokenizer_component'
 
-#mednlp_combine_biomed_doc_parser:
-#  target_parser: 'instance: amr_base_doc_parser'
+# use the AMR base doc parser since it does not embed entities so token indexes
+# are not perturbed by multi-word named entities
+mednlp_combine_biomed_doc_parser:
+  target_parser: 'instance: amr_base_doc_parser'
 
 # use scispacy NER model
 mednlp_biomed_parser:
@@ -29,13 +31,23 @@ amr_anon_doc_parser:
 amr_default:
   doc_parser: amr_anon_doc_parser
 
+# medical section segmentation
+mimicsid_section_predictor:
+  section_filter_type: >-
+    eval({'import': ['zensols.mimicsid as m']}):
+      m.SectionFilterType.keep_non_empty
 
-## Paragraph
+
+## Section paragraph
 #
 camr_token_cui_doc_decorator:
   class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
   role: :cui
   feature_id: cui_
+  use_sent_index: false
+
+amr_token_ent_doc_decorator:
+  use_sent_index: false
 
 camr_paragraph_stash:
   class_name: zensols.db.sqlite.SqliteDbStash
@@ -49,27 +61,19 @@ camr_paragraph_factory:
   condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
-      document_decorators: 'instance: tuple: camr_token_cui_doc_decorator'
+      document_decorators: 'instance: tuple: camr_token_cui_doc_decorator, amr_token_ent_doc_decorator'
     else:
       document_decorators: []
 
 
-## Section
+## Application objects
 #
-mimicsid_section_predictor:
-  section_filter_type: >-
-    eval({'import': ['zensols.mimicsid as m']}):
-      m.SectionFilterType.keep_non_empty
-
-
-## Spring AMR
-clinical_amr_parser_spring:
+# spring AMR (THYME) parser
+camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
 
-
-## Plot
-#
+# plot graphs for pysician evaluation
 amr_plotter:
   class_name: zensols.clinicamr.Plotter
   corpus: 'instance: mimic_corpus'
