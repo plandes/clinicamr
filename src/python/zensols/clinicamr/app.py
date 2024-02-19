@@ -89,21 +89,25 @@ class Application(object):
         print('\nstandard deviation:')
         print(dfg.agg(np.std))
 
-    def _test_parse(self):
+    def _test_parse(self, clear_data: bool = False,
+                    print_toks: bool = False,
+                    dump: bool = True):
         from zensols.amr import AmrFeatureDocument
-        sent = 'Pt is a 73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia, perscribe paxil 2/day.'
-        parser = self.doc_parser
-        #parser = self.config_factory('mednlp_combine_biomed_doc_parser')
-        #parser = self.config_factory('mednlp_biomed_parser')
-        doc: AmrFeatureDocument = parser(sent)
-        if 1:
-            for t in doc.tokens:
-                #print(t, t.ent_)
-                print(t.is_concept, t, t.ent_, t.cui_)
-            return
-        if 1:
-            print(isinstance(doc, AmrFeatureDocument))
-            doc.amr.write()
+        if clear_data:
+            p = Path('data')
+            if p.is_dir():
+                import shutil
+                shutil.rmtree(p)
+
+        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+presenting with acute onset of CP and liver failure"""
+        doc: AmrFeatureDocument = self.doc_parser(sent)
+        if print_toks:
+            for i, t in enumerate(doc.tokens):
+                print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+            print('_' * 40)
+        doc.amr.write()
+        if dump:
             dumper = self.config_factory('amr_dumper')
             dumper.render(doc.amr)
 
@@ -145,35 +149,9 @@ class Application(object):
                     dumper.render(para.amr)
 
     def _tmp(self):
-        s = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-presenting with acute onset of CP"""
-        doc = self.doc_parser(s)
-        doc.write()
+        pass
 
-    def _tmp(self):
-        if 1:
-            p = Path('data')
-            if p.is_dir():
-                import shutil
-                shutil.rmtree(p)
-            #return
-        s = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-presenting with acute onset of CP and liver failure"""
-        parser_name = 'amr_anon_doc_parser'
-        parser_name = 'amr_base_doc_parser'
-        parser_name = 'mednlp_combine_biomed_doc_parser'
-        parser_name = 'camr_doc_parser'
-        #dp = self.config_factory(parser_name)
-        dp = self.doc_parser
-        doc = dp(s)
-        if 0:
-            print(s)
-            for i, t in enumerate(doc.tokens):
-                #print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_})>')
-                print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
-        doc.amr.write()
-
-    def proto(self, run: int = 0):
+    def proto(self, run: int = 3):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
