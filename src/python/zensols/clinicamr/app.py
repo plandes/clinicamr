@@ -90,30 +90,16 @@ class Application(object):
         print(dfg.agg(np.std))
 
     def _test_parse(self):
-        if 0:
-            self.config_factory.config['map_filter_token_normalizer'].write()
-            return
         from zensols.amr import AmrFeatureDocument
         sent = 'Pt is a 73-year-old female in Dallas with COPD/RAD on home O2, diastolic CHF, recent TKR, presenting with respiratory distress and tachycardia, perscribe paxil 2/day.'
-        #parser = self.doc_parser
-        #parser = self.config_factory('doc_parser')
-        parser = self.config_factory('mednlp_combine_biomed_doc_parser')
+        parser = self.doc_parser
+        #parser = self.config_factory('mednlp_combine_biomed_doc_parser')
         #parser = self.config_factory('mednlp_biomed_parser')
-        if 0:
-            from scispacy.abbreviation import AbbreviationDetector
-            parser.model.add_pipe("abbreviation_detector")
-        if 0:
-            print(parser.model.name)
         doc: AmrFeatureDocument = parser(sent)
-        if 0:
-            self.config_factory.config['mednlp_combine_biomed_doc_parser'].write()
-        if 0:
-            for t in doc.tokens:
-                print(t, t.ent_, t.pos_, t.tag_)
-            return
         if 1:
             for t in doc.tokens:
-                print(t, t.is_concept, t.ent_, t.cui_, t.is_concept)
+                #print(t, t.ent_)
+                print(t.is_concept, t, t.ent_, t.cui_)
             return
         if 1:
             print(isinstance(doc, AmrFeatureDocument))
@@ -122,11 +108,14 @@ class Application(object):
             dumper.render(doc.amr)
 
     def _test_paragraphs(self):
-        from typing import Dict, Tuple
+        from typing import Dict
         from zensols.mimic import Section, Note
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
+        if 0:
+            self.config_factory('clear_cli').clear()
+        dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
@@ -144,17 +133,43 @@ class Application(object):
         if 1:
             paras = tuple(sec.paragraphs)
             para: AmrFeatureDocument
-            for para in paras[0:1]:
-                para.write(sent_kwargs=dict(include_metadata=True))
-            if 1:
+            for para in paras:
+                #para.write(sent_kwargs=dict(include_metadata=True))
+                print(para.text)
+                print()
+            if 0:
                 for t in paras[0][1]:
                     print(t, t.cui_, t.ent_, t.is_concept)
+            if 0:
+                for para in paras:
+                    dumper.render(para.amr)
 
     def _tmp(self):
-        #self.config_factory('clear_cli').clear()
-        self.config_factory.config.write()
+        s = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+presenting with acute onset of CP"""
+        doc = self.doc_parser(s)
+        doc.write()
 
-    def proto(self, run: int = 3):
+    def _tmp(self):
+        if 1:
+            p = Path('data')
+            if p.is_dir():
+                import shutil
+                shutil.rmtree(p)
+        s = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+presenting with acute onset of CP and liver failure"""
+        parser_name = 'amr_anon_doc_parser'
+        parser_name = 'amr_base_doc_parser'
+        parser_name = 'mednlp_combine_biomed_doc_parser'
+        parser_name = 'camr_doc_parser'
+        dp = self.config_factory(parser_name)
+        doc = dp(s)
+        print(s)
+        for t in doc.tokens:
+            print(f'<{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+        doc.amr.write()
+
+    def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
