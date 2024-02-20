@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, Any
+from typing import Tuple
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
@@ -89,16 +89,15 @@ class Application(object):
         print('\nstandard deviation:')
         print(dfg.agg(np.std))
 
-    def _test_parse(self, clear_data: bool = False,
-                    print_toks: bool = False,
+    def _clear(self):
+        self.config_factory('clear_cli').clear()
+
+    def _test_parse(self, clear_data: bool = True,
+                    print_toks: bool = True,
                     dump: bool = True):
         from zensols.amr import AmrFeatureDocument
-        if clear_data:
-            p = Path('data')
-            if p.is_dir():
-                import shutil
-                shutil.rmtree(p)
 
+        self._clear()
         sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
 presenting with acute onset of CP and liver failure"""
         doc: AmrFeatureDocument = self.doc_parser(sent)
@@ -117,8 +116,7 @@ presenting with acute onset of CP and liver failure"""
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
-        if 0:
-            self.config_factory('clear_cli').clear()
+        #self._clear()
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
@@ -141,17 +139,28 @@ presenting with acute onset of CP and liver failure"""
                 #para.write(sent_kwargs=dict(include_metadata=True))
                 print(para.text)
                 print()
-            if 0:
+            if 1:
                 for t in paras[0][1]:
                     print(t, t.cui_, t.ent_, t.is_concept)
-            if 0:
+            if 1:
                 for para in paras:
                     dumper.render(para.amr)
 
     def _tmp(self):
-        pass
+        if 0:
+            self.config_factory.config.write()
+            return
+        if 1:
+            sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+            presenting with acute onset of CP and liver failure"""
+            #dp = self.config_factory('amr_base_doc_parser')
+            dp = self.config_factory('mednlp_combine_biomed_doc_parser')
+            doc = dp(sent)
+            for t in doc.tokens:
+                print(t, hasattr(t, 'mimic_'))
+            return
 
-    def proto(self, run: int = 3):
+    def proto(self, run: int = 4):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),

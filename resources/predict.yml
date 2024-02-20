@@ -1,21 +1,6 @@
 # @meta {desc: 'non-annotated prediction', date: '2024-02-15'}
 
-
-# camr_doc_base_parser:
-#   class_name: zensols.nlp.combine.MappingCombinerFeatureDocumentParser
-#   target_parser: 'instance: ${amr_default:doc_parser}'
-#   source_parsers: 'instance: tuple: ${mednlp_default:doc_parser}'
-#   # only map token level instead of sentence
-#   merge_sentences: false
-#   # add the FeatureToken attribute regardless
-#   overwrite_nones: true
-#   # use all scispacy/biomed features
-#   overwrite_features: >-
-#     eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
-#     (n.FeatureToken.FEATURE_IDS | m.MedicalFeatureToken.FEATURE_IDS)
-
 camr_doc_parser:
   class_name: zensols.nlp.DecoratedFeatureDocumentParser
-  #delegate: 'instance: camr_doc_base_parser'
   delegate: ${camr_paragraph_factory:amr_annotator}
   document_decorators: ${camr_paragraph_factory:document_decorators}

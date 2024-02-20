@@ -12,24 +12,18 @@ amr_base_doc_parser:
 # are not perturbed by multi-word named entities
 mednlp_combine_biomed_doc_parser:
   target_parser: 'instance: amr_base_doc_parser'
+  yield_features: >-
+    eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
+      list(m.MedicalFeatureToken.FEATURE_IDS |
+      {'ent_', 'ent', 'ent_iob', 'ent_iob_', 'mimic_', 'onto_'})
 
 # use scispacy NER model
 mednlp_biomed_parser:
   model_name: en_ner_bionlp13cg_md
 
-# use scispacy biomed and MedCAT entitiy linking; see camr_paragraph_factory,
-# camr_doc_base_parser
-mednlp_default:
-  doc_parser: mednlp_combine_biomed_doc_parser
-
 # use the medical parser when creating AmrFeatureDocument instances
 amr_anon_doc_parser:
   delegate: 'instance: ${mednlp_default:doc_parser}'
-
-# use the annotation (already default); see camr_paragraph_factory,
-# camr_doc_base_parser
-amr_default:
-  doc_parser: amr_anon_doc_parser
 
 # medical section segmentation
 mimicsid_section_predictor:
