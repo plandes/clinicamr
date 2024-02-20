@@ -1,6 +1,0 @@
-# @meta {desc: 'non-annotated prediction', date: '2024-02-15'}
-
-camr_doc_parser:
-  class_name: zensols.nlp.DecoratedFeatureDocumentParser
-  delegate: ${camr_paragraph_factory:amr_annotator}
-  document_decorators: ${camr_paragraph_factory:document_decorators}

@@ -74,6 +74,12 @@ camr_paragraph_factory:
 
 ## Application objects
 #
+# non-annotated prediction'
+camr_doc_parser:
+  class_name: zensols.nlp.DecoratedFeatureDocumentParser
+  delegate: ${camr_paragraph_factory:amr_annotator}
+  document_decorators: ${camr_paragraph_factory:document_decorators}
+
 # spring AMR (THYME) parser
 camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
