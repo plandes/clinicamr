@@ -7,6 +7,7 @@
 # non-MIMIC source)
 amr_base_doc_parser:
   components: 'instance: list: mimic_component, mimic_tokenizer_component'
+  token_decorators: 'instance: list: mimic_token_decorator'
 
 # use the AMR base doc parser since it does not embed entities so token indexes
 # are not perturbed by multi-word named entities

@@ -17,6 +17,7 @@ class ClinicTokenAnnotationFeatureDocumentDecorator(
 
     """
     feature_format: str = field(default='{pref_name_} ({cui_})')
+    """The format used for CUI annotated tokens."""
 
     def _format_feature_value(self, tok: FeatureToken) -> str:
         if tok.is_concept and self.feature_format is not None:

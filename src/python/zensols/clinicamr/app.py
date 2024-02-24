@@ -117,8 +117,14 @@ presenting with acute onset of CP and liver failure"""
         from zensols.amr import AmrFeatureDocument
 
         #self._clear()
+        nlg = self.config_factory('amr_generator_amrlib')
+        if 1:
+            print(type(nlg))
+            nlg.installer.write()
+            return
         dumper = self.config_factory('amr_dumper')
-        hadm_id: str = '134891'
+        #hadm_id: str = '134891'
+        hadm_id: str = '124656'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -128,34 +134,52 @@ presenting with acute onset of CP and liver failure"""
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
-        if 0:
-            print(sec.text)
-            print('_' * 80)
-        if 1:
+        #sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        import itertools as it
+        for sec in it.islice(ds_note.sections.values(), 1):
+            if 0:
+                print(sec.text)
+                print('_' * 80)
             paras = tuple(sec.paragraphs)
-            para: AmrFeatureDocument
-            for para in paras:
-                #para.write(sent_kwargs=dict(include_metadata=True))
-                print(para.text)
-                print()
             if 1:
+                para: AmrFeatureDocument
+                for para in paras:
+                    print(para.text)
+                    print()
+                    if 0:
+                        print(para.amr.graph_string)
+                        print('_' * 80)
+            if 0:
                 for t in paras[0][1]:
                     print(t, t.cui_, t.ent_, t.is_concept)
-            if 1:
-                for para in paras:
-                    dumper.render(para.amr)
+            if 0:
+                dumper.clean()
+                dumper.overwrite_dir = False
+                for pix, para in enumerate(paras):
+                    dumper(para.amr, f'p-{pix}')
 
     def _tmp(self):
+        from zensols.amr import AmrFeatureDocument
         if 0:
             self.config_factory.config.write()
             return
         if 1:
             sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-            presenting with acute onset of CP and liver failure"""
+presenting with acute onset of CP and liver failure"""
+            sent = """sulfites/[**DoctorLastName**] Juice, Lime Juice, Sauerkraut"""
+            #sent = """sulfites/[**Doctor Last Name**] Juice, Lime Juice, Sauerkraut"""
+            sent = """sulfites/[**DoctorLastName5942**] Juice, Lime Juice, Sauerkraut"""
+            #sent = """sulfites/[**SomeStuff**] Juice, Lime Juice, Sauerkraut"""
             #dp = self.config_factory('amr_base_doc_parser')
-            dp = self.config_factory('mednlp_combine_biomed_doc_parser')
-            doc = dp(sent)
+            #dp = self.config_factory('mednlp_combine_biomed_doc_parser')
+            #dp = self.config_factory('doc_parser')
+            dp = self.doc_parser
+            doc: AmrFeatureDocument = dp(sent)
+            for t in doc.tokens:
+                print(t.norm, t.text, t.ent_, t.mimic_, t.onto_)
+            doc.write(include_relation_set=True)
+            print(doc.amr.graph_string)
+            print()
             for t in doc.tokens:
                 print(t, hasattr(t, 'mimic_'))
             return

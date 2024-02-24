@@ -19,7 +19,7 @@ class SpringAmrParser(AmrParser):
     def _parse_sents(self, sents: Iterable[Span]) -> Iterable[AmrSentence]:
         sent_strs: Tuple[str] = tuple(map(lambda s: s.text, sents))
         pred: AmrPrediction
-        for pred in self.client.predict(sent_strs):
+        for pred in self.client.parse(sent_strs):
             if pred.is_error:
                 fail = AmrFailure(message=pred.error, sent=pred.sent)
                 yield AmrSentence(fail)
