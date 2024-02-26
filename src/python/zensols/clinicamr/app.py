@@ -90,20 +90,24 @@ class Application(object):
                                  sent.norm, gen_sent.text))
         return pd.DataFrame(rows, columns=cols)
 
-    def generate(self, ids: str = '134891,124656,104434,110132'):
+    def generate(self, ids: str = '134891,124656,104434,110132',
+                 output_path: Path = None):
         """Creates samples of generated AMR text by first parsing clinical
         sentences into graphs.
 
         :param ids: a comma separated list of admission IDs to generate
 
+        :param output_path: the path of the output data
+
         """
-        out_file: Path = Path('/d/generated-sents.csv')
         hadm_ids: List[str] = ids.split(',')
         dfs: Tuple[pd.DataFrame] = tuple(map(self._generate_adm, hadm_ids))
-        df = pd.concat(dfs)
-        out_file.parent.mkdir(parents=True, exist_ok=True)
-        df.to_csv(out_file)
-        logger.info(f'wrote: {out_file}')
+        df: pd.DataFrame = pd.concat(dfs)
+        output_path = Path('generated-sents.csv') \
+            if output_path is None else output_path
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(output_path)
+        logger.info(f'wrote: {output_path}')
 
     def plot(self, hadm_ids: str = None, limit: int = None,
              mode: PlotMode = PlotMode.by_admission,
@@ -126,13 +130,15 @@ class Application(object):
         return self.plotter.get_feasibility_report(
             Path('feasibility/proofing.xlsx'), 'paul plots')
 
-    def write_proof_report(self, output_path: Path = Path('proof-report.csv')):
+    def write_proof_report(self, output_path: Path = None):
         """Write the feasibility proof report, which writes only the analyzed
         AMR graphs.
 
-        :param output_path: the path to write the report
+        :param output_path: the path of the output data
 
         """
+        output_path = Path('proof-report.csv') \
+            if output_path is None else output_path
         df = self._get_feasibility_report()
         df.to_csv(output_path)
         logger.info(f'wrote: {output_path}')
