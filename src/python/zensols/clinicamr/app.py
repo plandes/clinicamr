@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple
+from typing import List, Tuple
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
@@ -48,6 +48,63 @@ class Application(object):
             print(doc.amr)
             doc.amr.plot(Path('/d/amr'))
 
+    def _generate_adm(self, hadm_id: str) -> pd.DataFrame:
+        from typing import List, Dict, Any
+        from zensols.mimic import Section, Note
+        from zensols.mimic.regexnote import DischargeSummaryNote
+        from zensols.amr import (
+            AmrFeatureSentence, AmrFeatureDocument,
+            AmrGeneratedSentence, AmrGeneratedDocument,
+        )
+        from zensols.amr.model import AmrGenerator
+
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'generating admission {hadm_id}')
+        generator: AmrGenerator = self.config_factory('amr_generator_amrlib')
+        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
+        by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
+        ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
+        if len(ds_notes) == 0:
+            raise ClinicalAmrError(
+                f'No discharge sumamries for admission: {hadm_id}')
+        ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
+        ds_note: Note = ds_notes[0]
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'generating from note {ds_note}')
+        rows: List[Tuple[Any, ...]] = []
+        cols: List[str] = 'hadm_id sec_id sec_name org gen'.split()
+        sec: Section
+        for sec in ds_note.sections.values():
+            if logger.isEnabledFor(logging.INFO):
+                logger.info(
+                    f'generating sentences for section {sec.name} ({sec.id})')
+            para: AmrFeatureDocument
+            for para in sec.paragraphs:
+                gen_para: AmrGeneratedDocument = generator(para.amr)
+                assert len(gen_para) == len(para)
+                sent: AmrFeatureSentence
+                gen_sent: AmrGeneratedSentence
+                for sent, gen_sent in zip(para, gen_para):
+                    rows.append((hadm_id, sec.id, sec.name,
+                                 sent.norm, gen_sent.text))
+        return pd.DataFrame(rows, columns=cols)
+
+    def generate(self, ids: str = '134891,124656,104434,110132'):
+        """Creates samples of generated AMR text by first parsing clinical
+        sentences into graphs.
+
+        :param ids: a comma separated list of admission IDs to generate
+
+        """
+        out_file: Path = Path('/d/generated-sents.csv')
+        hadm_ids: List[str] = ids.split(',')
+        dfs: Tuple[pd.DataFrame] = tuple(map(self._generate_adm, hadm_ids))
+        df = pd.concat(dfs)
+        out_file.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(out_file)
+        logger.info(f'wrote: {out_file}')
+
     def plot(self, hadm_ids: str = None, limit: int = None,
              mode: PlotMode = PlotMode.by_admission,
              annotators: str = 'kunal,adam,paul'):
@@ -89,6 +146,14 @@ class Application(object):
         print('\nstandard deviation:')
         print(dfg.agg(np.std))
 
+
+@dataclass
+class PrototypeApplication(object):
+    CLI_META = {'is_usage_visible': False}
+
+    config_factory: ConfigFactory = field()
+    app: Application = field()
+
     def _clear(self):
         self.config_factory('clear_cli').clear()
 
@@ -116,15 +181,15 @@ presenting with acute onset of CP and liver failure"""
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
-        #self._clear()
+        self._clear()
         nlg = self.config_factory('amr_generator_amrlib')
-        if 1:
+        if 0:
             print(type(nlg))
             nlg.installer.write()
             return
         dumper = self.config_factory('amr_dumper')
-        #hadm_id: str = '134891'
-        hadm_id: str = '124656'
+        hadm_id: str = '134891'
+        #hadm_id: str = '124656'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -143,10 +208,10 @@ presenting with acute onset of CP and liver failure"""
             paras = tuple(sec.paragraphs)
             if 1:
                 para: AmrFeatureDocument
-                for para in paras:
+                for para in it.islice(paras, 1):
                     print(para.text)
                     print()
-                    if 0:
+                    if 1:
                         print(para.amr.graph_string)
                         print('_' * 80)
             if 0:
@@ -160,35 +225,27 @@ presenting with acute onset of CP and liver failure"""
 
     def _tmp(self):
         from zensols.amr import AmrFeatureDocument
-        if 0:
-            self.config_factory.config.write()
-            return
-        if 1:
-            sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
 presenting with acute onset of CP and liver failure"""
-            sent = """sulfites/[**DoctorLastName**] Juice, Lime Juice, Sauerkraut"""
-            #sent = """sulfites/[**Doctor Last Name**] Juice, Lime Juice, Sauerkraut"""
-            sent = """sulfites/[**DoctorLastName5942**] Juice, Lime Juice, Sauerkraut"""
-            #sent = """sulfites/[**SomeStuff**] Juice, Lime Juice, Sauerkraut"""
-            #dp = self.config_factory('amr_base_doc_parser')
-            #dp = self.config_factory('mednlp_combine_biomed_doc_parser')
-            #dp = self.config_factory('doc_parser')
-            dp = self.doc_parser
-            doc: AmrFeatureDocument = dp(sent)
-            for t in doc.tokens:
-                print(t.norm, t.text, t.ent_, t.mimic_, t.onto_)
-            doc.write(include_relation_set=True)
-            print(doc.amr.graph_string)
-            print()
-            for t in doc.tokens:
-                print(t, hasattr(t, 'mimic_'))
-            return
+        sent = """sulfites/[**DoctorLastName**] Juice, Lime Juice, Sauerkraut"""
+        #sent = """sulfites/[**Doctor Last Name**] Juice, Lime Juice, Sauerkraut"""
+        sent = """sulfites/[**DoctorLastName5942**] Juice, Lime Juice, Sauerkraut"""
+        #sent = """sulfites/[**SomeStuff**] Juice, Lime Juice, Sauerkraut"""
+        #dp = self.config_factory('amr_base_doc_parser')
+        #dp = self.config_factory('mednlp_combine_biomed_doc_parser')
+        #dp = self.config_factory('doc_parser')
+        dp = self.app.doc_parser
+        doc: AmrFeatureDocument = dp(sent)
+        for t in doc.tokens:
+            print(t.norm, t.text, t.ent_, t.mimic_, t.onto_)
+        doc.write(include_relation_set=True)
+        print(doc.amr.graph_string)
 
-    def proto(self, run: int = 4):
+    def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
-         2: self.write_proof_report,
+         2: self.app.write_proof_report,
          3: self._test_parse,
          4: self._test_paragraphs,
          }[run]()

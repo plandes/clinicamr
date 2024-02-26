@@ -81,10 +81,20 @@ camr_doc_parser:
   delegate: ${camr_paragraph_factory:amr_annotator}
   document_decorators: ${camr_paragraph_factory:document_decorators}
 
+# this parser is used to remove MIMIC masks as they result in ``<pointer:0>``
+# type tokens from the SPRING parser
+camr_fix_mimic_doc_parser:
+  class_name: zensols.nlp.sparser.SpacyFeatureDocumentParser
+  lang: en
+  model_name: '${lang}_core_web_sm'
+  components: 'instance: list: mimic_component, mimic_tokenizer_component'
+  token_decorators: 'instance: list: mimic_token_decorator'
+
 # spring AMR (THYME) parser
 camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
+  doc_parser: 'instance: camr_fix_mimic_doc_parser'
 
 # plot graphs for pysician evaluation
 amr_plotter:
