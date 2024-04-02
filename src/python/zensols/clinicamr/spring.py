@@ -15,7 +15,8 @@ from zensols.amrspring import AmrPrediction, AmrParseClient
 @dataclass
 class SpringAmrParser(AmrParser):
     """Adapt the :mod:`zensols.amrspring` client to a
-    :class:`zensols.amr.model.AmrParser`.
+    :class:`zensols.amr.model.AmrParser`.  This is to allow us to use the
+    clinical notes trained THYME parser.
 
     Citation:
 
