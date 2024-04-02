@@ -8,12 +8,12 @@ from dataclasses import dataclass, field
 import logging
 from pathlib import Path
 import pandas as pd
-import numpy as np
 from zensols.config import ConfigFactory
 from zensols.persist import Stash
+from zensols.cli import ApplicationError
 from zensols.nlp import FeatureToken, FeatureDocumentParser
 from zensols.mimic import HospitalAdmission
-from . import ClinicalAmrError, PlotMode, Plotter
+from . import PlotMode, Plotter
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class Application(object):
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
         if len(ds_notes) == 0:
-            raise ClinicalAmrError(
+            raise ApplicationError(
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
@@ -130,32 +130,6 @@ class Application(object):
         """
         self.plotter.plot(hadm_ids, limit, mode, annotators)
 
-    def _get_feasibility_report(self) -> pd.DataFrame:
-        return self.plotter.get_feasibility_report(
-            Path('feasibility/proofing.xlsx'), 'paul plots')
-
-    def write_proof_report(self, output_path: Path = None):
-        """Write the feasibility proof report, which writes only the analyzed
-        AMR graphs.
-
-        :param output_path: the path of the output data
-
-        """
-        output_path = Path('proof-report.csv') \
-            if output_path is None else output_path
-        df = self._get_feasibility_report()
-        df.to_csv(output_path)
-        logger.info(f'wrote: {output_path}')
-
-    def report_stats(self):
-        """Print feasibility report stats."""
-        df = self._get_feasibility_report()
-        dfg = df.groupby('model')['correctness']
-        print('mean:')
-        print(dfg.agg('mean'))
-        print('\nstandard deviation:')
-        print(dfg.agg(np.std))
-
 
 @dataclass
 class PrototypeApplication(object):
@@ -205,7 +179,7 @@ presenting with acute onset of CP and liver failure"""
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
         if len(ds_notes) == 0:
-            raise ClinicalAmrError(
+            raise ApplicationError(
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
