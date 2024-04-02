@@ -254,7 +254,7 @@ presenting with acute onset of CP and liver failure"""
     def _tmp(self):
         sent = '2. smaller PE in the RML and RUL branches.'
         sent = 'Pt was discharged from the oncology service yesterday, when she noticed the onset of severe pleuritic chest pain.'
-        if 1:
+        if 0:
             import re
             linker = self.app.config_factory('entity_linker_resource')
             ent = linker.get_linked_entity('C1555459')
@@ -278,7 +278,6 @@ presenting with acute onset of CP and liver failure"""
         print(doc.amr.graph_string)
         dumper = self.config_factory('amr_dumper')
         dumper(doc.amr)
-
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
