@@ -70,10 +70,6 @@ class Application(object):
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        if 0:
-            with open(f'/d/{ds_note.row_id}.txt', 'w') as f:
-                ds_note.write(writer=f)
-            return pd.DataFrame()
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'generating from note {ds_note}')
         rows: List[Tuple[Any, ...]] = []
@@ -94,8 +90,7 @@ class Application(object):
                                  sent.norm, gen_sent.text))
         return pd.DataFrame(rows, columns=cols)
 
-    def generate(self, ids: str = '134891,124656,104434,110132',
-                 output_path: Path = None):
+    def generate(self, ids: str, output_path: Path = Path('generated.csv')):
         """Creates samples of generated AMR text by first parsing clinical
         sentences into graphs.
 
@@ -107,8 +102,6 @@ class Application(object):
         hadm_ids: List[str] = ids.split(',')
         dfs: Tuple[pd.DataFrame] = tuple(map(self._generate_adm, hadm_ids))
         df: pd.DataFrame = pd.concat(dfs)
-        output_path = Path('generated-sents.csv') \
-            if output_path is None else output_path
         output_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path)
         logger.info(f'wrote: {output_path}')
@@ -253,11 +246,13 @@ presenting with acute onset of CP and liver failure"""
         dumper = self.config_factory('amr_dumper')
         dumper(doc.amr)
 
+    def _tmp(self):
+        self.app.generate('110132')
+
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
-         2: self.app.write_proof_report,
          3: self._test_parse,
          4: self._test_paragraphs,
          5: self.app.generate,

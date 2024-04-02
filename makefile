@@ -20,21 +20,25 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
+# create plots for annotation of feesibility
 .PHONY:			plot
 plot:
 			nohup ./src/bin/plot.sh > plot.log 2>&1 &
 
+# generate AMR sentences by first parsing into graphs
+.PHONY:			generate
+generate:
+			@echo "generating sentences"
+			$(ENTRY) generate --ids 134891,124656,104434,110132
+
+# push graphs to NLPDeep server for annotation lookups
 .PHONY:			push
 push:
 			hostcon push -n nlproot --delete \
 				--localdir '$(HOME)/view/nlp/med/clinicamr/amr-plot/' \
 				--remotedir view/rgh/apache-amr/site/proofing
 
+# stop the plots
 .PHONY:			stop
 stop:
 			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
-
-.PHONY:			proofrep
-proofrep:
-			$(ENTRY) proofrep --output /d/proof.csv \
-				--override amr_default.parse_model=gsii

@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 import logging
 from zensols.persist import Stash
 from zensols.nlp import FeatureDocument, FeatureDocumentDecorator
-from zensols.amr import AmrFeatureDocument
+from zensols.amr import AmrError, AmrFeatureDocument
 from zensols.amr.annotate import AnnotationFeatureDocumentParser
 from zensols.mimic import ParagraphFactory, Section
 
@@ -59,7 +59,11 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         paras: Iterable[FeatureDocument] = self.delegate.create(sec)
         para: FeatureDocument
         for pix, para in enumerate(paras):
-            yield self._get_doc(f'{nid}-{sec.id}-{pix}', para)
+            try:
+                doc = self._get_doc(f'{nid}-{sec.id}-{pix}', para)
+            except Exception as e:
+                raise AmrError(f'Could not parse AMR for <{para.text}>') from e
+            yield doc
 
     def clear(self):
         self.stash.clear()
