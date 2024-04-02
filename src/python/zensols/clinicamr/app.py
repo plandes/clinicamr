@@ -254,6 +254,24 @@ presenting with acute onset of CP and liver failure"""
     def _tmp(self):
         sent = '2. smaller PE in the RML and RUL branches.'
         sent = 'Pt was discharged from the oncology service yesterday, when she noticed the onset of severe pleuritic chest pain.'
+        if 1:
+            import re
+            linker = self.app.config_factory('entity_linker_resource')
+            ent = linker.get_linked_entity('C1555459')
+            ent.write()
+            html_tag = re.compile('<.*?>')
+            desc = re.sub(html_tag, '', ent.definition)
+            print(desc)
+            return
+        if 0:
+            for i in 'app clinicamr_default camr_doc_parser amr_anon_doc_parser mednlp_combine_biomed_doc_parser'.split():
+                self.app.config_factory.config[i].write()
+                print()
+            return
+        if 0:
+            print(type(self.app.doc_parser))
+            print(type(self.app.doc_parser.delegate))
+            return
         dp = self.app.doc_parser
         doc: AmrFeatureDocument = dp(sent)
         doc.write()
