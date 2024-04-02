@@ -70,10 +70,14 @@ class Application(object):
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
+        if 0:
+            with open(f'/d/{ds_note.row_id}.txt', 'w') as f:
+                ds_note.write(writer=f)
+            return pd.DataFrame()
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'generating from note {ds_note}')
         rows: List[Tuple[Any, ...]] = []
-        cols: List[str] = 'hadm_id sec_id sec_name org gen'.split()
+        cols: List[str] = 'hadm_id note_id sec_id sec_name org gen'.split()
         sec: Section
         for sec in ds_note.sections.values():
             if logger.isEnabledFor(logging.INFO):
@@ -86,7 +90,7 @@ class Application(object):
                 sent: AmrFeatureSentence
                 gen_sent: AmrGeneratedSentence
                 for sent, gen_sent in zip(para, gen_para):
-                    rows.append((hadm_id, sec.id, sec.name,
+                    rows.append((hadm_id, ds_note.row_id, sec.id, sec.name,
                                  sent.norm, gen_sent.text))
         return pd.DataFrame(rows, columns=cols)
 
@@ -247,6 +251,17 @@ presenting with acute onset of CP and liver failure"""
         doc.write(include_relation_set=True)
         print(doc.amr.graph_string)
 
+    def _tmp(self):
+        sent = '2. smaller PE in the RML and RUL branches.'
+        sent = 'Pt was discharged from the oncology service yesterday, when she noticed the onset of severe pleuritic chest pain.'
+        dp = self.app.doc_parser
+        doc: AmrFeatureDocument = dp(sent)
+        doc.write()
+        print(doc.amr.graph_string)
+        dumper = self.config_factory('amr_dumper')
+        dumper(doc.amr)
+
+
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
@@ -254,4 +269,5 @@ presenting with acute onset of CP and liver failure"""
          2: self.app.write_proof_report,
          3: self._test_parse,
          4: self._test_paragraphs,
+         5: self.app.generate,
          }[run]()
