@@ -20,11 +20,6 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
-# create plots for annotation of feesibility
-.PHONY:			plot
-plot:
-			nohup ./src/bin/plot.sh > plot.log 2>&1 &
-
 # generate AMR sentences by first parsing into graphs
 .PHONY:			generate
 generate:
