@@ -1,5 +1,4 @@
-"""Adapt the :mod:`zensols.amrspring` client to a
-:class:`zensols.amr.model.AmrParser`.
+"""Use the paper implementation of the SPRING parser.
 
 """
 __author__ = 'Paul Landes'
@@ -15,6 +14,19 @@ from zensols.amrspring import AmrPrediction, AmrParseClient
 
 @dataclass
 class SpringAmrParser(AmrParser):
+    """Adapt the :mod:`zensols.amrspring` client to a
+    :class:`zensols.amr.model.AmrParser`.
+
+    Citation:
+
+      `Bevilacqua et al. (2021)`_ One SPRING to Rule Them Both: Symmetric AMR
+      Semantic Parsing and Generation without a Complex Pipeline. In Proceedings
+      of the AAAI Conference on Artificial Intelligence, volume 35, pages
+      12564–12573, Virtual, May.
+
+      .. _Bevilacqua et al. (2021): https://ojs.aaai.org/index.php/AAAI/article/view/17489
+
+    """
     client: AmrParseClient = field(default=None)
     doc_parser: FeatureDocumentParser = field(default=None)
 
