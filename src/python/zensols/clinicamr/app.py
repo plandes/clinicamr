@@ -27,21 +27,11 @@ class Application(object):
     doc_parser: FeatureDocumentParser = field()
     """The document parser used for the :meth:`parse` action."""
 
+    dumper: 'Dumper' = field()
+    """Plots and writes AMR content in human readable formats."""
+
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
-
-    def predict(self, text: str):
-        """Predict clinical text.
-
-        :param text: the text to parse
-
-        """
-        doc = self.doc_parser(text)
-        doc.sents[0].write()
-        sent = doc.sents[0]
-        if hasattr(sent, 'amr'):
-            print(doc.amr)
-            doc.amr.plot(Path('/d/amr'))
 
     def _generate_adm(self, hadm_id: str) -> pd.DataFrame:
         from typing import List, Dict, Any
@@ -85,15 +75,18 @@ class Application(object):
                                  sent.norm, gen_sent.text))
         return pd.DataFrame(rows, columns=cols)
 
-    def generate(self, ids: str, output_path: Path = Path('generated.csv')):
+    def generate(self, ids: str, output_dir: Path = None):
         """Creates samples of generated AMR text by first parsing clinical
         sentences into graphs.
 
         :param ids: a comma separated list of admission IDs to generate
 
-        :param output_path: the path of the output data
+        :param output_dir: the output directory
 
         """
+        if output_dir is None:
+            output_dir = self.dumper.target_dir
+        output_path = output_dir / 'generated-sents.csv'
         hadm_ids: List[str] = ids.split(',')
         dfs: Tuple[pd.DataFrame] = tuple(map(self._generate_adm, hadm_ids))
         df: pd.DataFrame = pd.concat(dfs)
@@ -226,7 +219,10 @@ presenting with acute onset of CP and liver failure"""
 
     def _tmp(self):
         #self.app.generate('110132')
-        self.app.config_factory.config.write()
+        #self.app.config_factory.config.write()
+        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
+presenting with acute onset of CP and liver failure"""
+        self.app.predict(sent)
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""

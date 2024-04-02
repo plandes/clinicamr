@@ -20,6 +20,13 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
+.PHONY:			plot
+plot:
+			$(eval SENT=58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]\npresenting with acute onset of CP and liver failure)
+			@echo "parsing: $(SENT)"
+			$(ENTRY) plot '$(SENT)'
+
+
 # generate AMR sentences by first parsing into graphs
 .PHONY:			generate
 generate:
@@ -37,7 +44,6 @@ push:
 .PHONY:			stop
 stop:
 			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
-
 
 # TODO
 .PHONY:			tmp
