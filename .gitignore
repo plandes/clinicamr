@@ -1,6 +1,5 @@
 *.pyc
 *_flymake.py
 /target
-/amr-plot
 /amr_graph
 /data

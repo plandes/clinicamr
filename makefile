@@ -5,7 +5,7 @@
 #
 PROJ_TYPE =		python
 PROJ_MODULES =		git python-resources python-cli python-doc python-doc-deploy
-CLEAN_ALL +=		amr_graph
+ADD_CLEAN +=		amr_graph
 
 ## Project
 #
