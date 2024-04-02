@@ -29,7 +29,7 @@ plot:
 .PHONY:			generate
 generate:
 			@echo "generating sentences"
-			$(ENTRY) generate --ids 134891,124656,104434,110132
+			$(ENTRY) generate 134891,124656,104434,110132
 
 # push graphs to NLPDeep server for annotation lookups
 .PHONY:			push
@@ -42,3 +42,10 @@ push:
 .PHONY:			stop
 stop:
 			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
+
+
+# TODO
+.PHONY:			tmp
+tmp:
+			@echo "generating sentences"
+			$(ENTRY) generate 110132

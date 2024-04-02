@@ -95,10 +95,3 @@ camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
-
-# plot graphs for pysician evaluation
-amr_plotter:
-  class_name: zensols.clinicamr.Plotter
-  corpus: 'instance: mimic_corpus'
-  anon_resource: 'instance: mimicsid_anon_resource'
-  plot_path: 'path: ${clinicamr_default:amr_plot_path}'

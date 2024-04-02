@@ -12,8 +12,6 @@ from zensols.config import ConfigFactory
 from zensols.persist import Stash
 from zensols.cli import ApplicationError
 from zensols.nlp import FeatureToken, FeatureDocumentParser
-from zensols.mimic import HospitalAdmission
-from . import PlotMode, Plotter
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +26,6 @@ class Application(object):
 
     doc_parser: FeatureDocumentParser = field()
     """The document parser used for the :meth:`parse` action."""
-
-    plotter: Plotter = field()
-    """Creates PDF plots of the AMR graphs."""
 
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
@@ -50,7 +45,7 @@ class Application(object):
 
     def _generate_adm(self, hadm_id: str) -> pd.DataFrame:
         from typing import List, Dict, Any
-        from zensols.mimic import Section, Note
+        from zensols.mimic import Section, Note, HospitalAdmission
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import (
             AmrFeatureSentence, AmrFeatureDocument,
@@ -106,23 +101,6 @@ class Application(object):
         df.to_csv(output_path)
         logger.info(f'wrote: {output_path}')
 
-    def plot(self, hadm_ids: str = None, limit: int = None,
-             mode: PlotMode = PlotMode.by_admission,
-             annotators: str = 'kunal,adam,paul'):
-        """Create plots for an admission.
-
-        :param hadm_id: the admission ID
-
-        :param limit: the max number of notes to plot
-
-        :param mode: the plot file system and tracking strategy
-
-        :param annotators: the human annotators used to divide the work in
-                           sheets
-
-        """
-        self.plotter.plot(hadm_ids, limit, mode, annotators)
-
 
 @dataclass
 class PrototypeApplication(object):
@@ -154,7 +132,7 @@ presenting with acute onset of CP and liver failure"""
 
     def _test_paragraphs(self):
         from typing import Dict
-        from zensols.mimic import Section, Note
+        from zensols.mimic import Note, HospitalAdmission
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
@@ -247,12 +225,12 @@ presenting with acute onset of CP and liver failure"""
         dumper(doc.amr)
 
     def _tmp(self):
-        self.app.generate('110132')
+        #self.app.generate('110132')
+        self.app.config_factory.config.write()
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
-         1: lambda: self.plot(limit=1, mode=PlotMode.by_paragraph),
          3: self._test_parse,
          4: self._test_paragraphs,
          5: self.app.generate,
