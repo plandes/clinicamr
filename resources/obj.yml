@@ -22,19 +22,18 @@ mednlp_combine_biomed_doc_parser:
 mednlp_biomed_parser:
   model_name: en_ner_bionlp13cg_md
 
-# use the medical parser when creating AmrFeatureDocument instances
-amr_anon_doc_parser:
-  delegate: 'instance: ${mednlp_default:doc_parser}'
+# remove newlines from sentences
+camr_rm_space_decorator:
+  class_name: zensols.nlp.decorate.FilterTokenSentenceDecorator
+  remove_space: true
 
-# medical section segmentation
-mimicsid_section_predictor:
-  section_filter_type: >-
-    eval({'import': ['zensols.mimicsid as m']}):
-      m.SectionFilterType.keep_non_empty
+# recreate token index for mapping CUIs correctly
+camr_reindex_decorator:
+  class_name: zensols.nlp.decorate.UpdateDocumentDecorator
+  update_indexes: false
+  update_entity_spans: false
+  reindex: true
 
-
-## Section paragraph
-#
 camr_token_cui_doc_decorator:
   class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
   use_sent_index: false
@@ -49,6 +48,36 @@ camr_token_cui_desc_doc_decorator:
   feature_id: cui_
   feature_format: '{pref_name_}'
 
+# the medical intermediate parser that strips space; otherwise alignments
+# shifted from MIMIC-III newlines
+camr_medical_doc_parser:
+  class_name: zensols.nlp.parser.DecoratedFeatureDocumentParser
+  delegate: 'instance: ${mednlp_default:doc_parser}'
+  sentence_decorators: 'instance: tuple: camr_rm_space_decorator'
+  document_decorators: 'instance: tuple: camr_reindex_decorator'
+
+# use the medical parser when creating AmrFeatureDocument instances
+amr_anon_doc_parser:
+  delegate: 'instance: camr_medical_doc_parser'
+  condition:
+    if: 'eval: ${clinicamr_default:map_cuis}'
+    then:
+      document_decorators: >-
+        instance: tuple:
+          camr_token_cui_doc_decorator,
+          amr_token_ent_doc_decorator
+    else:
+      document_decorators: []
+
+# medical section segmentation
+mimicsid_section_predictor:
+  section_filter_type: >-
+    eval({'import': ['zensols.mimicsid as m']}):
+      m.SectionFilterType.keep_non_empty
+
+
+## Section paragraph
+#
 amr_token_ent_doc_decorator:
   use_sent_index: false
 

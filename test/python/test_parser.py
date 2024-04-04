@@ -1,8 +1,16 @@
 import unittest
 import sys
+from pathlib import Path
+import shutil
 from zensols.config import ImportIniConfig, ImportConfigFactory
 from zensols.nlp import FeatureDocument
 from zensols.amr import AmrDocument, AmrFeatureDocument
+
+
+if 0:
+    import logging
+    logging.basicConfig(level=logging.WARNING)
+    logging.getLogger('zensols.amr').setLevel(logging.DEBUG)
 
 
 class TestParser(unittest.TestCase):
@@ -11,23 +19,37 @@ class TestParser(unittest.TestCase):
         super().__init__(*args, **kwargs)
         conf = ImportIniConfig('test-resources/test.conf')
         fac = ImportConfigFactory(conf)
-        self.doc_parser = fac('mednlp_combine_doc_parser')
-        self.ann = fac('amr_annotator')
+        self.doc_parser = fac('amr_anon_doc_parser')
+        #self.doc_parser = fac('camr_medical_doc_parser')
+        targ_dir = Path('target')
+        if targ_dir.is_dir():
+            shutil.rmtree(targ_dir)
 
     def test_parse(self):
-        text = """Mr. [**Known lastname **] is an 87 yo male with a
-history of diastolic CHF (EF\n65% 1/10)."""
+        DO_WRITE = 0
+        DEBUG = 0
+        text = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
+history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
         doc: FeatureDocument = self.doc_parser(text)
-        if 0:
-            print(doc.tokens)
-        should = ('Mr', '.', 'LASTNAME', 'is', 'an', '87', 'yo', 'male',
-                  'with', 'a', 'history of', 'diastolic', 'CHF',
-                  '(', 'EF', '65', '%', '1/10', ')', '.')
+        if DEBUG:
+            print(doc.norm)
+            for i, t in enumerate(doc.token_iter()):
+                print(f'<{i}/{t.i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+            doc.write()
+        self.assertEqual(AmrFeatureDocument, type(doc))
+        self.assertEqual(1, len(doc))
+        should = ('Mr.', 'KNOWNLASTNAME', 'from', 'the', 'United', 'States',
+                  'is', 'an', '87', 'yo', 'male',
+                  'with', 'a', 'history', 'of', 'diastolic', 'CHF',
+                  '(', 'EF', '65', '%', '1/10', ')',
+                  'and', 'kidney', 'failure', '.')
         self.assertEqual(should, tuple(doc.norm_token_iter()))
-        amr_feat_doc: AmrFeatureDocument = self.ann(doc)
-        self.assertTrue(isinstance(amr_feat_doc, AmrFeatureDocument))
-        amr_doc: AmrDocument = amr_feat_doc.amr
+        amr_doc: AmrDocument = doc.amr
         self.assertTrue(isinstance(amr_doc, AmrDocument))
-        with open('test-resources/amr-graph.txt') as f:
+        should_file = 'test-resources/amr-graph.txt'
+        if DO_WRITE:
+            with open(should_file, 'w') as f:
+                f.write(amr_doc.graph_string)
+        with open(should_file) as f:
             should = f.read().strip()
         self.assertEqual(should, amr_doc.graph_string)

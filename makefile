@@ -44,9 +44,3 @@ push:
 .PHONY:			stop
 stop:
 			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
-
-# TODO
-.PHONY:			tmp
-tmp:
-			@echo "generating sentences"
-			$(ENTRY) generate 110132

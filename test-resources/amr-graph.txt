@@ -1,23 +1,34 @@
-# ::snt Mr . LASTNAME is an 87 yo male with a history of diastolic CHF ( EF 65 % 1/10 ) .
-# ::tokens ["Mr", ".", "LASTNAME", "is", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
-# ::ner_tags ["O", "O", "PERSON", "O", "O", "DATE", "O", "concept", "O", "O", "concept", "concept", "concept", "ORG", "O", "GPE", "PERCENT", "O", "CARDINAL", "O", "O"]
-# ::ner_iob ["O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "B", "B", "B", "O", "B", "O", "O", "O", "O", "O"]
-# ::pos_tags ["UH", ".", "DT", "VBZ", "DT", "CD", "NN", "NN", "IN", "DT", "NN", "NN", "JJ", "NN", "-LRB-", "NN", "CD", "NN", "CD", "-RRB-", "."]
-# ::lemmas ["mr.", ".", "LASTNAME", "be", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "."]
-(m0 / multi-sentence
-    :snt2 (e0 / equal-01
-              :ARG2 (p2 / percentage-entity
-                        :value 65)
-              :ARG1 (p1 / percentage-entity
-                        :value 65))
-    :snt1 (m1 / male
-              :domain (p0 / person
-                          :name (n0 / name
-                                    :op1 "LASTNAME"))
-              :quant (m2 / mr.)
-              :ARG0-of (h0 / have-03
-                           :ARG1 (h1 / history
-                                     :mod (d0 / diastolic
-                                              :cui "Diastole (C0012000)")
-                                     :cui "Medical History (C0262926)"))
-              :cui "Males (C0086582)"))
+# ::snt Mr.KNOWNLASTNAME from the United States is an 87 yo male with a history of diastolic CHF (EF 65% 1/10) and kidney failure.
+# ::tokens ["Mr.", "KNOWNLASTNAME", "from", "the", "United", "States", "is", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "and", "kidney", "failure", "."]
+# ::ner_tags ["O", "O", "O", "GPE", "GPE", "GPE", "O", "O", "CARDINAL", "O", "O", "O", "O", "O", "O", "O", "ORG", "O", "O", "PERCENT", "PERCENT", "O", "O", "O", "O", "O", "O"]
+# ::ner_iob ["O", "O", "O", "B", "I", "I", "O", "O", "B", "O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "I", "O", "O", "O", "O", "O", "O"]
+# ::pos_tags ["NNP", "NNP", "IN", "DT", "NNP", "NNP", "VBZ", "DT", "CD", "NNP", "NN", "IN", "DT", "NN", "IN", "JJ", "NNP", "-LRB-", "NNP", "CD", "NN", "CD", "-RRB-", "CC", "NN", "NN", "."]
+# ::lemmas ["Mr.", "KNOWNLASTNAME", "from", "the", "United", "States", "be", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "and", "kidney", "failure", "."]
+# ::alignments 13-1.1 14-1.1.1.r 23-1.1.1 25-1.1.1.1 24-1.1.1.1.1 20-1.1.1.2.1 19-1.1.1.2.1.1 15-1.1.1.2.3 8-1.2.1.2 2-1.2.2.r
+(h0 / have-03
+    :ARG1 (h1 / history~e.13
+              :consist-of~e.14 (a0 / and~e.23
+                                   :op2 (f0 / fail-01~e.25
+                                            :ARG1 (k0 / kidney~e.24
+                                                      :cui-id "C0035078"
+                                                      :ent "ORGAN")
+                                            :cui-id "C0035078")
+                                   :op1 (s0 / small-molecule
+                                            :location (p1 / percentage-entity~e.20
+                                                          :value 65~e.19
+                                                          :ent "PERCENT")
+                                            :name (n2 / name
+                                                      :op1 "CHF")
+                                            :mod (d0 / diastolic~e.15))))
+    :ARG0 (p0 / person
+              :age (t0 / temporal-quantity
+                       :unit (y0 / year)
+                       :quant 87~e.8
+                       :ent "CARDINAL")
+              :source~e.2 (c0 / country
+                              :name (n1 / name
+                                        :op2 "States"
+                                        :op1 "United"))
+              :name (n0 / name
+                        :op2 "News"
+                        :op1 "Mr.")))

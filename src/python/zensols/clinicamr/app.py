@@ -113,10 +113,19 @@ class PrototypeApplication(object):
         self._clear()
         sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
 presenting with acute onset of CP and liver failure"""
-        doc: AmrFeatureDocument = self.doc_parser(sent)
+        sent = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
+history of diastolic CHF (EF\n65% 1/10)."""
+        sent = 'He was diagnosed with kidney failure'
+        parser = self.app.doc_parser
+        #parser = self.config_factory('camr_medical_doc_parser')
+        #parser = self.config_factory('amr_anon_doc_parser')
+        #parser = self.config_factory('mednlp_combine_doc_parser')
+        #parser = self.config_factory('mednlp_doc_parser')
+        #parser = self.config_factory('camr_medical_doc_parser')
+        doc: AmrFeatureDocument = parser(sent)
         if print_toks:
             for i, t in enumerate(doc.tokens):
-                print(f'<{i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
+                print(f'<{i}/{t.i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
             print('_' * 40)
         doc.amr.write()
         if dump:
@@ -224,7 +233,7 @@ presenting with acute onset of CP and liver failure"""
 presenting with acute onset of CP and liver failure"""
         self.app.predict(sent)
 
-    def proto(self, run: int = 0):
+    def proto(self, run: int = 3):
         """Used for rapid prototyping."""
         {0: self._tmp,
          3: self._test_parse,
