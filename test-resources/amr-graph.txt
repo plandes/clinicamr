@@ -10,21 +10,18 @@
               :consist-of~e.14 (a0 / and~e.23
                                    :op2 (f0 / fail-01~e.25
                                             :ARG1 (k0 / kidney~e.24
-                                                      :cui-id "C0035078"
-                                                      :ent "ORGAN")
+                                                      :cui-id "C0035078")
                                             :cui-id "C0035078")
                                    :op1 (s0 / small-molecule
                                             :location (p1 / percentage-entity~e.20
-                                                          :value 65~e.19
-                                                          :ent "PERCENT")
+                                                          :value 65~e.19)
                                             :name (n2 / name
                                                       :op1 "CHF")
                                             :mod (d0 / diastolic~e.15))))
     :ARG0 (p0 / person
               :age (t0 / temporal-quantity
                        :unit (y0 / year)
-                       :quant 87~e.8
-                       :ent "CARDINAL")
+                       :quant 87~e.8)
               :source~e.2 (c0 / country
                               :name (n1 / name
                                         :op2 "States"

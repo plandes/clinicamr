@@ -20,6 +20,7 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
+# plot a sentence
 .PHONY:			plot
 plot:
 			$(eval SENT=58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]\npresenting with acute onset of CP and liver failure)

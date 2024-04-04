@@ -147,7 +147,7 @@ history of diastolic CHF (EF\n65% 1/10)."""
             return
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
-        #hadm_id: str = '124656'
+        hadm_id: str = '124656'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -234,7 +234,7 @@ presenting with acute onset of CP and liver failure"""
 presenting with acute onset of CP and liver failure"""
         self.app.predict(sent)
 
-    def proto(self, run: int = 3):
+    def proto(self, run: int = 4):
         """Used for rapid prototyping."""
         {0: self._tmp,
          3: self._test_parse,

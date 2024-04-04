@@ -40,7 +40,7 @@ camr_reindex_decorator:
   update_entity_spans: false
   reindex: true
 
-# adds :cui-id attributes
+# adds :cui-id CUI attributes
 camr_token_cui_doc_decorator:
   class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
   use_sent_index: false
@@ -48,12 +48,13 @@ camr_token_cui_doc_decorator:
   feature_id: cui_
   feature_format: '{cui_}'
 
-# camr_token_cui_desc_doc_decorator:
-#   class_name: ${camr_token_cui_doc_decorator:class_name}
-#   use_sent_index: ${camr_token_cui_doc_decorator:use_sent_index}
-#   role: :cui-desc
-#   feature_id: cui_
-#   feature_format: '{pref_name_}'
+# add :cui-desc CUI description attributes
+camr_token_cui_desc_doc_decorator:
+  class_name: ${camr_token_cui_doc_decorator:class_name}
+  use_sent_index: ${camr_token_cui_doc_decorator:use_sent_index}
+  role: :cui-desc
+  feature_id: cui_
+  feature_format: '{pref_name_}'
 
 # the medical intermediate parser that strips space; otherwise alignments
 # shifted from MIMIC-III newlines
@@ -71,8 +72,9 @@ amr_anon_doc_parser:
     then:
       document_decorators: >-
         instance: tuple:
-          camr_token_cui_doc_decorator,
-          amr_token_ent_doc_decorator
+          camr_token_cui_doc_decorator
+#          camr_token_cui_desc_doc_decorator
+#          amr_token_ent_doc_decorator
     else:
       document_decorators: []
 
