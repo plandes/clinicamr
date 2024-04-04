@@ -97,13 +97,6 @@ camr_paragraph_factory:
 
 ## Application objects
 #
-# non-annotated prediction'
-# camr_doc_parser:
-#   class_name: zensols.nlp.DecoratedFeatureDocumentParser
-#   delegate: ${camr_paragraph_factory:amr_annotator}
-#   document_decorators: ${camr_paragraph_factory:document_decorators}
-
-
 # this parser is used to remove MIMIC masks as they result in ``<pointer:0>``
 # type tokens from the SPRING parser
 camr_fix_mimic_doc_parser:
