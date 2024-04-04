@@ -19,8 +19,7 @@ class TestParser(unittest.TestCase):
         super().__init__(*args, **kwargs)
         conf = ImportIniConfig('test-resources/test.conf')
         fac = ImportConfigFactory(conf)
-        self.doc_parser = fac('amr_anon_doc_parser')
-        #self.doc_parser = fac('camr_medical_doc_parser')
+        self.doc_parser = fac('resources').doc_parser
         targ_dir = Path('target')
         if targ_dir.is_dir():
             shutil.rmtree(targ_dir)
@@ -35,9 +34,12 @@ history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
             print(doc.norm)
             for i, t in enumerate(doc.token_iter()):
                 print(f'<{i}/{t.i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
-            doc.write()
+            doc.amr.write()
         self.assertEqual(AmrFeatureDocument, type(doc))
         self.assertEqual(1, len(doc))
+        self.assertEqual(27, len(doc[0]))
+        self.assertEqual(tuple(range(len(doc[0]))),
+                         tuple(map(lambda t: t.i_sent, doc.token_iter())))
         should = ('Mr.', 'KNOWNLASTNAME', 'from', 'the', 'United', 'States',
                   'is', 'an', '87', 'yo', 'male',
                   'with', 'a', 'history', 'of', 'diastolic', 'CHF',
