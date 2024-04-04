@@ -117,6 +117,7 @@ presenting with acute onset of CP and liver failure"""
 history of diastolic CHF (EF\n65% 1/10)."""
         sent = 'He was diagnosed with kidney failure'
         parser = self.app.doc_parser
+        #self.config_factory.config['amr_anon_doc_parser'].write()
         #parser = self.config_factory('camr_medical_doc_parser')
         #parser = self.config_factory('amr_anon_doc_parser')
         #parser = self.config_factory('mednlp_combine_doc_parser')
