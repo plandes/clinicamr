@@ -13,6 +13,16 @@ logger = logging.getLogger(__name__)
 
 
 class TestParagraph(TestBase):
+    """The medical parsers normalize out the MIMIC-III tokens, but that happens
+    at the FeatureDocument level.  We cannot use that normalized text when
+    parsing the AMR because amrlib expects spaCy spans (i.e. GSII expects it
+    already tokenized).  The only way to do it is to create a spacy adapted
+    (from feature document) span, then parse.
+
+    The ``amrspring`` parser uses the MIMIC mapped singleton tokens from the
+    MIMIC-III masked tokens in :mod:`zensols.clinicamr.spring`.
+
+    """
     def _validate_db_exists(self) -> bool:
         self._config_logging()
         mng: SqliteConnectionManager = self.fac('mimic_sqlite_conn_manager')
@@ -25,9 +35,6 @@ class TestParagraph(TestBase):
         if self._validate_db_exists():
             self._test_parse()
 
-    def _clear_cache(self):
-        pass
-
     def _write_paras(self, paras: Tuple[AmrFeatureDocument],
                      writer: TextIOBase = sys.stdout):
         for para in paras:
@@ -39,18 +46,8 @@ class TestParagraph(TestBase):
             print('_' * 79, file=writer)
 
     def _test_parse(self):
-        """The medical parsers normalize out the MIMIC-III tokens, but that
-        happens at the FeatureDocument level.  We cannot use that normalized
-        text when parsing the AMR because amrlib expects spaCy spans (i.e. GSII
-        expects it already tokenized).  The only way to do it is to create a
-        spacy adapted (from feature document) span, then parse.
-
-        The ``amrspring`` parser uses the MIMIC mapped singleton tokens from the
-        MIMIC-III masked tokens in :mod:`zensols.clinicamr.spring`.
-
-        """
         DEBUG = 0
-        WRITE = 1
+        WRITE = 0
         hadm_id: str = '134891'
         stash: Stash = self.fac('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]

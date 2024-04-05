@@ -66,12 +66,9 @@ camr_medical_doc_parser:
   sentence_decorators: 'instance: tuple: camr_rm_space_decorator'
   document_decorators: 'instance: tuple: camr_reindex_decorator'
 
-camr_medical_doc_parser_TMP:
-  aval: 1
-
 # use the medical parser when creating AmrFeatureDocument instances
 amr_anon_doc_parser:
-  delegate: 'instance: camr_medical_doc_parser_TMP'
+  delegate: 'instance: camr_medical_doc_parser'
   condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
