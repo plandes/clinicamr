@@ -4,12 +4,12 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Sequence, Iterable
+from typing import Dict, Sequence, Iterable
 from dataclasses import dataclass, field
 import logging
 from zensols.persist import Stash
 from zensols.nlp import FeatureDocument, FeatureDocumentDecorator
-from zensols.amr import AmrError, AmrFeatureDocument
+from zensols.amr import AmrError, AmrSentence, AmrFeatureDocument
 from zensols.amr.annotate import AnnotationFeatureDocumentParser
 from zensols.mimic import ParagraphFactory, Section
 
@@ -44,6 +44,20 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     document.
 
     """
+    add_id: bool = field(default=True)
+    """Whether to add the ``id`` AMR metadata field if it does not already
+    exist.
+
+    """
+    def _add_id(self, pid: str, fdoc: AmrFeatureDocument):
+        did: str = 'MIMIC3_' + pid.replace('-', '_')
+        sent: AmrSentence
+        for sid, sent in enumerate(fdoc.amr.sents):
+            meta: Dict[str, str] = sent.metadata
+            if 'id' not in meta:
+                meta['id'] = f'{did}.{sid}'
+            sent.metadata = meta
+
     def _get_doc(self, pid: str, para: FeatureDocument) -> AmrFeatureDocument:
         fdoc: AmrFeatureDocument = self.stash.load(pid)
         if fdoc is None:
@@ -51,6 +65,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
             dec: FeatureDocumentDecorator
             for dec in self.document_decorators:
                 dec.decorate(fdoc)
+            if self.add_id:
+                self._add_id(pid, fdoc)
             self.stash.dump(pid, fdoc)
         return fdoc
 

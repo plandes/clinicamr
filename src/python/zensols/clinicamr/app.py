@@ -135,10 +135,13 @@ history of diastolic CHF (EF\n65% 1/10)."""
 
     def _test_paragraphs(self):
         from typing import Dict
-        from zensols.mimic import Note, HospitalAdmission
+        from zensols.mimic import Section, Note, HospitalAdmission
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
+        if 0:
+            self.config_factory.config.write()
+            return
         self._clear()
         nlg = self.config_factory('amr_generator_amrlib')
         if 0:
@@ -147,7 +150,7 @@ history of diastolic CHF (EF\n65% 1/10)."""
             return
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
-        hadm_id: str = '124656'
+        #hadm_id: str = '124656'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -157,9 +160,12 @@ history of diastolic CHF (EF\n65% 1/10)."""
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        #sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        #ds_note.write()
+        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        #sec: Section = ds_note.sections_by_name['physical-examination'][0]
         import itertools as it
-        for sec in it.islice(ds_note.sections.values(), 1):
+        for sec in [sec]:
+            #it.islice(ds_note.sections.values(), 1):
             if 0:
                 print(sec.text)
                 print('_' * 80)

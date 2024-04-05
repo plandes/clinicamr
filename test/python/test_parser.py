@@ -5,7 +5,7 @@ from util import TestBase
 
 class TestParser(TestBase):
     def test_parse(self):
-        DO_WRITE = 0
+        WRITE = 0
         DEBUG = 0
         text = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
 history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
@@ -30,7 +30,7 @@ history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
         amr_doc: AmrDocument = doc.amr
         self.assertTrue(isinstance(amr_doc, AmrDocument))
         should_file = 'test-resources/amr-graph.txt'
-        if DO_WRITE:
+        if WRITE:
             with open(should_file, 'w') as f:
                 f.write(amr_doc.graph_string)
         with open(should_file) as f:

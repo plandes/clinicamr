@@ -57,16 +57,21 @@ camr_token_cui_desc_doc_decorator:
   feature_format: '{pref_name_}'
 
 # the medical intermediate parser that strips space; otherwise alignments
-# shifted from MIMIC-III newlines
+# shifted from MIMIC-III newlines; we don't use this parser in
+# `camr_paragraph_factory` so it keeps new lines for creating medical note
+# sections and the pargraph factory deals with newlines while chunking
 camr_medical_doc_parser:
   class_name: zensols.nlp.parser.DecoratedFeatureDocumentParser
   delegate: 'instance: ${mednlp_default:doc_parser}'
   sentence_decorators: 'instance: tuple: camr_rm_space_decorator'
   document_decorators: 'instance: tuple: camr_reindex_decorator'
 
+camr_medical_doc_parser_TMP:
+  aval: 1
+
 # use the medical parser when creating AmrFeatureDocument instances
 amr_anon_doc_parser:
-  delegate: 'instance: camr_medical_doc_parser'
+  delegate: 'instance: camr_medical_doc_parser_TMP'
   condition:
     if: 'eval: ${clinicamr_default:map_cuis}'
     then:
@@ -91,6 +96,9 @@ camr_paragraph_stash:
 camr_paragraph_factory:
   class_name: zensols.clinicamr.parafac.ClinicAmrParagraphFactory
   delegate: 'instance: mimic_chunker_paragraph_factory'
+  # this only uses the annotator to add AMRs, and does not use the delegate
+  # parser; the document parsing is done by `mednlp_default:doc_parser` set in
+  # `mimic_note_event_persister_parser_stash:doc_parser`
   amr_annotator: 'instance: ${amr_default:doc_parser}'
   stash: 'instance: camr_paragraph_stash'
 
