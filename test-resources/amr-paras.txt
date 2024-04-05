@@ -1,0 +1,228 @@
+MIMIC3_5298_3_0.0
+(p0 / present-01~e.16
+    :ARG1 (p1 / person
+              :quant 58~e.0
+              :quant (o0 / operate-02
+                         :mod (a2 / acute~e.18)))
+    :ARG0 (a0 / and~e.12
+              :op2 (d1 / disease
+                       :name (n1 / name
+                                 :op3 "Organization"
+                                 :op2 "Health"
+                                 :op1 "auto")
+                       :ARG1-of (a1 / auto~e.13))
+              :op1 (d0 / disease
+                       :mod (d2 / disease)
+                       :name (n0 / name
+                                 :op2 (n2 / name
+                                          :op1 "cp"
+                                          :op2 "chemo"~e.11
+                                          :op1 "multiple"~e.6)
+                                 :op1 "myeloma"~e.7))))
+________________________________________
+MIMIC3_5298_3_0.1
+(d0 / discharge-01~e.2
+    :time~e.9,10 (n0 / notice-01~e.11
+                     :ARG0 (p0 / person
+                               :name (n1 / name
+                                         :op1 "Pt"))
+                     :ARG1 (o1 / onset~e.12
+                               :domain (p1 / pain-01~e.17
+                                           :ARG1 (p2 / pleuritic~e.15)
+                                           :mod (s1 / severe~e.14)
+                                           :mod (c0 / chest~e.16))))
+    :time~e.9,10 (y0 / yesterday~e.7)
+    :ARG2 (s0 / service~e.6
+              :mod (o0 / oncology~e.5))
+    :ARG1 p0)
+________________________________________
+MIMIC3_5298_3_0.2
+(s0 / state-01~e.2
+    :location~e.3 (s1 / set-02~e.5
+                      :ARG1 (m0 / medication
+                                :name (n1 / name
+                                          :op1 "Zyprexa")
+                                :ARG1-of (s2 / start-01~e.12
+                                             :time (t1 / today~e.17)
+                                             :time (b0 / before)
+                                             :ARG0 (o0 / oncologist~e.15
+                                                       :poss~e.14 (h0 / he~e.14)))
+                                :mod (n0 / new-01~e.8)))
+    :ARG1 (t0 / this~e.1))
+________________________________________
+MIMIC3_5298_3_0.3
+(d0 / difficult~e.4
+    :domain (c0 / catch-up-04~e.5
+                :ARG1 (b0 / breathe-01~e.7
+                          :ARG0 (h0 / he~e.6)))
+    :mod (a0 / also))
+________________________________________
+MIMIC3_5298_3_0.4
+(s0 / say-01
+    :ARG1 (r0 / radiate-01~e.4
+              :polarity~e.2,3 -~e.3
+              :ARG0 (p0 / pain-01~e.1)
+              :ARG1 (a0 / anywhere~e.5)))
+________________________________________
+MIMIC3_5298_3_0.5
+(h0 / have-trouble-04
+    :mod (c0 / chronic~e.1)
+    :ARG1 (s0 / slash
+              :op2 (v0 / vomiting~e.6)
+              :op1 (d0 / disease
+                       :name (n0 / name
+                                 :op1 "nausea/vomiting"~e.4))
+              :op1 (i0 / i)))
+________________________________________
+MIMIC3_5298_3_0.6
+(h0 / have-polarity-91
+    :ARG2 -
+    :ARG1 (a0 / and
+              :op3 (o0 / oliguria~e.5
+                       :cui-id "C0028961")
+              :op2 (d1 / disease
+                       :name (n1 / name
+                                 :op1 "dysuria"~e.3))
+              :op1 (d0 / disease
+                       :name (n0 / name
+                                 :op1 "cough"~e.1))))
+________________________________________
+MIMIC3_5298_3_0.7
+(a0 / and~e.10
+    :op2 (d0 / deny-01~e.11
+             :ARG1 (h2 / history~e.12
+                       :topic (b1 / bleed-01)
+                       :topic (b0 / bleed-01~e.7
+                                  :ARG2-of (e2 / except-01
+                                               :ARG1 (a1 / amount~e.19
+                                                         :ARG1-of (c0 / cause-01~e.20
+                                                                      :ARG0 (d2 / disease
+                                                                                :name (n1 / name
+                                                                                          :op1 "hemhorroid"~e.22)))
+                                                         :mod (s1 / small~e.18)))))
+             :ARG0 h1)
+    :op1 (s0 / state-01~e.1
+             :ARG0 (h1 / he~e.2
+                       :ARG0-of (h0 / have-03~e.5
+                                    :time (e0 / ever~e.4)
+                                    :polarity -
+                                    :ARG1 (o0 / or~e.8
+                                              :ARG1-of (e1 / easy-05~e.6)
+                                              :op2 (d1 / disease
+                                                       :name (n0 / name
+                                                                 :op1 "GI")))))
+             :ARG1 h0))
+________________________________________
+MIMIC3_5298_3_0.8
+(k0 / know-01~e.2
+    :ARG0 (h0 / he~e.1)
+    :ARG1 (i0 / involve-01~e.7
+              :ARG1 (p0 / person
+                        :name (n0 / name
+                                  :op1 "MM"))
+              :time~e.5 (e0 / ever~e.4)
+              :polarity~e.4 -~e.4
+              :ARG0 (b0 / brain~e.6)))
+_______________________________________________________________________________
+MIMIC3_5298_3_1.0
+(a0 / and
+    :op3 (t1 / thing
+             :ARG1-of (v0 / variable)
+             :mod (i1 / initial~e.4)
+             :mod (a3 / aircraft-type
+                      :name (n3 / name
+                                :op2 "O2"
+                                :op1 "R")))
+    :op2 (s0 / sit-01
+             :ARG2 (a2 / aircraft-type
+                       :name (n2 / name
+                                 :op2 "109BP"
+                                 :op1 "123/75"))
+             :ARG1 (a1 / aircraft-type
+                       :name (n1 / name
+                                 :op2 "109BP"
+                                 :op1 "T")
+                       :name (n0 / name
+                                 :op1 "ED"
+                                 :op1 (n4 / name))))
+    :op1 (t0 / thing
+             :ARG1-of (f0 / factor-01)
+             :mod (i0 / initial)))
+________________________________________
+MIMIC3_5298_3_1.1
+(h0 / have-03~e.4
+    :ARG1 (a0 / and~e.22
+              :op2 (e0 / extend-01~e.23
+                       :ARG4 (a1 / and~e.22
+                                 :op3 (b2 / branch~e.31
+                                          :mod "lingular"~e.30)
+                                 :op2 (b1 / branch~e.31)
+                                 :op1 (b0 / branch~e.31
+                                          :mod (l2 / lingular~e.30))))
+              :op2 (s0 / strand
+                       :location~e.5 (s2 / strand~e.15
+                                         :location~e.16 (e3 / enzyme
+                                                            :name (n3 / name))
+                                         :ARG0-of (e2 / exclusive-02
+                                                      :polarity~e.12 -~e.12)
+                                         :location~e.16 (m0 / mean-01
+                                                            :ARG2 (s4 / strand
+                                                                      :name (n4 / name
+                                                                                :op1 "LLL")))
+                                         :mod (s3 / small~e.11))
+                       :location~e.5 (e1 / enzyme
+                                         :name (n1 / name
+                                                   :op2 "PA")))
+              :op1 (l0 / location
+                       :ARG0-of (s1 / show-01~e.2
+                                    :ARG1 (l1 / location
+                                              :location "Western"
+                                              :name (n2 / name
+                                                        :op2 "PA")))
+                       :name (n0 / name
+                                 :op1 "CTA"))))
+________________________________________
+MIMIC3_5298_3_1.2
+(b0 / be-located-at-91
+    :li 2~e.0
+    :ARG2 (a0 / and~e.7
+              :op2 (b2 / branch
+                       :part-of (p1 / political-party
+                                    :name (n2 / name
+                                              :op1 "RML")))
+              :op1 (b1 / branch~e.9
+                       :mod (p0 / political-party
+                                :name (n1 / name
+                                          :op1 "RML"))))
+    :ARG1 (t0 / thing
+              :name (n0 / name
+                        :op1 "PE")
+              :ARG1-of (h0 / have-degree-91
+                           :ARG3 (m0 / more)
+                           :ARG2 (s0 / small~e.2))))
+________________________________________
+MIMIC3_5298_3_1.3
+(s0 / swell-01
+    :polarity~e.6,7 -~e.7
+    :ARG0-of (s2 / suggest-01~e.13
+                 :ARG1 (d0 / disease
+                           :domain (h0 / heart~e.15)
+                           :name (n0 / name
+                                     :op1 "LV")))
+    :ARG1 (s1 / septum~e.5
+              :mod (v0 / ventricular~e.4))
+    :li 3~e.0)
+________________________________________
+MIMIC3_5298_3_1.4
+(g0 / give-01~e.2
+    :ARG2 (P0 / Patient)
+    :ARG1 (a0 / and~e.12
+              :op3 (s0 / start-101~e.13
+                       :ARG2 (p1 / product
+                                 :name (n0 / name
+                                           :op1 "heparin"~e.16)))
+              :op2 (m0 / morphine~e.8)
+              :op1 (d0 / dose-01~e.4
+                       :purpose~e.9 (p0 / pain-01~e.10)
+                       :ARG2 (c0 / cefepime))))
+_______________________________________________________________________________
