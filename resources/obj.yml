@@ -11,16 +11,16 @@ amr_base_doc_parser:
 
 # use the AMR base doc parser since it does not embed entities so token indexes
 # are not perturbed by multi-word named entities
-mednlp_combine_biomed_doc_parser:
-  target_parser: 'instance: amr_base_doc_parser'
-  yield_features: >-
-    eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
-      list(m.MedicalFeatureToken.FEATURE_IDS |
-      {'ent_', 'ent', 'ent_iob', 'ent_iob_', 'mimic_', 'onto_'})
+# mednlp_combine_biomed_doc_parser:
+#   target_parser: 'instance: amr_base_doc_parser'
+#   yield_features: >-
+#     eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
+#       list(m.MedicalFeatureToken.FEATURE_IDS |
+#       {'ent_', 'ent', 'ent_iob', 'ent_iob_', 'mimic_', 'onto_'})
 
 # use scispacy NER model
-mednlp_biomed_parser:
-  model_name: en_ner_bionlp13cg_md
+# mednlp_biomed_parser:
+#   model_name: en_ner_bionlp13cg_md
 
 # medical section segmentation
 mimicsid_section_predictor:
@@ -116,3 +116,24 @@ camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
+
+
+## tmp
+# mimicsid_client_section_predictor:
+#   class_name: zensols.clinicamr.tmp.DecoratorNoteFactory
+#   delegate: 'application(zensols.mimicsid): mimic_note_factory'
+
+# mimic_note_factory:
+#   class_name: zensols.clinicamr.tmp.DecoratorNoteFactory
+#   delegate: 'application(zensols.mimicsid): mimic_note_factory'
+
+
+# mimicsid_mimic_pred_note:
+#   class_name: zensols.mimicsid.MimicPredictedNote
+#   context: 'instance: mimic_note_context'
+
+# mimic_note_factory:
+#   class_name: zensols.mimicsid.pred.PredictionNoteFactory
+#   anon_resource: 'instance: mimicsid_anon_resource'
+#   section_predictor_name: 'application(zensols.mimicsid): mimicsid_section_predictor'
+#   mimic_pred_note_section: mimicsid_mimic_pred_note

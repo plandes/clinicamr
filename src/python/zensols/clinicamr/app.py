@@ -139,18 +139,11 @@ history of diastolic CHF (EF\n65% 1/10)."""
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
-        if 0:
-            self.config_factory.config.write()
-            return
         self._clear()
-        nlg = self.config_factory('amr_generator_amrlib')
-        if 0:
-            print(type(nlg))
-            nlg.installer.write()
-            return
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
         #hadm_id: str = '124656'
+        hadm_id: str = '151608'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -160,7 +153,10 @@ history of diastolic CHF (EF\n65% 1/10)."""
                 f'No discharge sumamries for admission: {hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        #ds_note.write()
+        if 0:
+            #print(ds_note.text)
+            ds_note.write()
+            return
         sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
         #sec: Section = ds_note.sections_by_name['physical-examination'][0]
         import itertools as it
@@ -188,57 +184,10 @@ history of diastolic CHF (EF\n65% 1/10)."""
                     dumper(para.amr, f'p-{pix}')
 
     def _tmp(self):
-        from zensols.amr import AmrFeatureDocument
-        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-presenting with acute onset of CP and liver failure"""
-        sent = """sulfites/[**DoctorLastName**] Juice, Lime Juice, Sauerkraut"""
-        #sent = """sulfites/[**Doctor Last Name**] Juice, Lime Juice, Sauerkraut"""
-        sent = """sulfites/[**DoctorLastName5942**] Juice, Lime Juice, Sauerkraut"""
-        #sent = """sulfites/[**SomeStuff**] Juice, Lime Juice, Sauerkraut"""
-        #dp = self.config_factory('amr_base_doc_parser')
-        #dp = self.config_factory('mednlp_combine_biomed_doc_parser')
-        #dp = self.config_factory('doc_parser')
-        dp = self.app.doc_parser
-        doc: AmrFeatureDocument = dp(sent)
-        for t in doc.tokens:
-            print(t.norm, t.text, t.ent_, t.mimic_, t.onto_)
-        doc.write(include_relation_set=True)
-        print(doc.amr.graph_string)
-
-    def _tmp(self):
-        sent = '2. smaller PE in the RML and RUL branches.'
-        sent = 'Pt was discharged from the oncology service yesterday, when she noticed the onset of severe pleuritic chest pain.'
-        if 0:
-            import re
-            linker = self.app.config_factory('entity_linker_resource')
-            ent = linker.get_linked_entity('C1555459')
-            ent.write()
-            html_tag = re.compile('<.*?>')
-            desc = re.sub(html_tag, '', ent.definition)
-            print(desc)
-            return
-        if 0:
-            for i in 'app clinicamr_default camr_doc_parser amr_anon_doc_parser mednlp_combine_biomed_doc_parser'.split():
-                self.app.config_factory.config[i].write()
-                print()
-            return
-        if 0:
-            print(type(self.app.doc_parser))
-            print(type(self.app.doc_parser.delegate))
-            return
-        dp = self.app.doc_parser
-        doc: AmrFeatureDocument = dp(sent)
-        doc.write()
-        print(doc.amr.graph_string)
-        dumper = self.config_factory('amr_dumper')
-        dumper(doc.amr)
-
-    def _tmp(self):
-        #self.app.generate('110132')
-        #self.app.config_factory.config.write()
-        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-presenting with acute onset of CP and liver failure"""
-        self.app.predict(sent)
+        pred = self.config_factory('mimicsid_client_section_predictor')
+        pred.tmp()
+        #tmp = self.config_factory('mimic_note_factory')
+        #print(type(tmp), type(tmp.mimic_pred_note_section), type(tmp.section_predictor))
 
     def proto(self, run: int = 4):
         """Used for rapid prototyping."""
