@@ -34,6 +34,11 @@ generate:
 			@echo "generating sentences"
 			$(ENTRY) generate 134891,124656,104434,110132
 
+# get DSProv annotated admissions by note count per admission
+.PHONY:			admbycount
+admbycount:
+			src/bin/adm-by-count.py
+
 # push graphs to NLPDeep server for annotation lookups
 .PHONY:			push
 push:

@@ -14,13 +14,15 @@ def main():
     ds_prov_home: Path = Path('~/view/uic/thesis/view/dsprov/').expanduser()
     corpus: Corpus = ApplicationFactory.get_corpus()
     df: pd.DataFrame = pd.read_csv(ds_prov_home / 'results/csv/match.csv')
+    out_file: Path = Path('~/Desktop/adm-by-count.csv').expanduser()
     rows: List[Tuple] = []
     for hid in df['hadm_id'].drop_duplicates():
         adm: HospitalAdmission = corpus.get_hospital_adm_by_id(hid)
         rows.append((hid, len(adm)))
     df = pd.DataFrame(rows, columns='hadm_id count'.split())
     df = df.sort_values('count', ascending=True).reset_index(drop=True)
-    print(df)
+    df.to_csv(out_file, index=False)
+    print(f'wrote: {out_file}')
 
 
 if (__name__ == '__main__'):
