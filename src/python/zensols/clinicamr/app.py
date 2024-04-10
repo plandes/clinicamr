@@ -139,12 +139,13 @@ history of diastolic CHF (EF\n65% 1/10)."""
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
-        self._clear()
+        #self._clear()
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
         #hadm_id: str = '124656'
         hadm_id: str = '151608'
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
+        #stash: Stash = self.config_factory('camr_mimic_resources').corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
@@ -157,7 +158,8 @@ history of diastolic CHF (EF\n65% 1/10)."""
             #print(ds_note.text)
             ds_note.write()
             return
-        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        sec: Section = ds_note.sections_by_name['hospital-course'][0]
+        #sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
         #sec: Section = ds_note.sections_by_name['physical-examination'][0]
         import itertools as it
         for sec in [sec]:
@@ -165,18 +167,19 @@ history of diastolic CHF (EF\n65% 1/10)."""
             if 0:
                 print(sec.text)
                 print('_' * 80)
-            paras = tuple(sec.paragraphs)
+            paras = tuple(sec.paragraphs)[4:5]
+            print('PARA', len(paras))
             if 1:
                 para: AmrFeatureDocument
-                for para in it.islice(paras, 1):
+                for para in paras:
                     print(para.text)
                     print()
                     if 1:
                         print(para.amr.graph_string)
                         print('_' * 80)
-            if 0:
-                for t in paras[0][1]:
-                    print(t, t.cui_, t.ent_, t.is_concept)
+                    if 1:
+                        for t in para.token_iter():
+                            print(t, t.cui_, t.ent_, t.is_concept, t.cui_)
             if 0:
                 dumper.clean()
                 dumper.overwrite_dir = False
@@ -184,10 +187,13 @@ history of diastolic CHF (EF\n65% 1/10)."""
                     dumper(para.amr, f'p-{pix}')
 
     def _tmp(self):
-        pred = self.config_factory('mimicsid_client_section_predictor')
+        pred = self.config_factory('msid_client_section_predictor')
         pred.tmp()
         #tmp = self.config_factory('mimic_note_factory')
         #print(type(tmp), type(tmp.mimic_pred_note_section), type(tmp.section_predictor))
+
+    def _tmp(self):
+        self.config_factory('amr_base_doc_parser').write()
 
     def proto(self, run: int = 4):
         """Used for rapid prototyping."""
