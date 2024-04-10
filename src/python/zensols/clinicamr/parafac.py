@@ -4,12 +4,14 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Dict, Sequence, Iterable
+from typing import Dict, Tuple, Sequence, Iterable
 from dataclasses import dataclass, field
 import logging
 from zensols.persist import Stash
-from zensols.nlp import FeatureDocument, FeatureDocumentDecorator
-from zensols.amr import AmrError, AmrSentence, AmrFeatureDocument
+from zensols.nlp import LexicalSpan, FeatureDocument, FeatureDocumentDecorator
+from zensols.amr import (
+    AmrError, AmrSentence, AmrFeatureSentence, AmrFeatureDocument
+)
 from zensols.amr.annotate import AnnotationFeatureDocumentParser
 from zensols.mimic import ParagraphFactory, Section
 
@@ -49,16 +51,33 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     exist.
 
     """
-    def _add_id(self, pid: str, fdoc: AmrFeatureDocument):
+    add_is_header: bool = field(default=True)
+    """Whether or not to add the ``is_header`` AMR metadata indicating if the
+    sentence is part of one of the section headers.
+
+    """
+    def _add_id(self, pid: str, doc: AmrFeatureDocument):
         did: str = 'MIMIC3_' + pid.replace('-', '_')
         sent: AmrSentence
-        for sid, sent in enumerate(fdoc.amr.sents):
+        for sid, sent in enumerate(doc.amr.sents):
             meta: Dict[str, str] = sent.metadata
             if 'id' not in meta:
                 meta['id'] = f'{did}.{sid}'
             sent.metadata = meta
 
-    def _get_doc(self, pid: str, para: FeatureDocument) -> AmrFeatureDocument:
+    def _add_is_header(self, sec: Section, sent: AmrFeatureSentence):
+        hspans: Tuple[LexicalSpan, ...] = ()
+        if len(sec.header_spans) > 0:
+            off: int = sec.header_spans[0].begin
+            hspans = tuple(map(
+                lambda hs: LexicalSpan(off - hs[0], off - hs[1]),
+                sec.header_spans))
+        is_header: bool = any(map(
+            lambda hs: sent.lexspan.overlaps_with(hs), hspans))
+        sent.amr.set_metadata('is_header', 'true' if is_header else 'false')
+
+    def _get_doc(self, pid: str, sec: Section, para: FeatureDocument) -> \
+            AmrFeatureDocument:
         fdoc: AmrFeatureDocument = self.stash.load(pid)
         if fdoc is None:
             fdoc = self.amr_annotator.annotate(para)
@@ -67,6 +86,9 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
                 dec.decorate(fdoc)
             if self.add_id:
                 self._add_id(pid, fdoc)
+            if self.add_is_header:
+                for s in fdoc:
+                    self._add_is_header(sec, s)
             self.stash.dump(pid, fdoc)
         return fdoc
 
@@ -76,7 +98,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         para: FeatureDocument
         for pix, para in enumerate(paras):
             try:
-                doc = self._get_doc(f'{nid}-{sec.id}-{pix}', para)
+                doc = self._get_doc(f'{nid}-{sec.id}-{pix}', sec, para)
             except Exception as e:
                 raise AmrError(f'Could not parse AMR for <{para.text}>') from e
             yield doc

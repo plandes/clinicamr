@@ -139,7 +139,7 @@ history of diastolic CHF (EF\n65% 1/10)."""
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import AmrFeatureDocument
 
-        #self._clear()
+        self._clear()
         dumper = self.config_factory('amr_dumper')
         hadm_id: str = '134891'
         #hadm_id: str = '124656'
@@ -155,32 +155,39 @@ history of diastolic CHF (EF\n65% 1/10)."""
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
         if 0:
-            #print(ds_note.text)
             ds_note.write()
             return
-        sec: Section = ds_note.sections_by_name['hospital-course'][0]
-        #sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
+        #sec: Section = ds_note.sections_by_name['hospital-course'][0]
+        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
         #sec: Section = ds_note.sections_by_name['physical-examination'][0]
-        import itertools as it
+        if 0:
+            print(sec.headers)
+            print(sec.body)
+            return
         for sec in [sec]:
             #it.islice(ds_note.sections.values(), 1):
             if 0:
                 print(sec.text)
                 print('_' * 80)
-            paras = tuple(sec.paragraphs)[4:5]
-            print('PARA', len(paras))
+                continue
+            paras = tuple(sec.paragraphs)
+            print('num paragraphs:', len(paras))
             if 1:
                 para: AmrFeatureDocument
                 for para in paras:
                     print(para.text)
                     print()
                     if 1:
+                        for s in para:
+                            print(s.amr.graph_string)
+                            print()
+                    if 0:
                         print(para.amr.graph_string)
                         print('_' * 80)
-                    if 1:
+                    if 0:
                         for t in para.token_iter():
                             print(t, t.cui_, t.ent_, t.is_concept, t.cui_)
-            if 0:
+            if 1:
                 dumper.clean()
                 dumper.overwrite_dir = False
                 for pix, para in enumerate(paras):
