@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ClinicAmrParagraphFactory(ParagraphFactory):
-    """Parse paragraph AMR graphs by using the super class paragraph factory.
-    Then each document is given an AMR graph using a
+    """Parse paragraph AMR graphs by using the the :obj:`delegate` paragraph
+    factory.  Then each document is given an AMR graph using a
     :class:`~zensols.amr.doc.AmrDocument` at the document level and a
     :class:`~zensols.amr.sent.AmrSentence` at the sentence level, which are
     cached using a :class:`~zensols.persist.Stash`.
