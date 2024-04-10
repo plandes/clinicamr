@@ -105,48 +105,21 @@ class PrototypeApplication(object):
     def _clear(self):
         self.config_factory('clear_cli').clear()
 
-    def _test_parse(self, clear_data: bool = True,
-                    print_toks: bool = True,
-                    dump: bool = True):
-        from zensols.amr import AmrFeatureDocument
-
-        self._clear()
-        sent = """58 y/o M with multiple myeloma s/p chemo and auto SCT [**4-27**]
-presenting with acute onset of CP and liver failure"""
-        sent = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
-history of diastolic CHF (EF\n65% 1/10)."""
-        sent = 'He was diagnosed with kidney failure'
-        parser = self.app.doc_parser
-        #self.config_factory.config['amr_anon_doc_parser'].write()
-        #parser = self.config_factory('camr_medical_doc_parser')
-        #parser = self.config_factory('amr_anon_doc_parser')
-        #parser = self.config_factory('mednlp_combine_doc_parser')
-        #parser = self.config_factory('mednlp_doc_parser')
-        #parser = self.config_factory('camr_medical_doc_parser')
-        doc: AmrFeatureDocument = parser(sent)
-        if print_toks:
-            for i, t in enumerate(doc.tokens):
-                print(f'<{i}/{t.i}/{t.i_sent}>: <{t.norm}/{t.text}>, <{t.ent_} ({t.cui_})>')
-            print('_' * 40)
-        doc.amr.write()
-        if dump:
-            dumper = self.config_factory('amr_dumper')
-            dumper.render(doc.amr)
-
-    def _test_paragraphs(self):
+    def _tmp(self):
         from typing import Dict
         from zensols.mimic import Section, Note, HospitalAdmission
         from zensols.mimic.regexnote import DischargeSummaryNote
-        from zensols.amr import AmrFeatureDocument
+        from zensols.amr import Dumper, AmrFeatureDocument
 
-        self._clear()
-        dumper = self.config_factory('amr_dumper')
-        hadm_id: str = '134891'
-        #hadm_id: str = '124656'
-        hadm_id: str = '151608'
+        hadm_id: str = '134891'  # human annotated
+        #hadm_id: str = '151608'  # model annotated
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
-        #stash: Stash = self.config_factory('camr_mimic_resources').corpus.hospital_adm_stash
+        dumper: Dumper = self.config_factory('amr_dumper')
         adm: HospitalAdmission = stash[hadm_id]
+        if 0:
+            for note in adm.notes:
+                print(note.row_id, note.category, note.section_annotator_type)
+            return
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
         if len(ds_notes) == 0:
@@ -157,21 +130,17 @@ history of diastolic CHF (EF\n65% 1/10)."""
         if 0:
             ds_note.write()
             return
-        #sec: Section = ds_note.sections_by_name['hospital-course'][0]
         sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
-        #sec: Section = ds_note.sections_by_name['physical-examination'][0]
         if 0:
             print(sec.headers)
             print(sec.body)
             return
         for sec in [sec]:
-            #it.islice(ds_note.sections.values(), 1):
             if 0:
                 print(sec.text)
                 print('_' * 80)
                 continue
             paras = tuple(sec.paragraphs)
-            print('num paragraphs:', len(paras))
             if 1:
                 para: AmrFeatureDocument
                 for para in paras:
@@ -182,30 +151,15 @@ history of diastolic CHF (EF\n65% 1/10)."""
                             print(s.amr.graph_string)
                             print()
                     if 0:
-                        print(para.amr.graph_string)
-                        print('_' * 80)
-                    if 0:
                         for t in para.token_iter():
                             print(t, t.cui_, t.ent_, t.is_concept, t.cui_)
-            if 1:
+            if 0:
                 dumper.clean()
                 dumper.overwrite_dir = False
                 for pix, para in enumerate(paras):
                     dumper(para.amr, f'p-{pix}')
 
-    def _tmp(self):
-        pred = self.config_factory('msid_client_section_predictor')
-        pred.tmp()
-        #tmp = self.config_factory('mimic_note_factory')
-        #print(type(tmp), type(tmp.mimic_pred_note_section), type(tmp.section_predictor))
-
-    def _tmp(self):
-        self.config_factory('amr_base_doc_parser').write()
-
-    def proto(self, run: int = 4):
+    def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
-         3: self._test_parse,
-         4: self._test_paragraphs,
-         5: self.app.generate,
          }[run]()
