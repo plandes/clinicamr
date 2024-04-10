@@ -20,6 +20,12 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
+# install dependencies need by the the models (both training and inference)
+.PHONY:			modeldeps
+modeldeps:
+			$(PIP_BIN) install $(PIP_ARGS) \
+				-r $(PY_SRC)/requirements-model.txt --no-deps
+
 # plot a sentence
 .PHONY:			plot
 plot:
