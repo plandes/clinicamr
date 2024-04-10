@@ -16,26 +16,6 @@ amr_base_doc_parser:
 # are not perturbed by multi-word named entities
 mednlp_combine_biomed_medcat_doc_parser:
   delegate: 'instance: amr_base_doc_parser'
-  # yield_features: >-
-  #   eval({'import': ['zensols.nlp as n', 'zensols.mednlp as m']}):
-  #     list(m.MedicalFeatureToken.FEATURE_IDS |
-  #     {'ent_', 'ent', 'ent_iob', 'ent_iob_', 'mimic_', 'onto_'})
-
-# amr_base_doc_parser:
-#   token_feature_ids: >-
-#     eval({'import': ['zensols.nlp as n']}):
-#       (n.FeatureToken.FEATURE_IDS | {'mimic_'})
-
-# use scispacy NER model
-# mednlp_biomed_parser:
-#   model_name: en_ner_bionlp13cg_md
-
-# medical section segmentation
-# mimicsid_section_predictor:
-#   section_filter_type: >-
-#     eval({'import': ['zensols.mimicsid as m']}):
-#       m.SectionFilterType.keep_non_empty
-
 
 # remove newlines from sentences
 camr_rm_space_decorator:
@@ -108,6 +88,9 @@ camr_paragraph_factory:
   amr_annotator: 'instance: ${amr_default:doc_parser}'
   stash: 'instance: camr_paragraph_stash'
 
+# mimic_chunker_paragraph_factory:
+#   include_section_headers: true
+
 
 ## Application objects
 #
@@ -125,13 +108,3 @@ camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
-
-
-
-## tmp
-# msid_client_section_predictor:
-#   class_name: zensols.clinicamr.tmp.DecoratorNoteFactory
-#   delegate: 'application(zensols.mimicsid): mimic_note_factory'
-
-# camr_mimic_resources:
-#   corpus: 'application(zensols.mimicsid): mimic_corpus'
