@@ -33,7 +33,7 @@ camr_reindex_decorator:
 camr_token_cui_doc_decorator:
   class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
   use_sent_index: false
-  role: :cui-id
+  name: cui-id
   feature_id: cui_
   feature_format: '{cui_}'
 
@@ -41,7 +41,7 @@ camr_token_cui_doc_decorator:
 camr_token_cui_desc_doc_decorator:
   class_name: ${camr_token_cui_doc_decorator:class_name}
   use_sent_index: ${camr_token_cui_doc_decorator:use_sent_index}
-  role: :cui-desc
+  name: cui-desc
   feature_id: cui_
   feature_format: '{pref_name_}'
 

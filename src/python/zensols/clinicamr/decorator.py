@@ -3,9 +3,9 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Set, Tuple
+from typing import List
 from dataclasses import dataclass, field
-from penman import Graph
+from penman.graph import Graph, Triple, Attribute
 from zensols.nlp import FeatureToken
 from zensols.amr.docparser import TokenAnnotationFeatureDocumentDecorator
 
@@ -24,9 +24,8 @@ class ClinicTokenAnnotationFeatureDocumentDecorator(
             return self.feature_format.format(**tok.asdict())
         return getattr(tok, self.feature_id)
 
-    def _annotate_token(self, tok: FeatureToken, source: str,
-                        feature_triples: Set[Tuple[str, str, str]],
-                        graph: Graph):
+    def _annotate_token(self, tok: FeatureToken, source: Triple,
+                        feature_triples: List[Attribute], graph: Graph):
         # when we find a concept, add in the CUI if the token is a
         # concept
         if tok.is_concept:
