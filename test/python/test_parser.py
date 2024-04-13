@@ -9,8 +9,7 @@ class TestParser(TestBase):
         DEBUG = 0
         text = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
 history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
-        doc_parser = self.fac('resources').doc_parser
-        doc: FeatureDocument = doc_parser(text)
+        doc: FeatureDocument = self.doc_parser(text)
         if DEBUG:
             print(doc.norm)
             for i, t in enumerate(doc.token_iter()):

@@ -20,7 +20,8 @@ History of Present Illness: 58 y/ o M with multiple myeloma s/ p chemo and auto 
                                 :name (n3 / name
                                           :op1 "CP"))
                        :name (n1 / name
-                                 :op2 "myeloma"
+                                 :op3 "Organization"
+                                 :op2 "Health"
                                  :op1 "Present"~e.21)))
     :snt1 (o0 / organization
               :name (n0 / name
@@ -31,21 +32,20 @@ History of Present Illness: 58 y/ o M with multiple myeloma s/ p chemo and auto 
 ________________________________________
 MIMIC3_5298_3_0.1
 Pt was discharged from the oncology service yesterday, when he noticed onset of severe pleuritic chest pain.
-(a0 / and
-    :op2 (n0 / notice-01~e.11
-             :ARG1 (o0 / onset~e.12
-                       :topic (p1 / pain-01~e.17
-                                  :mod (p2 / pleuritic~e.15)
-                                  :mod (s1 / severe~e.14)
-                                  :ARG1 (c1 / chest~e.16)))
-             :ARG0 p0)
-    :op1 (c0 / charge-01
-             :ARG3~e.3 (s0 / service~e.6
-                           :mod (o1 / oncology~e.5))
-             :ARG2 (y0 / yesterday~e.7)
-             :ARG1 (p0 / person
-                       :name (n1 / name
-                                 :op1 "Pt"))))
+(d0 / discharge-01~e.2
+    :time~e.9,10 (n0 / notice-01~e.11
+                     :ARG0 (p0 / person
+                               :name (n1 / name
+                                         :op1 "Pt"))
+                     :ARG1 (o1 / onset~e.12
+                               :domain (p1 / pain-01~e.17
+                                           :ARG1 (p2 / pleuritic~e.15)
+                                           :mod (s1 / severe~e.14)
+                                           :mod (c0 / chest~e.16))))
+    :time~e.9,10 (y0 / yesterday~e.7)
+    :ARG2 (s0 / service~e.6
+              :mod (o0 / oncology~e.5))
+    :ARG1 p0)
 ________________________________________
 MIMIC3_5298_3_0.2
 Stated this started in the setting of a new medication for nausea started by his oncologist earlier today (Zyprexa).
@@ -91,16 +91,14 @@ No cough, dysuria, oliguria.
 (h0 / have-polarity-91
     :ARG2 -
     :ARG1 (a0 / and
-              :op3 (d2 / disease
-                       :name (n2 / name
-                                 :op1 "oliguria"~e.5
-                                 :cui-id "C0028961"))
+              :op3 (o0 / oliguria~e.5
+                       :cui-id "C0028961")
               :op2 (d1 / disease
                        :name (n1 / name
                                  :op1 "dysuria"~e.3))
               :op1 (d0 / disease
                        :name (n0 / name
-                                 :op1 "dysuria"~e.3))))
+                                 :op1 "cough"~e.1))))
 ________________________________________
 MIMIC3_5298_3_0.7
 He states he has never had easy bleeding or bruising and denies history of GI bleeding other than small amounts due to hemhorroids.
@@ -114,7 +112,7 @@ He states he has never had easy bleeding or bruising and denies history of GI bl
                                                          :ARG1-of (c0 / cause-01~e.20
                                                                       :ARG0 (d2 / disease
                                                                                 :name (n1 / name
-                                                                                          :op1 "hemhorroids"~e.22)))
+                                                                                          :op1 "hemhorroid"~e.22)))
                                                          :mod (s1 / small~e.18)))))
              :ARG0 h1)
     :op1 (s0 / state-01~e.1
@@ -144,67 +142,59 @@ _______________________________________________________________________________
 MIMIC3_5298_3_1.0
 In the ED, initial vs were: T 99.3P 109BP 123/75 R O2 sat.
 (a0 / and
-    :op3 (l0 / location
-             :name (n0 / name
-                       :op1 "ED"))
+    :op3 (t1 / thing
+             :ARG1-of (n0 / name
+                          :op1 "ED")
+             :mod (i1 / initial~e.4)
+             :mod (a3 / aircraft-type
+                      :name (n3 / name
+                                :op2 "O2"
+                                :op1 "R")))
     :op2 (s0 / sit-01
-             :ARG1 (a1 / aircraft-type))
+             :ARG2 (a2 / aircraft-type
+                       :name (n2 / name
+                                 :op2 "109BP"
+                                 :op1 "R"))
+             :ARG1 (a1 / aircraft-type
+                       :name (n1 / name
+                                 :op2 "109BP"
+                                 :op1 "99.3P"~e.9)))
     :op1 (t0 / thing
-             :ARG2-of (v1 / versus
-                          :op2 (n1 / name
-                                   :op1 "ED")
-                          :op2 (a5 / aircraft-type
-                                   :name (n5 / name))
-                          :op2 (a4 / aircraft-type
-                                   :name (n4 / name
-                                             :op2 "O2"
-                                             :op1 "R")))
-             :ARG1-of (v0 / versus
-                          :op2 (a3 / aircraft-type
-                                   :name (n3 / name
-                                             :op2 "109BP"
-                                             :op1 "R"))
-                          :op1 (a2 / aircraft-type
-                                   :name (n2 / name
-                                             :op2 "109BP"
-                                             :op1 "99.3P"~e.9)))
-             :mod (i0 / initial~e.4)))
+             :ARG1-of (f0 / factor-01)
+             :mod (i0 / initial)))
 ________________________________________
 MIMIC3_5298_3_1.1
 Had CTA showing PE predominantly in L main PA w/ a small non-occlusive strand in the R main PA, and extension into LLL, LUL, and lingular branches.
-(h0 / have-03
+(h0 / have-03~e.4
     :ARG1 (a0 / and~e.22
               :op2 (e0 / extend-01~e.23
                        :ARG4 (a1 / and~e.22
-                                 :op3 (b1 / branches
-                                          :mod (n3 / name
-                                                   :op1 "R")
-                                          :part (b2 / branches~e.31
-                                                    :mod (l1 / lingular~e.30)))
-                                 :op1 (s1 / strand~e.15
-                                          :location~e.5 (e3 / enzyme
+                                 :op3 (b2 / branch~e.31
+                                          :mod "lingular"~e.30
+                                          :mod (l1 / lingular~e.30))
+                                 :op3 (b1 / branch~e.31)))
+              :op2 (s0 / strand
+                       :location~e.5 (s2 / strand~e.15
+                                         :location~e.16 (b0 / branch~e.31)
+                                         :location~e.16 (e4 / enzyme
                                                             :name (n4 / name
                                                                       :op1 "LUL"))
-                                          :location~e.5 (s2 / small~e.11)
-                                          :ARG0-of (e2 / exclusive-02
-                                                       :polarity~e.12 -~e.12)
-                                          :mod (m0 / main~e.19))))
-              :op1 (b0 / be-located-at-91
-                       :ARG2 (l0 / location
-                                 :location~e.16 (c0 / country-region
-                                                    :name (n2 / name
-                                                              :op3 "PA"
-                                                              :op2 "main"
-                                                              :op1 "R"))
-                                 :name (n1 / name
-                                           :op2 "PA"
-                                           :op1 "L"))
-                       :ARG1-of (p0 / predominate-01~e.4)
-                       :ARG1 (e1 / enzyme
-                                 :ARG0-of (s0 / show-01~e.2
-                                              :ARG1 (p1 / protein))
-                                 :name (n0 / name
-                                           :op1 "CTA")))))
+                                         :ARG0-of (e3 / exclusive-02
+                                                      :polarity~e.12 -~e.12)
+                                         :location~e.16 (e2 / enzyme
+                                                            :name (n3 / name
+                                                                      :op1 "L"))
+                                         :location~e.16 (s3 / small~e.11))
+                       :location~e.5 (e1 / enzyme
+                                         :name (n1 / name
+                                                   :op1 "PA")))
+              :op1 (l0 / location
+                       :ARG0-of (s1 / show-01~e.2
+                                    :ARG1 (t0 / thing
+                                              :name (n2 / name
+                                                        :op2 "PA")))
+                       :name (n0 / name
+                                 :op1 "CTA"))))
 ________________________________________
 MIMIC3_5298_3_1.2
 2. smaller PE in the RML and RUL branches.
@@ -229,16 +219,15 @@ ________________________________________
 MIMIC3_5298_3_1.3
 3. flattening of ventricular septum but no bowing into the LV to suggest R heart strain.
 (s0 / swell-01
-    :li 3~e.0
     :polarity~e.6,7 -~e.7
     :ARG0-of (s2 / suggest-01~e.13
                  :ARG1 (d0 / disease
-                           :part-of~e.3 (h0 / heart~e.15)
+                           :domain (h0 / heart~e.15)
                            :name (n0 / name
-                                     :op2 "LV"
-                                     :op1 "R")))
+                                     :op1 "LV")))
     :ARG1 (s1 / septum~e.5
-              :mod (v0 / ventricular~e.4)))
+              :mod (v0 / ventricular~e.4))
+    :li 3~e.0)
 ________________________________________
 MIMIC3_5298_3_1.4
 Patient was given a dose of cefepime, morphine for pain, and started on a heparin gtt.

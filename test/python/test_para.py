@@ -11,10 +11,6 @@ from util import TestBase
 
 logger = logging.getLogger(__name__)
 
-if 1:
-    logging.basicConfig(level=logging.INFO)
-    logging.getLogger('zensols.nlp').setLevel(logging.INFO)
-
 
 class TestParagraph(TestBase):
     """The medical parsers normalize out the MIMIC-III tokens, but that happens
@@ -29,7 +25,8 @@ class TestParagraph(TestBase):
     """
     def _validate_db_exists(self) -> bool:
         self._config_logging()
-        mng: SqliteConnectionManager = self.config_factory('mimic_sqlite_conn_manager')
+        mng: SqliteConnectionManager = \
+            self.config_factory('mimic_sqlite_conn_manager')
         if not mng.db_file.exists():
             logger.warning('no MIMIC-III database to test with--skipping')
             return False
@@ -51,32 +48,6 @@ class TestParagraph(TestBase):
             print('_' * 79, file=writer)
 
     def test_parse(self):
-        from zensols.nlp import FeatureDocumentParser
-        FeatureDocumentParser._LOG_FORMAT = 'parse[{name}/{cls.__name__}]: {text}'
-
-        if 0:
-            stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
-            parser = stash.doc_stash.factory.doc_parser
-            print(type(parser))
-            doc = parser('He died of liver failure.')
-            doc.write()
-            for t in doc.token_iter():
-                print(t, t.cui_, t.is_concept)
-            return
-        if 0:
-            #parser = self.doc_parser
-            parser = self.config_factory('mimic_note_event_persister_parser_stash').doc_parser
-            print(parser, type(parser))
-            doc = parser('He died of liver failure.')
-            doc.write()
-            for t in doc.token_iter():
-                print(t, t.cui_, t.is_concept)
-            return
-        if 0:
-            parser = self.config_factory('mimic_note_event_persister_parser_stash')
-            print(parser.doc_parser)
-            return
-
         DEBUG: bool = 0
         WRITE: bool = 0
         hadm_id: str = '134891'
