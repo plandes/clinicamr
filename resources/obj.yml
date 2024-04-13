@@ -14,6 +14,12 @@ amr_base_doc_parser:
 
 # use the AMR base doc parser since it does not embed entities so token indexes
 # are not perturbed by multi-word named entities
+mednlp_combine_biomed_doc_parser:
+  delegate: 'instance: amr_base_doc_parser'
+
+mednlp_combine_medcat_doc_parser:
+  delegate: 'instance: amr_base_doc_parser'
+
 mednlp_combine_biomed_medcat_doc_parser:
   delegate: 'instance: amr_base_doc_parser'
 

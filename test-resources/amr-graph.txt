@@ -1,4 +1,4 @@
-# ::snt Mr.KNOWNLASTNAME from the United States is an 87 yo male with a history of diastolic CHF (EF 65% 1/10) and kidney failure.
+# ::snt Mr. KNOWNLASTNAME from the United States is an 87 yo male with a history of diastolic CHF (EF 65% 1/10) and kidney failure.
 # ::tokens ["Mr.", "KNOWNLASTNAME", "from", "the", "United", "States", "is", "an", "87", "yo", "male", "with", "a", "history", "of", "diastolic", "CHF", "(", "EF", "65", "%", "1/10", ")", "and", "kidney", "failure", "."]
 # ::ner_tags ["O", "O", "O", "GPE", "GPE", "GPE", "O", "O", "CARDINAL", "O", "O", "O", "O", "O", "O", "O", "ORG", "O", "O", "PERCENT", "PERCENT", "O", "O", "O", "O", "O", "O"]
 # ::ner_iob ["O", "O", "O", "B", "I", "I", "O", "O", "B", "O", "O", "O", "O", "O", "O", "O", "B", "O", "O", "B", "I", "O", "O", "O", "O", "O", "O"]
