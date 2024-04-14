@@ -161,48 +161,7 @@ class PrototypeApplication(object):
                     dumper(para.amr, f'p-{pix}')
 
     def _tmp(self):
-        from typing import Dict
-        from zensols.mimic import Section, Note, HospitalAdmission
-        from zensols.mimic.regexnote import DischargeSummaryNote
-        from zensols.amr import Dumper, AmrFeatureDocument
-        from zensols.nlp import FeatureDocumentParser
-        FeatureDocumentParser._LOG_FORMAT = 'parse[{name}/{cls.__name__}]: {text}'
-
-        if 0:
-            self.config_factory.config['mimic_note_event_persister_parser_stash'].write()
-
-        self._clear()
-        hadm_id: str = '134891'
-        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        if 0:
-            ds_note = adm['5298']
-        else:
-            by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
-            ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
-            ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
-            ds_note: Note = ds_notes[0]
-        secs: Tuple[Section] = ds_note.sections_by_name['history-of-present-illness']
-        sec: Section = secs[0]
-        if 0:
-            for s in sec.doc:
-                print(s)
-                for t in s.tokens:
-                    c = t.clone()
-                    assert hasattr(t, 'is_concept')
-                    print(t, len(t._detatched_feature_ids))
-                    if not hasattr(c, 'is_concept'):
-                        print(t)
-                    assert hasattr(c, 'is_concept')
-            return
-        if 0:
-        #for sec in ds_note.sections.values():
-            doc = sec.doc
-            for t in doc.token_iter():
-                print(t, t.ent_, t.cui_, t.is_concept)
-        #return
-        paras: Tuple[AmrFeatureDocument] = tuple(sec.paragraphs)
-        paras[0].write()
+        print('here')
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
