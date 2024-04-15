@@ -43,16 +43,4 @@ generate:
 # get DSProv annotated admissions by note count per admission
 .PHONY:			admbycount
 admbycount:
-			src/bin/adm-by-count.py
-
-# push graphs to NLPDeep server for annotation lookups
-.PHONY:			push
-push:
-			hostcon push -n nlproot --delete \
-				--localdir '$(HOME)/view/nlp/med/clinicamr/amr-plot/' \
-				--remotedir view/rgh/apache-amr/site/proofing
-
-# stop the plots
-.PHONY:			stop
-stop:
-			ps -eaf | grep clinic | grep -v grep | awk '{print $$2}' | xargs kill
+			./src/bin/adm-by-count.py
