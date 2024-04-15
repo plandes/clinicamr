@@ -1,10 +1,16 @@
-# Medical AMR generation
+# Clincial Domain Abstract Meaning Representation Graphs
 
 [![PyPI][pypi-badge]][pypi-link]
 [![Python 3.9][python39-badge]][python39-link]
 [![Build Status][build-badge]][build-link]
 
-Clincial Domain Abstract Meaning Representation Graphs
+This package parses clinical notes in to Abstract Meaning Representation Graphs
+(AMR).  It uses the following packages to create the graphs and features:
+
+* THYME [AMR SPRING parser] to create the graphs
+* [MedCAT] for entity linking `CUI` attribution nodes
+* [MedSecId] for the clinical note sectioning
+* [Zensols Natural Language Parsing] for language parsing and feature creation
 
 
 ## Documentation
@@ -16,12 +22,10 @@ available.
 
 ## Obtaining
 
-The easiest way to install the command line program is via the `pip` installer:
+The library can be installed with pip from the [pypi] repository:
 ```bash
 pip3 install zensols.clinicamr
 ```
-
-Binaries are also available on [pypi].
 
 
 ## Changelog
@@ -69,3 +73,6 @@ Copyright (c) 2022 Paul Landes
 [build-link]: https://github.com/plandes/clinicamr/actions
 
 [AMR SPRING parser]: https://github.com/SapienzaNLP/spring
+[MedCAT]: https://github.com/CogStack/MedCAT
+[MedSecId]: https://github.com/plandes/mimicsid
+[Zensols Natural Language Parsing]: https://github.com/plandes/nlparse

@@ -111,7 +111,9 @@ class PrototypeApplication(object):
         from zensols.mimic.regexnote import DischargeSummaryNote
         from zensols.amr import Dumper, AmrFeatureDocument
 
-        #self._clear()
+        if 0:
+            self._clear()
+            return
         hadm_id: str = '134891'  # human annotated
         #hadm_id: str = '151608'  # model annotated
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
@@ -160,11 +162,7 @@ class PrototypeApplication(object):
                 for pix, para in enumerate(paras):
                     dumper(para.amr, f'p-{pix}')
 
-    def _tmp(self):
-        print('here')
-
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: self._tmp,
-         1: self._test_paras,
+        {0: self._test_paras,
          }[run]()
