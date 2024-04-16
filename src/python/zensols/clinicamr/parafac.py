@@ -47,7 +47,7 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
 
     """
     id_format: str = field(
-        default='CLINIC_{note_id}_{sec_id}_{para_id}.{sent_id}')
+        default='MIMIC3_{note_id}_{sec_id}_{para_id}.{sent_id}')
     """Whether to add the ``id`` AMR metadata field if it does not already
     exist.
 
