@@ -161,8 +161,14 @@ class PrototypeApplication(object):
                 dumper.overwrite_dir = False
                 for pix, para in enumerate(paras):
                     dumper(para.amr, f'p-{pix}')
+    def _tmp(self):
+        from zensols.clinicamr.corpus import CorpusFactoryStash
+        stash = self.config_factory('camr_corpus_factory_stash')
+        # human annotated
+        stash.load('134891')
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
-        {0: self._test_paras,
+        {0: self._tmp,
+         1: self._test_paras,
          }[run]()

@@ -122,3 +122,7 @@ camr_parser_spring:
   class_name: zensols.clinicamr.spring.SpringAmrParser
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
+
+camr_corpus_factory_stash:
+  class_name: zensols.clinicamr.corpus.CorpusFactoryStash
+  mimic_corpus: 'instance: mimic_corpus'
