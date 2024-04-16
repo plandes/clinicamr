@@ -46,7 +46,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     document.
 
     """
-    add_id: bool = field(default=True)
+    id_format: str = field(
+        default='CLINIC_{note_id}_{sec_id}_{para_id}.{sent_id}')
     """Whether to add the ``id`` AMR metadata field if it does not already
     exist.
 
@@ -56,13 +57,18 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     sentence is part of one of the section headers.
 
     """
-    def _add_id(self, pid: str, doc: AmrFeatureDocument):
-        did: str = 'MIMIC3_' + pid.replace('-', '_')
+    def _add_id(self, nid: int, sec: Section, pix: int,
+                doc: AmrFeatureDocument):
         sent: AmrSentence
-        for sid, sent in enumerate(doc.amr.sents):
+        for six, sent in enumerate(doc.amr.sents):
             meta: Dict[str, str] = sent.metadata
             if 'id' not in meta:
-                meta['id'] = f'{did}.{sid}'
+                meta['id'] = self.id_format.format(
+                    note_id=nid,
+                    sec_id=sec.id,
+                    sec_name=sec.name,
+                    para_id=pix,
+                    sent_id=six)
             sent.metadata = meta
 
     def _add_is_header(self, sec: Section, sent: AmrFeatureSentence):
@@ -76,16 +82,18 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
             lambda hs: sent.lexspan.overlaps_with(hs), hspans))
         sent.amr.set_metadata('is_header', 'true' if is_header else 'false')
 
-    def _get_doc(self, pid: str, sec: Section, para: FeatureDocument) -> \
+    def _get_doc(self, sec: Section, pix: int, para: FeatureDocument) -> \
             AmrFeatureDocument:
+        nid: int = sec.container.row_id
+        pid: str = f'{nid}-{sec.id}-{pix}'
         fdoc: AmrFeatureDocument = self.stash.load(pid)
         if fdoc is None:
             fdoc = self.amr_annotator.annotate(para)
             dec: FeatureDocumentDecorator
             for dec in self.document_decorators:
                 dec.decorate(fdoc)
-            if self.add_id:
-                self._add_id(pid, fdoc)
+            if self.id_format is not None:
+                self._add_id(nid, sec, pix, fdoc)
             if self.add_is_header:
                 for s in fdoc:
                     self._add_is_header(sec, s)
@@ -93,12 +101,11 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         return fdoc
 
     def create(self, sec: Section) -> Iterable[FeatureDocument]:
-        nid: int = sec.container.row_id
         paras: Iterable[FeatureDocument] = self.delegate.create(sec)
         para: FeatureDocument
         for pix, para in enumerate(paras):
             try:
-                doc = self._get_doc(f'{nid}-{sec.id}-{pix}', sec, para)
+                doc = self._get_doc(sec, pix, para)
             except Exception as e:
                 raise AmrError(f'Could not parse AMR for <{para.text}>') from e
             yield doc

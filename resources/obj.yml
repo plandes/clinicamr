@@ -65,13 +65,13 @@ camr_medical_doc_parser:
 amr_anon_doc_parser:
   delegate: 'instance: camr_medical_doc_parser'
   condition:
-    if: 'eval: ${clinicamr_default:map_cuis}'
+    if: 'eval: ${clinicamr_default:annotate_features}'
     then:
       document_decorators: >-
         instance: tuple:
+          amr_token_pos_doc_decorator,
           camr_token_cui_doc_decorator
 #          camr_token_cui_desc_doc_decorator
-#          amr_token_ent_doc_decorator
     else:
       document_decorators: []
 
