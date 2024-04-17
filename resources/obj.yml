@@ -11,6 +11,9 @@ amr_base_doc_parser:
   token_feature_ids: >-
     eval({'import': ['zensols.nlp as n']}):
       (n.FeatureToken.FEATURE_IDS | {'mimic_', 'onto_'})
+  # copy document indexes so MIMIC parsed sections, and thus paragraphs, and
+  # later reindex back into the note text
+  document_decorators: 'instance: tuple: camr_cp_idx_decorator'
 
 # use the AMR base doc parser since it does not embed entities so token indexes
 # are not perturbed by multi-word named entities
@@ -34,6 +37,11 @@ camr_reindex_decorator:
   update_indexes: false
   update_entity_spans: false
   reindex: true
+
+# copy character offset of the token within the parent document before re-index
+camr_cp_idx_decorator:
+  class_name: zensols.nlp.decorate.CopyFeatureTokenContainerDecorator
+  feature_ids: [[idx, idx_abs]]
 
 # adds :cui-id CUI attributes
 camr_token_cui_doc_decorator:
@@ -86,7 +94,7 @@ amr_token_ent_doc_decorator:
 # whether to add `is_header` for sentences in paragraphs that are section
 # headers
 mimic_chunker_paragraph_factory:
-  include_section_headers: true
+  include_section_headers: false
 
 # stash for parsed and annotated paragraphs
 camr_paragraph_stash:
@@ -126,3 +134,15 @@ camr_parser_spring:
 camr_corpus_factory_stash:
   class_name: zensols.clinicamr.corpus.CorpusFactoryStash
   mimic_corpus: 'instance: mimic_corpus'
+  filter_summary_sections:
+    # physicians
+    - addendum
+    - discharge-condition
+    - discharge-diagnosis
+    - discharge-disposition
+    - discharge-instructions
+    - facility
+    - hospital-course
+    # curiosity
+    - history-of-present-illness
+    - past-medical-history
