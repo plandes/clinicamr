@@ -18,7 +18,7 @@ from .domain import (
 
 
 @dataclass
-class CorpusFactoryStash(ReadOnlyStash):
+class AdmissionAmrFactoryStash(ReadOnlyStash):
     mimic_corpus: MimicCorpus = field()
     filter_summary_sections: Union[List[str], Set[str]] = field()
 

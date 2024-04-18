@@ -166,11 +166,12 @@ class PrototypeApplication(object):
                     dumper(para.amr, f'p-{pix}')
     def _tmp(self):
         #self._clear(1)
-        from zensols.clinicamr.corpus import CorpusFactoryStash
-        stash = self.config_factory('camr_corpus_factory_stash')
+        from zensols.clinicamr.adm import AdmissionAmrFactoryStash
+        stash: AdmissionAmrFactoryStash = self.config_factory('camr_adm_amr_factory_stash')
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
-        stash.load(hadm_id).write()
+        adm = stash.load(hadm_id)
+        adm.write()
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""

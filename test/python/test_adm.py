@@ -1,7 +1,7 @@
 import logging
 from io import StringIO
 from pathlib import Path
-from zensols.clinicamr.corpus import CorpusFactoryStash
+from zensols.clinicamr.adm import AdmissionAmrFactoryStash
 from zensols.clinicamr import AdmissionAmrFeatureDocument
 from util import TestBase
 
@@ -20,9 +20,9 @@ class TestAdmissionGraph(TestBase):
     def _test_adm_graph(self):
         WRITE: bool = 0
         should_file = Path('test-resources/should-graph.txt')
-        stash: CorpusFactoryStash = self.config_factory(
-            'camr_corpus_factory_stash')
-        self.assertTrue(isinstance(stash, CorpusFactoryStash))
+        stash: AdmissionAmrFactoryStash = self.config_factory(
+            'camr_adm_amr_factory_stash')
+        self.assertTrue(isinstance(stash, AdmissionAmrFactoryStash))
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
         adm: AdmissionAmrFeatureDocument = stash.load(hadm_id)

@@ -131,8 +131,8 @@ camr_parser_spring:
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
 
-camr_corpus_factory_stash:
-  class_name: zensols.clinicamr.corpus.CorpusFactoryStash
+camr_adm_amr_factory_stash:
+  class_name: zensols.clinicamr.adm.AdmissionAmrFactoryStash
   mimic_corpus: 'instance: mimic_corpus'
   filter_summary_sections:
     # physicians
