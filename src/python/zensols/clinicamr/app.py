@@ -102,8 +102,11 @@ class PrototypeApplication(object):
     config_factory: ConfigFactory = field()
     app: Application = field()
 
-    def _clear(self):
-        self.config_factory('clear_cli').clear()
+    def _clear(self, only_para: bool = False):
+        if only_para:
+            self.config_factory('camr_paragraph_factory').clear()
+        else:
+            self.config_factory('clear_cli').clear()
 
     def _test_paras(self):
         from typing import Dict
@@ -162,10 +165,12 @@ class PrototypeApplication(object):
                 for pix, para in enumerate(paras):
                     dumper(para.amr, f'p-{pix}')
     def _tmp(self):
+        #self._clear(1)
         from zensols.clinicamr.corpus import CorpusFactoryStash
         stash = self.config_factory('camr_corpus_factory_stash')
-        # human annotated
-        stash.load('134891')
+        #hadm_id: str = '134891'  # human annotated
+        hadm_id: str = '151608'  # model annotated
+        stash.load(hadm_id)
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""

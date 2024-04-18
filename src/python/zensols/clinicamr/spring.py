@@ -7,7 +7,7 @@ from typing import Tuple, Iterable
 from dataclasses import dataclass, field
 from spacy.tokens import Span
 from zensols.nlp import FeatureDocument, FeatureDocumentParser
-from zensols.amr import AmrFailure, AmrSentence
+from zensols.amr import AmrError, AmrFailure, AmrSentence
 from zensols.amr.model import AmrParser
 from zensols.amrspring import AmrPrediction, AmrParseClient
 
@@ -47,4 +47,7 @@ class SpringAmrParser(AmrParser):
                 fail = AmrFailure(message=pred.error, sent=pred.sent)
                 yield AmrSentence(fail)
             else:
-                yield AmrSentence(pred.graph, model=self.model)
+                try:
+                    yield AmrSentence(pred.graph, model=self.model)
+                except AmrError as e:
+                    yield AmrSentence(e.to_failure())

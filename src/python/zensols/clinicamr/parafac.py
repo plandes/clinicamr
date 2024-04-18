@@ -57,6 +57,9 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     sentence is part of one of the section headers.
 
     """
+    def __post_init__(self):
+        Section.FILTER_ENUMS = False
+
     def _add_id(self, nid: int, sec: Section, pix: int,
                 doc: AmrFeatureDocument):
         sent: AmrSentence
@@ -88,7 +91,12 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         pid: str = f'{nid}-{sec.id}-{pix}'
         fdoc: AmrFeatureDocument = self.stash.load(pid)
         if fdoc is None:
-            fdoc = self.amr_annotator.annotate(para)
+            cr = self.amr_annotator.coref_resolver
+            self.amr_annotator.coref_resolver = None
+            try:
+                fdoc = self.amr_annotator.annotate(para)
+            finally:
+                self.amr_annotator.coref_resolver = cr
             dec: FeatureDocumentDecorator
             for dec in self.document_decorators:
                 dec.decorate(fdoc)

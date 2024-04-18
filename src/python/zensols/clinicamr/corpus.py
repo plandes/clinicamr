@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, Dict, Iterable
+from typing import List, Tuple, Dict, Set, Iterable, Union
 from dataclasses import dataclass, field
 from zensols.persist import Stash, ReadOnlyStash
 from zensols.mimic import MimicError, Section, Note, HospitalAdmission
@@ -12,40 +12,68 @@ from zensols.mimic.regexnote import DischargeSummaryNote
 from zensols.amr import (
     AmrFeatureSentence, AmrFeatureDocument, AmrSentence, AmrDocument
 )
+from .domain import (
+    _ParagraphIndex, _SectionIndex, _NoteIndex, AdmissionAmrFeatureDocument
+)
 
 
 @dataclass
 class CorpusFactoryStash(ReadOnlyStash):
     mimic_corpus: MimicCorpus = field()
+    filter_summary_sections: Union[List[str], Set[str]] = field()
 
-    def load(self, hadm_id: str) -> AmrFeatureDocument:
-        pdocs = []
-        stash: Stash = self.mimic_corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
+    def __post_init__(self):
+        super().__post_init__()
+        if not isinstance(self.filter_summary_sections, set):
+            self.filter_summary_sections = set(self.filter_summary_sections)
+
+    def _load_note(self, note: Note, include_sections: Set[str],
+                   sents: List[AmrSentence]) -> _NoteIndex:
+        sec_ixs: List[_SectionIndex] = []
+        secs: Iterable[Section] = note.sections.values()
+        if include_sections is not None:
+            secs = filter(lambda s: s.name in include_sections, secs)
+        sec: Section
+        for sec in secs:
+            para_ixs: List[_ParagraphIndex] = []
+            para: AmrFeatureDocument
+            for para in sec.paragraphs:
+                para_begin: int = len(sents)
+                assert isinstance(para, AmrFeatureDocument)
+                assert isinstance(para.amr, AmrDocument)
+                sent: AmrFeatureSentence
+                for sent in para:
+                    assert isinstance(sent, AmrFeatureSentence)
+                    assert isinstance(sent.amr, AmrSentence)
+                    sents.append(sent)
+                para_ixs.append(_ParagraphIndex(span=(para_begin, len(sents))))
+            sec_ixs.append(_SectionIndex(sec.id, sec.name, tuple(para_ixs)))
+        return _NoteIndex(note.row_id, tuple(sec_ixs))
+
+    def _load_adm(self, adm: HospitalAdmission):
+        sents: List[AmrFeatureSentence] = []
+        notes: List[_NoteIndex] = []
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
         if len(ds_notes) == 0:
             raise MimicError(
-                f'No discharge sumamries for admission: {hadm_id}')
+                f'No discharge sumamries for admission: {adm.hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
-        for sec in [sec]:
-            paras = tuple(sec.paragraphs)
-            para: AmrFeatureDocument
-            for para in paras:
-                assert isinstance(para, AmrFeatureDocument)
-                assert isinstance(para.amr, AmrDocument)
-                print(para.text)
-                print('-')
-                for s in para:
-                    assert isinstance(s, AmrFeatureSentence)
-                    assert isinstance(s.amr, AmrSentence)
-                    print(s.norm)
-                    print()
-                print('_' * 80)
-                pdocs.append(para)
-        return para
+        notes.append(self._load_note(
+            ds_note, self.filter_summary_sections, sents))
+        for note in filter(lambda n: n.row_id != ds_note.row_id, adm.notes):
+            notes.append(self._load_note(note, None, sents))
+        return AdmissionAmrFeatureDocument(
+            sents=tuple(sents),
+            amr=AmrDocument(tuple(map(lambda s: s.amr, sents))),
+            hadm_id=adm.hadm_id,
+            _note_ixs=tuple(notes))
+
+    def load(self, hadm_id: str) -> AmrFeatureDocument:
+        stash: Stash = self.mimic_corpus.hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
+        return self._load_adm(adm)
 
     def keys(self) -> Iterable[str]:
         return self.corpus.hospital_adm_stash.keys()
