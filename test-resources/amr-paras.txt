@@ -1,34 +1,23 @@
 MIMIC3_5298_3_0.0
-History of Present Illness: 58 y/ o M with multiple myeloma s/ p chemo and auto SCT [**4-27**] presenting with acute onset of CP.
-(m0 / multi-sentence
-    :snt2 (a0 / and
-              :op3 (p0 / present-01
-                       :ARG1 (o1 / onset~e.24
-                                 :mod (a3 / acute~e.23)))
+58 y/ o M with multiple myeloma s/ p chemo and auto SCT [**4-27**] presenting with acute onset of CP.
+(p0 / present-01~e.16
+    :ARG1 (p1 / person
+              :mod (n0 / name
+                       :op2 "M"
+                       :op1 "myeloma"~e.7)
+              :mod 58~e.0
+              :mod (o0 / operate-02
+                       :mod (a2 / acute)))
+    :ARG2 (a0 / and~e.12
               :op2 (d1 / disease
-                       :ARG0-of (h0 / have-03
-                                    :ARG1 (a2 / and~e.17
-                                              :op2 (e0 / et-cetera)
-                                              :op1 (m1 / myeloma~e.12
-                                                       :mod (m2 / multiple~e.11))))
-                       :name (n2 / name
-                                 :op2 "M"
-                                 :op1 "58"~e.5)
-                       :ARG1-of (a1 / auto~e.18))
+                       :name (n1 / name
+                                 :op2 "SCT")
+                       :ARG1-of (a1 / automate-01~e.13
+                                    :degree "acute"~e.18))
               :op1 (d0 / disease
                        :mod (d2 / disease
-                                :name (n3 / name
-                                          :op1 "CP"))
-                       :name (n1 / name
-                                 :op3 "Organization"
-                                 :op2 "Health"
-                                 :op1 "Present"~e.21)))
-    :snt1 (o0 / organization
-              :name (n0 / name
-                        :op4 "Illness"
-                        :op3 "Present"
-                        :op2 "of"~e.25
-                        :op1 "History")))
+                                :name (n2 / name
+                                          :op1 "CP")))))
 ________________________________________
 MIMIC3_5298_3_0.1
 Pt was discharged from the oncology service yesterday, when he noticed onset of severe pleuritic chest pain.
