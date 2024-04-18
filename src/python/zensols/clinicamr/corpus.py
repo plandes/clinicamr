@@ -50,11 +50,12 @@ class CorpusFactoryStash(ReadOnlyStash):
             sec_ixs.append(_SectionIndex(sec.id, sec.name, tuple(para_ixs)))
         return _NoteIndex(note.row_id, tuple(sec_ixs))
 
-    def _load_adm(self, adm: HospitalAdmission):
+    def _load_adm(self, adm: HospitalAdmission) -> AdmissionAmrFeatureDocument:
         sents: List[AmrFeatureSentence] = []
         notes: List[_NoteIndex] = []
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
+        ds_hadm_ids: Set[str] = set(map(lambda n: n.row_id, ds_notes))
         if len(ds_notes) == 0:
             raise MimicError(
                 f'No discharge sumamries for admission: {adm.hadm_id}')
@@ -62,7 +63,10 @@ class CorpusFactoryStash(ReadOnlyStash):
         ds_note: Note = ds_notes[0]
         notes.append(self._load_note(
             ds_note, self.filter_summary_sections, sents))
-        for note in filter(lambda n: n.row_id != ds_note.row_id, adm.notes):
+        ant_notes: List[Note] = sorted(
+            filter(lambda n: n.row_id not in ds_hadm_ids, adm.notes),
+            key=lambda n: n.row_id)
+        for note in ant_notes:
             notes.append(self._load_note(note, None, sents))
         return AdmissionAmrFeatureDocument(
             sents=tuple(sents),
@@ -70,7 +74,7 @@ class CorpusFactoryStash(ReadOnlyStash):
             hadm_id=adm.hadm_id,
             _note_ixs=tuple(notes))
 
-    def load(self, hadm_id: str) -> AmrFeatureDocument:
+    def load(self, hadm_id: str) -> AdmissionAmrFeatureDocument:
         stash: Stash = self.mimic_corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         return self._load_adm(adm)

@@ -6,7 +6,6 @@ from zensols.persist import Stash
 from zensols.mimic import Section, Note, HospitalAdmission
 from zensols.mimic.regexnote import DischargeSummaryNote
 from zensols.amr import AmrFeatureDocument
-from zensols.db.sqlite import SqliteConnectionManager
 from util import TestBase
 
 logger = logging.getLogger(__name__)
@@ -23,15 +22,6 @@ class TestParagraph(TestBase):
     MIMIC-III masked tokens in :mod:`zensols.clinicamr.spring`.
 
     """
-    def _validate_db_exists(self) -> bool:
-        self._config_logging()
-        mng: SqliteConnectionManager = \
-            self.config_factory('mimic_sqlite_conn_manager')
-        if not mng.db_file.exists():
-            logger.warning('no MIMIC-III database to test with--skipping')
-            return False
-        return True
-
     def _test_parse(self):
         if self._validate_db_exists():
             self._test_parse()

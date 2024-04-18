@@ -5,8 +5,8 @@ from util import TestBase
 
 class TestParser(TestBase):
     def test_parse(self):
-        WRITE = 0
-        DEBUG = 0
+        WRITE: bool = 0
+        DEBUG: bool = 0
         text = """Mr. [**Known lastname **] from the United States is an 87 yo male with a
 history of diastolic CHF (EF\n65% 1/10) and kidney failure."""
         doc: FeatureDocument = self.doc_parser(text)

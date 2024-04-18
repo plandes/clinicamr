@@ -115,7 +115,8 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
             try:
                 doc = self._get_doc(sec, pix, para)
             except Exception as e:
-                raise AmrError(f'Could not parse AMR for <{para.text}>') from e
+                msg: str = f'Could not parse AMR for <{para.text}>'
+                raise AmrError(msg) from e
             yield doc
 
     def clear(self):

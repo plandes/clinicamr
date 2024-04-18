@@ -10,9 +10,7 @@ import sys
 from io import TextIOBase
 from zensols.config import Writable
 from zensols.util import APIError
-from zensols.amr import (
-    AmrFeatureSentence, AmrFeatureDocument, AmrSentence, AmrDocument
-)
+from zensols.amr import AmrFeatureSentence, AmrFeatureDocument, AmrDocument
 
 
 class ClinicAmrError(APIError):

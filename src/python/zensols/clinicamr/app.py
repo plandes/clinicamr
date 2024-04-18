@@ -170,7 +170,7 @@ class PrototypeApplication(object):
         stash = self.config_factory('camr_corpus_factory_stash')
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
-        stash.load(hadm_id)
+        stash.load(hadm_id).write()
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
