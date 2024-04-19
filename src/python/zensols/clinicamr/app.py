@@ -133,9 +133,8 @@ class PrototypeApplication(object):
         hadm_id: str = '151608'  # model annotated
         with time('loaded'):
             adm = stash.load(hadm_id)
-        if 1:
-            adm.write()
-            return
+        for s in adm.parse_fails:
+            s.write()
 
     def _tmp(self):
         pass

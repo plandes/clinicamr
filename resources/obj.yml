@@ -97,9 +97,9 @@ mimic_chunker_paragraph_factory:
   include_section_headers: false
 
 # stash for parsed and annotated paragraphs
-camr_paragraph_stash:
-  class_name: zensols.db.sqlite.SqliteDbStash
-  path: 'path: ${mimic_default:shared_data_dir}/sec-para/${amr_default:amr_parser}-${amr_default:parse_model}.sqlite3'
+camr_paragraph_cache_stash:
+  class_name: zensols.persist.DirectoryStash
+  path: 'path: ${clinicamr_default:data_dir}/para-${amr_default:amr_parser}-${amr_default:parse_model}'
 
 # parse paragraph AMR graphs by using default MIMIC-III library chunker
 # paragraph factory
@@ -110,7 +110,7 @@ camr_paragraph_factory:
   # parser; the document parsing is done by `mednlp_default:doc_parser` set in
   # `mimic_note_event_persister_parser_stash:doc_parser`
   amr_annotator: 'instance: ${amr_default:doc_parser}'
-  stash: 'instance: camr_paragraph_stash'
+  stash: 'instance: camr_paragraph_cache_stash'
   add_is_header: ${mimic_chunker_paragraph_factory:include_section_headers}
 
 

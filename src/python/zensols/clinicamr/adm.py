@@ -13,7 +13,8 @@ from zensols.amr import (
     AmrFeatureSentence, AmrFeatureDocument, AmrSentence, AmrDocument
 )
 from .domain import (
-    _ParagraphIndex, _SectionIndex, _NoteIndex, AdmissionAmrFeatureDocument
+    _ParagraphIndex, _SectionIndex, _NoteIndex, ParseFailure,
+    AdmissionAmrFeatureDocument
 )
 
 
@@ -34,7 +35,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             self.filter_summary_sections = set(self.filter_summary_sections)
 
     def _load_note(self, note: Note, include_sections: Set[str],
-                   sents: List[AmrSentence]) -> _NoteIndex:
+                   sents: List[AmrFeatureSentence],
+                   fails: List[ParseFailure]) -> _NoteIndex:
         """Index a note and track its sentences as section and paragraph levels.
 
         :param note: the note to create
@@ -42,6 +44,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         :param include_sections: the sections in the note to keep
 
         :param sents: the list to populate with paragraph level sentences
+
+        :param fails: a list of sentences with a failed AMR parse
 
         :return: a note, section and paragraph level index
 
@@ -56,7 +60,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             para_ixs: List[_ParagraphIndex] = []
             # iterate through each paragraph, track their indexes and sentences
             para: AmrFeatureDocument
-            for para in sec.paragraphs:
+            pix: int
+            for pix, para in enumerate(sec.paragraphs):
                 para_begin: int = len(sents)
                 assert isinstance(para, AmrFeatureDocument)
                 assert isinstance(para.amr, AmrDocument)
@@ -65,7 +70,15 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
                 for sent in para:
                     assert isinstance(sent, AmrFeatureSentence)
                     assert isinstance(sent.amr, AmrSentence)
-                    sents.append(sent)
+                    if sent.is_failure:
+                        fails.append(ParseFailure(
+                            row_id=note.row_id,
+                            sec_id=sec.id,
+                            sec_name=sec.name,
+                            para_idx=pix,
+                            sent=sent))
+                    else:
+                        sents.append(sent)
                 para_ixs.append(_ParagraphIndex(span=(para_begin, len(sents))))
             sec_ixs.append(_SectionIndex(
                 id=sec.id,
@@ -85,8 +98,9 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         :return: the parsed admission
 
         """
-        sents: List[AmrFeatureSentence] = []
         notes: List[_NoteIndex] = []
+        sents: List[AmrFeatureSentence] = []
+        fails: List[ParseFailure] = []
         stash: Stash = self.mimic_corpus.hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
@@ -98,18 +112,19 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
         ds_ix: _NoteIndex = self._load_note(
-            ds_note, self.filter_summary_sections, sents)
+            ds_note, self.filter_summary_sections, sents, fails)
         ant_notes: List[Note] = sorted(
             filter(lambda n: n.row_id not in ds_hadm_ids, adm.notes),
             key=lambda n: n.row_id)
         for note in ant_notes:
-            notes.append(self._load_note(note, None, sents))
+            notes.append(self._load_note(note, None, sents, fails))
         return AdmissionAmrFeatureDocument(
             sents=tuple(sents),
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))),
             hadm_id=adm.hadm_id,
             _ds_ix=ds_ix,
-            _ant_ixs=tuple(notes))
+            _ant_ixs=tuple(notes),
+            parse_fails=fails)
 
     def keys(self) -> Iterable[str]:
         return self.corpus.hospital_adm_stash.keys()

@@ -95,6 +95,37 @@ class _IndexedDocument(Writable, NotPickleable, metaclass=ABCMeta):
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))))
 
 
+@dataclass
+class ParseFailure(Writable):
+    """A container class for sentences who have parsed features, but the AMR
+    parse failed.
+
+    """
+    row_id: int = field()
+    """The MIMIC-III unique row ID of the clinical note."""
+
+    sec_id: int = field()
+    """The :obj:`~zensols.mimic.note.Section.id`."""
+
+    sec_name: str = field()
+    """The :obj:`~zensols.mimic.note.Section.name`."""
+
+    para_idx: int = field()
+    """The index of the paragraph."""
+
+    sent: AmrFeatureSentence = field()
+    """The AMR sentence.
+
+    :see: :obj:`~zensols.amr.container.AmrFeatureSentence.is_failure`
+
+    """
+    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+        self._write_line(f'note={self.row_id}, ' +
+                         f'section={self.sec_name} ({self.sec_id}), ' +
+                         f'paragraph={self.para_idx}:', depth, writer)
+        self._write_block(self.sent.text, depth + 1, writer)
+
+
 class SectionDocument(_IndexedDocument):
     """An index container class that creates AMR paragraph documents.
 
@@ -173,6 +204,9 @@ class AdmissionAmrFeatureDocument(AmrFeatureDocument):
 
     _ant_ixs: Tuple[_NoteIndex, ...] = field(default=None)
     """The note antecedent indexes."""
+
+    parse_fails: Tuple[ParseFailure, ...] = field(default=None)
+    """Sentences who have parsed features, but the AMR parse failed."""
 
     def create_discharge_summary(self) -> SectionDocument:
         """Return the discharge summary note."""
