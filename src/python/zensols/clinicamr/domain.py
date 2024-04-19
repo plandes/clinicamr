@@ -152,6 +152,7 @@ class AdmissionAmrFeatureDocument(AmrFeatureDocument):
     """The note antecedent indexes."""
 
     def create_discharge_summary(self) -> SectionDocument:
+        """Return the discharge summary note."""
         return NoteDocument(self.sents, self._ds_ix)
 
     def create_note_antecedents(self) -> Iterable[SectionDocument]:
