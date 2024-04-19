@@ -9,6 +9,7 @@ from abc import ABCMeta
 import sys
 from io import TextIOBase
 from zensols.config import Writable
+from zensols.persist import NotPickleable
 from zensols.util import APIError
 from zensols.amr import AmrFeatureSentence, AmrFeatureDocument, AmrDocument
 
@@ -20,51 +21,87 @@ class ClinicAmrError(APIError):
 
 @dataclass
 class _ParagraphIndex(object):
+    """A paragraph index as a span of sentence entries in
+    :class:`._IndexedDocument`.
+
+    """
     span: Tuple[int, int] = field(default=None)
+    """The 0-index sentence beginning and inclusive ending that make up the
+    paragraph."""
 
 
 @dataclass
 class _SectionIndex(object):
+    """A section made up of paragraph sentence spans.
+
+    """
     id: int = field()
+    """The :obj:`~zensols.mimic.note.Section.id`."""
+
     name: str = field()
+    """The :obj:`~zensols.mimic.note.Section.name`."""
+
     paras: Tuple[_ParagraphIndex, ...] = field()
+    """Paragraph sentence spans."""
 
     @property
     def span(self) -> Tuple[int, int]:
+        """The 0-index sentence beginning and inclusive ending that make up the
+        section.
+
+        """
         return (self.paras[0].span[0], self.paras[-1].span[1])
 
 
 @dataclass
 class _NoteIndex(object):
+    """The sections that make up a note.
+
+    """
     row_id: int = field()
+    """The MIMIC-III unique row ID of the clinical note."""
+
     secs: Tuple[_SectionIndex, ...] = field()
+    """The section indexes the make up the note."""
 
     @property
     def span(self) -> Tuple[int, int]:
+        """The 0-index sentence beginning and inclusive ending that make up the
+        clinical note.
+
+        """
         return (self.secs[0][0], self.secs[-1][1])
 
 
-class _IndexedDocument(Writable, metaclass=ABCMeta):
+class _IndexedDocument(Writable, NotPickleable, metaclass=ABCMeta):
+    """A base class for index container classes that create AMR documents.
+
+    """
     def __init__(self, sents: Tuple[AmrFeatureSentence]):
         self._sents = sents
 
     def _create_doc(self, index) -> AmrFeatureDocument:
+        """Create a paragraph document from a :class:`._NoteIndex` or like
+        (``_*Index``) object.
+
+        """
         span: Tuple[int, int] = index.span
         sents: List[AmrFeatureSentence] = self._sents[span[0]:span[1]]
         return AmrFeatureDocument(
             sents=tuple(sents),
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))))
 
-    def __getstate__(self):
-        raise ClinicAmrError('Iinstances are not pickleable')
-
 
 class SectionDocument(_IndexedDocument):
+    """An index container class that creates AMR paragraph documents.
+
+    """
     def __init__(self, sents: Tuple[AmrFeatureSentence], sec_ix: _SectionIndex):
         super().__init__(sents)
         self._sec_ix = sec_ix
 
-    def get_paragraphs(self) -> Iterable[AmrFeatureDocument]:
+    def create_paragraphs(self) -> Iterable[AmrFeatureDocument]:
+        """Return the paragraph documents of this section."""
         return map(self._create_doc, self._sec_ix.paras)
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
@@ -72,18 +109,22 @@ class SectionDocument(_IndexedDocument):
                          depth, writer)
         self._write_line('paragraphs:', depth, writer)
         para: AmrFeatureDocument
-        for para in self.get_paragraphs():
+        for para in self.create_paragraphs():
             para.write(depth + 1, writer, include_amr=False,
                        include_normalized=False,
                        sent_kwargs=dict(include_amr=False))
 
 
 class NoteDocument(_IndexedDocument):
+    """An index container class that creates AMR clinical note documents.
+
+    """
     def __init__(self, sents: Tuple[AmrFeatureSentence], note_ix: _NoteIndex):
         super().__init__(sents)
         self._note_ix = note_ix
 
-    def get_sections(self) -> Iterable[SectionDocument]:
+    def create_sections(self) -> Iterable[SectionDocument]:
+        """Return the clinical section documents of this section."""
         return map(lambda sec: SectionDocument(self._sents, sec),
                    self._note_ix.secs)
 
@@ -91,21 +132,37 @@ class NoteDocument(_IndexedDocument):
         self._write_line(f'note: {self._note_ix.row_id}', depth, writer)
         self._write_line('sections:', depth, writer)
         sec: SectionDocument
-        for sec in self.get_sections():
+        for sec in self.create_sections():
             self._write_object(sec, depth + 1, writer)
 
 
 @dataclass
 class AdmissionAmrFeatureDocument(AmrFeatureDocument):
-    hadm_id: str = field(default=None)
-    _note_ixs: Tuple[_NoteIndex, ...] = field(default=None)
+    """An AMR feature document whose :obj:`sents` consist of all parsed
+    sentences of all notes of an admission.
 
-    def get_notes(self) -> Iterable[SectionDocument]:
+    """
+    hadm_id: str = field(default=None)
+    """The MIMIC-III admission ID."""
+
+    _ds_ix: _NoteIndex = field(default=None)
+    """The discharge summary index."""
+
+    _ant_ixs: Tuple[_NoteIndex, ...] = field(default=None)
+    """The indexed notes."""
+
+    def create_discharge_summary(self) -> SectionDocument:
+        return NoteDocument(self.sents, self.ds_ix)
+
+    def create_note_antecedents(self) -> Iterable[SectionDocument]:
+        """Return the clinical notes of the admission."""
         return map(lambda note_ix: NoteDocument(self.sents, note_ix),
-                   self._note_ixs)
+                   self._ant_ixs)
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         self._write_line(f'hadm: {self.hadm_id}', depth, writer)
-        self._write_line('notes:', depth, writer)
-        for note in self.get_notes():
+        self._write_line('summary:', depth, writer)
+        self._write_object(self.create_discharge_summary(), depth + 1, writer)
+        self._write_line('antecedents:', depth, writer)
+        for note in self.create_notes():
             self._write_object(note, depth + 1, writer)

@@ -13,6 +13,9 @@ ADD_CLEAN_ALL +=	data
 ENTRY=			./clinicamr
 
 
+PY_SRC_TEST_PAT ?=	'test_adm.py'
+
+
 ## Includes
 #
 include ./zenbuild/main.mk

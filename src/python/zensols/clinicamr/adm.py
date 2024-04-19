@@ -19,8 +19,14 @@ from .domain import (
 
 @dataclass
 class AdmissionAmrFactoryStash(ReadOnlyStash):
+    """A stash that CRUDs instances of :obj:`.AdmissionAmrFeatureDocument`.
+
+    """
     mimic_corpus: MimicCorpus = field()
+    """The MIMIC-III corpus."""
+
     filter_summary_sections: Union[List[str], Set[str]] = field()
+    """The sections to keep in each clinical note.  The rest are filtered."""
 
     def __post_init__(self):
         super().__post_init__()
@@ -29,18 +35,32 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
 
     def _load_note(self, note: Note, include_sections: Set[str],
                    sents: List[AmrSentence]) -> _NoteIndex:
+        """Index a note and track its sentences as section and paragraph levels.
+
+        :param note: the note to create
+
+        :param include_sections: the sections in the note to keep
+
+        :param sents: the list to populate with paragraph level sentences
+
+        :return: a note, section and paragraph level index
+
+        """
         sec_ixs: List[_SectionIndex] = []
         secs: Iterable[Section] = note.sections.values()
         if include_sections is not None:
             secs = filter(lambda s: s.name in include_sections, secs)
+        # iterate through sections and tracking their indexes
         sec: Section
         for sec in secs:
             para_ixs: List[_ParagraphIndex] = []
+            # iterate through each paragraph, track their indexes and sentences
             para: AmrFeatureDocument
             for para in sec.paragraphs:
                 para_begin: int = len(sents)
                 assert isinstance(para, AmrFeatureDocument)
                 assert isinstance(para.amr, AmrDocument)
+                # each sentence is added to be retrieved in domain class indexes
                 sent: AmrFeatureSentence
                 for sent in para:
                     assert isinstance(sent, AmrFeatureSentence)
@@ -50,9 +70,19 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             sec_ixs.append(_SectionIndex(sec.id, sec.name, tuple(para_ixs)))
         return _NoteIndex(note.row_id, tuple(sec_ixs))
 
-    def _load_adm(self, adm: HospitalAdmission) -> AdmissionAmrFeatureDocument:
+    def load(self, hadm_id: str) -> AdmissionAmrFeatureDocument:
+        """Load an admission from the MIMIC-III package and parse it for
+        language and AMRs.
+
+        :param hadm_id: the MIMIC-III admission ID
+
+        :return: the parsed admission
+
+        """
         sents: List[AmrFeatureSentence] = []
         notes: List[_NoteIndex] = []
+        stash: Stash = self.mimic_corpus.hospital_adm_stash
+        adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
         ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
         ds_hadm_ids: Set[str] = set(map(lambda n: n.row_id, ds_notes))
@@ -61,8 +91,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
                 f'No discharge sumamries for admission: {adm.hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        notes.append(self._load_note(
-            ds_note, self.filter_summary_sections, sents))
+        ds_idx: _NoteIndex = self._load_note(
+            ds_note, self.filter_summary_sections, sents)
         ant_notes: List[Note] = sorted(
             filter(lambda n: n.row_id not in ds_hadm_ids, adm.notes),
             key=lambda n: n.row_id)
@@ -72,12 +102,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             sents=tuple(sents),
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))),
             hadm_id=adm.hadm_id,
+            _ds_idx=ds_idx,
             _note_ixs=tuple(notes))
-
-    def load(self, hadm_id: str) -> AdmissionAmrFeatureDocument:
-        stash: Stash = self.mimic_corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        return self._load_adm(adm)
 
     def keys(self) -> Iterable[str]:
         return self.corpus.hospital_adm_stash.keys()
