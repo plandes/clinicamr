@@ -171,7 +171,9 @@ class PrototypeApplication(object):
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
         adm = stash.load(hadm_id)
-        adm.write()
+        if 1:
+            adm.write()
+            return
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""

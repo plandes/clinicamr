@@ -67,8 +67,14 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
                     assert isinstance(sent.amr, AmrSentence)
                     sents.append(sent)
                 para_ixs.append(_ParagraphIndex(span=(para_begin, len(sents))))
-            sec_ixs.append(_SectionIndex(sec.id, sec.name, tuple(para_ixs)))
-        return _NoteIndex(note.row_id, tuple(sec_ixs))
+            sec_ixs.append(_SectionIndex(
+                id=sec.id,
+                name=sec.name.replace('-', ' '),
+                paras=tuple(para_ixs)))
+        return _NoteIndex(
+            row_id=note.row_id,
+            category=note.id.replace('-', ' '),
+            secs=tuple(sec_ixs))
 
     def load(self, hadm_id: str) -> AdmissionAmrFeatureDocument:
         """Load an admission from the MIMIC-III package and parse it for

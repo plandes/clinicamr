@@ -61,6 +61,9 @@ class _NoteIndex(object):
     row_id: int = field()
     """The MIMIC-III unique row ID of the clinical note."""
 
+    category: str = field()
+    """The category of the note (i.e. ``discharge-summary``)."""
+
     secs: Tuple[_SectionIndex, ...] = field()
     """The section indexes the make up the note."""
 
@@ -100,13 +103,22 @@ class SectionDocument(_IndexedDocument):
         super().__init__(sents)
         self._sec_ix = sec_ix
 
+    @property
+    def id(self) -> int:
+        """The :obj:`~zensols.mimic.note.Section.id`."""
+        return self._sec_ix.id
+
+    @property
+    def name(self) -> str:
+        """The :obj:`~zensols.mimic.note.Section.name`."""
+        return self._sec_ix.name
+
     def create_paragraphs(self) -> Iterable[AmrFeatureDocument]:
         """Return the paragraph documents of this section."""
         return map(self._create_doc, self._sec_ix.paras)
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
-        self._write_line(f'section {self._sec_ix.id} ({self._sec_ix.name}):',
-                         depth, writer)
+        self._write_line(f'section {self.id} ({self.name}):', depth, writer)
         self._write_line('paragraphs:', depth, writer)
         para: AmrFeatureDocument
         for para in self.create_paragraphs():
@@ -123,13 +135,24 @@ class NoteDocument(_IndexedDocument):
         super().__init__(sents)
         self._note_ix = note_ix
 
+    @property
+    def row_id(self) -> int:
+        """The MIMIC-III unique row ID of the clinical note."""
+        return self._note_ix.row_id
+
+    @property
+    def category(self) -> str:
+        """The category of the note (i.e. ``discharge-summary``)."""
+        return self._note_ix.category
+
     def create_sections(self) -> Iterable[SectionDocument]:
         """Return the clinical section documents of this section."""
         return map(lambda sec: SectionDocument(self._sents, sec),
                    self._note_ix.secs)
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
-        self._write_line(f'note: {self._note_ix.row_id}', depth, writer)
+        self._write_line(f'note: {self.row_id} ({self.category})',
+                         depth, writer)
         self._write_line('sections:', depth, writer)
         sec: SectionDocument
         for sec in self.create_sections():
