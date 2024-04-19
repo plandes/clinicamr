@@ -149,10 +149,10 @@ class AdmissionAmrFeatureDocument(AmrFeatureDocument):
     """The discharge summary index."""
 
     _ant_ixs: Tuple[_NoteIndex, ...] = field(default=None)
-    """The indexed notes."""
+    """The note antecedent indexes."""
 
     def create_discharge_summary(self) -> SectionDocument:
-        return NoteDocument(self.sents, self.ds_ix)
+        return NoteDocument(self.sents, self._ds_ix)
 
     def create_note_antecedents(self) -> Iterable[SectionDocument]:
         """Return the clinical notes of the admission."""
@@ -164,5 +164,5 @@ class AdmissionAmrFeatureDocument(AmrFeatureDocument):
         self._write_line('summary:', depth, writer)
         self._write_object(self.create_discharge_summary(), depth + 1, writer)
         self._write_line('antecedents:', depth, writer)
-        for note in self.create_notes():
+        for note in self.create_note_antecedents():
             self._write_object(note, depth + 1, writer)

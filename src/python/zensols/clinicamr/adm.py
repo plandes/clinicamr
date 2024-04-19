@@ -91,7 +91,7 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
                 f'No discharge sumamries for admission: {adm.hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
-        ds_idx: _NoteIndex = self._load_note(
+        ds_ix: _NoteIndex = self._load_note(
             ds_note, self.filter_summary_sections, sents)
         ant_notes: List[Note] = sorted(
             filter(lambda n: n.row_id not in ds_hadm_ids, adm.notes),
@@ -102,8 +102,8 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             sents=tuple(sents),
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))),
             hadm_id=adm.hadm_id,
-            _ds_idx=ds_idx,
-            _note_ixs=tuple(notes))
+            _ds_ix=ds_ix,
+            _ant_ixs=tuple(notes))
 
     def keys(self) -> Iterable[str]:
         return self.corpus.hospital_adm_stash.keys()

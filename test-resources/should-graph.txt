@@ -1,5 +1,5 @@
 hadm: 151608
-notes:
+summary:
     note: 13909
     sections:
         section 1 (history-of-present-illness):
@@ -49,6 +49,7 @@ notes:
             sentences:
                 [N]: . [**Last Name (Prefixes) **] in four weeks.
                 [N]: He is being discharged home with VNA for wound check.
+antecedents:
     note: 1277835
     sections:
         section 0 (assessment-and-plan):
