@@ -135,8 +135,9 @@ camr_parser_spring:
 camr_adm_amr_factory_stash:
   class_name: zensols.clinicamr.adm.AdmissionAmrFactoryStash
   mimic_corpus: 'instance: mimic_corpus'
+  amr_annotator: 'instance: ${amr_default:doc_parser}'
   filter_summary_sections:
-    # physicians
+    # physicians choice
     - addendum
     - discharge-condition
     - discharge-diagnosis

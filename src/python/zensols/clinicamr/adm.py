@@ -5,6 +5,7 @@ __author__ = 'Paul Landes'
 
 from typing import List, Tuple, Dict, Set, Iterable, Union
 from dataclasses import dataclass, field
+import logging
 from zensols.persist import Stash, ReadOnlyStash
 from zensols.mimic import MimicError, Section, Note, HospitalAdmission
 from zensols.mimic import Corpus as MimicCorpus
@@ -12,10 +13,13 @@ from zensols.mimic.regexnote import DischargeSummaryNote
 from zensols.amr import (
     AmrFeatureSentence, AmrFeatureDocument, AmrSentence, AmrDocument
 )
+from zensols.amr.annotate import AnnotationFeatureDocumentParser
 from .domain import (
     _ParagraphIndex, _SectionIndex, _NoteIndex, ParseFailure,
     AdmissionAmrFeatureDocument
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,6 +29,9 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
     """
     mimic_corpus: MimicCorpus = field()
     """The MIMIC-III corpus."""
+
+    amr_annotator: AnnotationFeatureDocumentParser = field()
+    """Parses, populates and caches AMR graphs in feature documents."""
 
     filter_summary_sections: Union[List[str], Set[str]] = field()
     """The sections to keep in each clinical note.  The rest are filtered."""
@@ -118,13 +125,20 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             key=lambda n: n.row_id)
         for note in ant_notes:
             notes.append(self._load_note(note, None, sents, fails))
-        return AdmissionAmrFeatureDocument(
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'parsed {len(sents)} sentences not including ' +
+                        f'{len(fails)} AMR parse failures')
+        doc = AdmissionAmrFeatureDocument(
             sents=tuple(sents),
             amr=AmrDocument(tuple(map(lambda s: s.amr, sents))),
             hadm_id=adm.hadm_id,
             _ds_ix=ds_ix,
             _ant_ixs=tuple(notes),
             parse_fails=fails)
+        if self.amr_annotator.coref_resolver is not None:
+            logger.info('resolving coreferences...')
+            self.amr_annotator.coref_resolver(doc)
+        return doc
 
     def keys(self) -> Iterable[str]:
         return self.corpus.hospital_adm_stash.keys()
