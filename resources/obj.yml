@@ -131,6 +131,7 @@ camr_parser_spring:
   client: 'instance: amr_spring_client'
   doc_parser: 'instance: camr_fix_mimic_doc_parser'
 
+# admission AMR feature document factory stash
 camr_adm_amr_factory_stash:
   class_name: zensols.clinicamr.adm.AdmissionAmrFactoryStash
   mimic_corpus: 'instance: mimic_corpus'
@@ -146,3 +147,12 @@ camr_adm_amr_factory_stash:
     # curiosity
     - history-of-present-illness
     - past-medical-history
+
+camr_adm_amr_cache_stash:
+  class_name: zensols.persist.DirectoryStash
+  path: 'path: ${clinicamr_default:data_dir}/adm-doc'
+
+camr_adm_amr_stash:
+  class_name: zensols.persist.FactoryStash
+  delegate: 'instance: camr_adm_amr_cache_stash'
+  factory: 'instance: camr_adm_amr_factory_stash'

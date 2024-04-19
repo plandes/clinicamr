@@ -27,11 +27,26 @@ class Application(object):
     doc_parser: FeatureDocumentParser = field()
     """The document parser used for the :meth:`parse` action."""
 
+    adm_amr_stash: Stash = field()
+    """A stash that CRUDs instances of :obj:`.AdmissionAmrFeatureDocument`."""
+
     dumper: 'Dumper' = field()
     """Plots and writes AMR content in human readable formats."""
 
     def __post_init__(self):
         FeatureToken.WRITABLE_FEATURE_IDS = tuple('norm cui_'.split())
+
+    def show_admission(self, hadm_id: str):
+        """Print an admission by ID.
+
+        :param hadm_id: the admission ID
+
+        """
+        from . import AdmissionAmrFeatureDocument
+        from .adm import AdmissionAmrFactoryStash
+        stash: AdmissionAmrFactoryStash = self.adm_amr_stash
+        adm: AdmissionAmrFeatureDocument = stash.load(hadm_id)
+        adm.write()
 
     def _generate_adm(self, hadm_id: str) -> pd.DataFrame:
         from typing import List, Dict, Any
@@ -108,75 +123,24 @@ class PrototypeApplication(object):
         else:
             self.config_factory('clear_cli').clear()
 
-    def _test_paras(self):
-        from typing import Dict
-        from zensols.mimic import Section, Note, HospitalAdmission
-        from zensols.mimic.regexnote import DischargeSummaryNote
-        from zensols.amr import Dumper, AmrFeatureDocument
-
-        if 0:
-            self._clear()
-            return
-        hadm_id: str = '134891'  # human annotated
-        #hadm_id: str = '151608'  # model annotated
-        stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
-        dumper: Dumper = self.config_factory('amr_dumper')
-        adm: HospitalAdmission = stash[hadm_id]
-        if 0:
-            for note in adm.notes:
-                print(note.row_id, note.category, note.section_annotator_type)
-            return
-        by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
-        ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
-        if len(ds_notes) == 0:
-            raise ApplicationError(
-                f'No discharge sumamries for admission: {hadm_id}')
-        ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
-        ds_note: Note = ds_notes[0]
-        if 0:
-            ds_note.write()
-            return
-        sec: Section = ds_note.sections_by_name['history-of-present-illness'][0]
-        if 0:
-            print(sec.headers)
-            print(sec.body)
-            return
-        for sec in [sec]:
-            if 0:
-                print(sec.text)
-                print('_' * 80)
-                continue
-            paras = tuple(sec.paragraphs)
-            if 1:
-                para: AmrFeatureDocument
-                for para in paras:
-                    print(para.text)
-                    print()
-                    if 1:
-                        for s in para:
-                            print(s.amr.graph_string)
-                            print()
-                    if 0:
-                        for t in para.token_iter():
-                            print(t, t.cui_, t.ent_, t.is_concept, t.cui_)
-            if 0:
-                dumper.clean()
-                dumper.overwrite_dir = False
-                for pix, para in enumerate(paras):
-                    dumper(para.amr, f'p-{pix}')
-    def _tmp(self):
-        #self._clear(1)
+    def _test_load(self):
+        from zensols.util.time import time
         from zensols.clinicamr.adm import AdmissionAmrFactoryStash
-        stash: AdmissionAmrFactoryStash = self.config_factory('camr_adm_amr_factory_stash')
+        #self._clear(1)
+        stash: AdmissionAmrFactoryStash = self.config_factory('camr_adm_amr_stash')
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
-        adm = stash.load(hadm_id)
+        with time('loaded'):
+            adm = stash.load(hadm_id)
         if 1:
             adm.write()
             return
 
-    def proto(self, run: int = 0):
+    def _tmp(self):
+        pass
+
+    def proto(self, run: int = 1):
         """Used for rapid prototyping."""
         {0: self._tmp,
-         1: self._test_paras,
+         1: self._test_load,
          }[run]()
