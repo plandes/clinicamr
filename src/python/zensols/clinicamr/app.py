@@ -120,6 +120,7 @@ class PrototypeApplication(object):
     def _clear(self, only_para: bool = False):
         if only_para:
             self.config_factory('camr_paragraph_factory').clear()
+            self.config_factory('camr_adm_amr_stash').clear()
         else:
             self.config_factory('clear_cli').clear()
 
