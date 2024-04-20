@@ -3,14 +3,16 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, List, Iterable
+from typing import Tuple, List, Iterable, Type
 from dataclasses import dataclass, field
 from abc import ABCMeta
 import sys
+import copy
 from io import TextIOBase
 from zensols.config import Writable
 from zensols.persist import NotPickleable
 from zensols.util import APIError
+from zensols.nlp import TokenContainer
 from zensols.amr import AmrFeatureSentence, AmrFeatureDocument, AmrDocument
 
 
@@ -216,6 +218,14 @@ class AdmissionAmrFeatureDocument(AmrFeatureDocument):
         """Return the clinical notes of the admission."""
         return map(lambda note_ix: NoteDocument(self.sents, note_ix),
                    self._ant_ixs)
+
+    def clone(self, cls: Type[TokenContainer] = None, **kwargs) -> \
+            TokenContainer:
+        clone = super().clone(cls, **kwargs)
+        clone._ds_ix = copy.deepcopy(self._ds_ix)
+        clone._ant_ixs = copy.deepcopy(self._ant_ixs)
+        clone.parse_fails = copy.deepcopy(self.parse_fails)
+        return clone
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         self._write_line(f'hadm: {self.hadm_id}', depth, writer)
