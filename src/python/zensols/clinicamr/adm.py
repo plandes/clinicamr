@@ -6,7 +6,7 @@ __author__ = 'Paul Landes'
 from typing import List, Tuple, Dict, Set, Iterable, Union
 from dataclasses import dataclass, field
 import logging
-from zensols.persist import Stash, ReadOnlyStash
+from zensols.persist import ReadOnlyStash
 from zensols.mimic import MimicError, Section, Note, HospitalAdmission
 from zensols.mimic import Corpus as MimicCorpus
 from zensols.mimic.regexnote import DischargeSummaryNote
@@ -112,7 +112,11 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         :return: the parsed admission
 
         """
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'loading admission: {name}...')
         hadm_id = int(name)
+        if not self.exists(hadm_id):
+            return None
         notes: List[_NoteIndex] = []
         sents: List[AmrFeatureSentence] = []
         fails: List[ParseFailure] = []
@@ -133,7 +137,9 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         row_ids: List[int]
         for cat, row_ids in by_cat.items():
             if cat != ds_cat:
-                notes.extend(map(lambda i: adm[str(i)], sorted(row_ids)))
+                notes.extend(map(
+                    lambda i: self._load_note(adm[str(i)], None, sents, fails),
+                    sorted(row_ids)))
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'parsed {len(sents)} sentences not including ' +
                         f'{len(fails)} AMR parse failures')
@@ -150,7 +156,9 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         return doc
 
     def keys(self) -> Iterable[str]:
-        return self.corpus.hospital_adm_stash.keys()
+        # bypass cache stash
+        return self.corpus.admission_persister.get_keys()
 
-    def exists(self, hadm_id: str) -> bool:
-        return self.corpus.hospital_adm_stash.exists(hadm_id)
+    def exists(self, name: str) -> bool:
+        # bypass cache stash
+        return self.corpus.admission_persister.exists(int(name))

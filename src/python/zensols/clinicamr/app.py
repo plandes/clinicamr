@@ -133,9 +133,7 @@ class PrototypeApplication(object):
         hadm_id: str = '151608'  # model annotated
         with time('loaded'):
             adm = stash.load(hadm_id)
-        #adm.write()
-        for n in adm.create_note_antecedents():
-            print('C', n.category)
+        adm.write()
 
     def _tmp(self):
         pass
