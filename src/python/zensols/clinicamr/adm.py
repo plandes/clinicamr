@@ -27,19 +27,26 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
     """A stash that CRUDs instances of :obj:`.AdmissionAmrFeatureDocument`.
 
     """
-    mimic_corpus: MimicCorpus = field()
+    corpus: MimicCorpus = field()
     """The MIMIC-III corpus."""
 
     amr_annotator: AnnotationFeatureDocumentParser = field()
     """Parses, populates and caches AMR graphs in feature documents."""
 
-    filter_summary_sections: Union[List[str], Set[str]] = field()
+    keep_notes: Union[List[str], Set[str]] = field()
+    """The note (by category) to keep in each clinical note.  The rest are
+    filtered.
+
+    """
+    keep_summary_sections: Union[List[str], Set[str]] = field()
     """The sections to keep in each clinical note.  The rest are filtered."""
 
     def __post_init__(self):
         super().__post_init__()
-        if not isinstance(self.filter_summary_sections, set):
-            self.filter_summary_sections = set(self.filter_summary_sections)
+        if not isinstance(self.keep_notes, set):
+            self.keep_notes = frozenset(self.keep_notes)
+        if not isinstance(self.keep_summary_sections, set):
+            self.keep_summary_sections = frozenset(self.keep_summary_sections)
 
     def _load_note(self, note: Note, include_sections: Set[str],
                    sents: List[AmrFeatureSentence],
@@ -96,35 +103,37 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             category=note.id.replace('-', ' '),
             secs=tuple(sec_ixs))
 
-    def load(self, hadm_id: str) -> AdmissionAmrFeatureDocument:
+    def load(self, name: str) -> AdmissionAmrFeatureDocument:
         """Load an admission from the MIMIC-III package and parse it for
         language and AMRs.
 
-        :param hadm_id: the MIMIC-III admission ID
+        :param name: the MIMIC-III admission ID
 
         :return: the parsed admission
 
         """
+        hadm_id = int(name)
         notes: List[_NoteIndex] = []
         sents: List[AmrFeatureSentence] = []
         fails: List[ParseFailure] = []
-        stash: Stash = self.mimic_corpus.hospital_adm_stash
-        adm: HospitalAdmission = stash[hadm_id]
-        by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
-        ds_notes: Tuple[Note] = by_cat[DischargeSummaryNote.CATEGORY]
-        ds_hadm_ids: Set[str] = set(map(lambda n: n.row_id, ds_notes))
+        adm: HospitalAdmission = self.corpus.get_hospital_adm_by_id(hadm_id)
+        ds_cat: str = DischargeSummaryNote.CATEGORY
+        by_cat: Dict[str, List[int]] = self.corpus.note_event_persister.\
+            get_row_ids_by_category(int(hadm_id), self.keep_notes)
+        ds_notes: Tuple[Note, ...] = tuple(map(
+            lambda i: adm[str(i)], by_cat[ds_cat]))
         if len(ds_notes) == 0:
             raise MimicError(
                 f'No discharge sumamries for admission: {adm.hadm_id}')
         ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
         ds_note: Note = ds_notes[0]
         ds_ix: _NoteIndex = self._load_note(
-            ds_note, self.filter_summary_sections, sents, fails)
-        ant_notes: List[Note] = sorted(
-            filter(lambda n: n.row_id not in ds_hadm_ids, adm.notes),
-            key=lambda n: n.row_id)
-        for note in ant_notes:
-            notes.append(self._load_note(note, None, sents, fails))
+            ds_note, self.keep_summary_sections, sents, fails)
+        cat: str
+        row_ids: List[int]
+        for cat, row_ids in by_cat.items():
+            if cat != ds_cat:
+                notes.extend(map(lambda i: adm[str(i)], sorted(row_ids)))
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'parsed {len(sents)} sentences not including ' +
                         f'{len(fails)} AMR parse failures')
