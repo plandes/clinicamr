@@ -51,14 +51,6 @@ camr_token_cui_doc_decorator:
   feature_id: cui_
   feature_format: '{cui_}'
 
-# add :cui-desc CUI description attributes
-camr_token_cui_desc_doc_decorator:
-  class_name: ${camr_token_cui_doc_decorator:class_name}
-  use_sent_index: ${camr_token_cui_doc_decorator:use_sent_index}
-  name: cui-desc
-  feature_id: cui_
-  feature_format: '{pref_name_}'
-
 # the medical intermediate parser that strips space; otherwise alignments
 # shifted from MIMIC-III newlines; we don't use this parser in
 # `camr_paragraph_factory` so it keeps new lines for creating medical note
@@ -79,7 +71,6 @@ amr_anon_doc_parser:
         instance: tuple:
           amr_token_pos_doc_decorator,
           camr_token_cui_doc_decorator
-#          camr_token_cui_desc_doc_decorator
     else:
       document_decorators: []
 
