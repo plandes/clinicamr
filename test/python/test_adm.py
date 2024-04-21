@@ -51,7 +51,9 @@ class TestAdmissionGraph(TestBase):
 
     def _test_pickle(self):
         adm: AdmissionAmrFeatureDocument = self._get_adm()
-        should: str = self._get_should()
+        sio = StringIO()
+        adm.write(writer=sio)
+        should: str = sio.getvalue()
 
         adm2 = self._pickle(adm)
         self.assertNotEqual(id(adm), id(adm2))
