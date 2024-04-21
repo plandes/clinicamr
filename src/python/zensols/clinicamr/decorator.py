@@ -28,5 +28,5 @@ class ClinicTokenAnnotationFeatureDocumentDecorator(
                         feature_triples: List[Attribute], graph: Graph):
         # when we find a concept, add in the CUI if the token is a
         # concept
-        if tok.is_concept:
+        if tok.is_concept and tok.cui_ != FeatureToken.NONE:
             super()._annotate_token(tok, source, feature_triples, graph)
