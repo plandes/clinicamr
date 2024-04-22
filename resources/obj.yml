@@ -69,7 +69,6 @@ amr_anon_doc_parser:
     then:
       document_decorators: >-
         instance: tuple:
-          amr_token_pos_doc_decorator,
           camr_token_cui_doc_decorator
     else:
       document_decorators: []
