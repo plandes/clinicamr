@@ -127,13 +127,16 @@ class PrototypeApplication(object):
     def _test_load(self):
         from zensols.util.time import time
         from zensols.clinicamr.adm import AdmissionAmrFactoryStash
-        self._clear(1)
+        #self._clear(1)
+        self._clear()
         stash: AdmissionAmrFactoryStash = self.config_factory('camr_adm_amr_stash')
         #hadm_id: str = '134891'  # human annotated
         hadm_id: str = '151608'  # model annotated
         with time('loaded'):
             adm = stash.load(hadm_id)
-        adm.write()
+        #adm.write()
+        for s in adm.sents:
+            s.amr.write()
 
     def _tmp(self):
         pass

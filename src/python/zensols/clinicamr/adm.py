@@ -150,6 +150,7 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
             _ds_ix=ds_ix,
             _ant_ixs=tuple(notes),
             parse_fails=fails)
+        doc.amr.reindex_variables()
         if self.amr_annotator.coref_resolver is not None:
             logger.info('resolving coreferences...')
             self.amr_annotator.coref_resolver(doc)
