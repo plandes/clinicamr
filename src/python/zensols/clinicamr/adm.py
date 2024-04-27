@@ -114,6 +114,7 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         """
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'loading admission: {name}...')
+        # MIMIC components index admissions and notes by ints
         hadm_id = int(name)
         if not self.exists(hadm_id):
             return None
@@ -158,7 +159,7 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
 
     def keys(self) -> Iterable[str]:
         # bypass cache stash
-        return self.corpus.admission_persister.get_keys()
+        return map(str, self.corpus.admission_persister.get_keys())
 
     def exists(self, name: str) -> bool:
         # bypass cache stash
