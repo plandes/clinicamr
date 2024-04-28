@@ -112,12 +112,14 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         paras: Iterable[FeatureDocument] = self.delegate.create(sec)
         para: FeatureDocument
         for pix, para in enumerate(paras):
+            doc: FeatureDocument = None
             try:
                 doc = self._get_doc(sec, pix, para)
             except Exception as e:
-                msg: str = f'Could not parse AMR for <{para.text}>'
-                raise AmrError(msg) from e
-            yield doc
+                msg: str = f'Could not parse AMR for <{para.text}>: {e}'
+                logging.exception(msg)
+            if doc is not None:
+                yield doc
 
     def clear(self):
         self.stash.clear()

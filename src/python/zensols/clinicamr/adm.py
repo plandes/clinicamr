@@ -43,9 +43,10 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
 
     def __post_init__(self):
         super().__post_init__()
-        if not isinstance(self.keep_notes, set):
+        if self.keep_notes is not None and not isinstance(self.keep_notes, set):
             self.keep_notes = frozenset(self.keep_notes)
-        if not isinstance(self.keep_summary_sections, set):
+        if self.keep_summary_sections is not None and \
+           not isinstance(self.keep_summary_sections, set):
             self.keep_summary_sections = frozenset(self.keep_summary_sections)
 
     def _load_note(self, note: Note, include_sections: Set[str],
@@ -117,11 +118,15 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         # MIMIC components index admissions and notes by ints
         hadm_id = int(name)
         if not self.exists(hadm_id):
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f'no admission: {hadm_id}')
             return None
         notes: List[_NoteIndex] = []
         sents: List[AmrFeatureSentence] = []
         fails: List[ParseFailure] = []
         adm: HospitalAdmission = self.corpus.get_hospital_adm_by_id(hadm_id)
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'admin retrieved: {adm}')
         ds_cat: str = DischargeSummaryNote.CATEGORY
         by_cat: Dict[str, List[int]] = self.corpus.note_event_persister.\
             get_row_ids_by_category(int(hadm_id), self.keep_notes)
