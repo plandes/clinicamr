@@ -5,7 +5,7 @@ __author__ = 'Paul Landes'
 
 from typing import Tuple, List, Iterable, Type
 from dataclasses import dataclass, field
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 import sys
 import copy
 from io import TextIOBase
@@ -75,7 +75,7 @@ class _NoteIndex(object):
         clinical note.
 
         """
-        return (self.secs[0][0], self.secs[-1][1])
+        return (self.secs[0].paras[0].span[0], self.secs[-1].paras[-1].span[1])
 
 
 class _IndexedDocument(Writable, NotPickleable, metaclass=ABCMeta):
@@ -84,6 +84,11 @@ class _IndexedDocument(Writable, NotPickleable, metaclass=ABCMeta):
     """
     def __init__(self, sents: Tuple[AmrFeatureSentence]):
         self._sents = sents
+
+    @abstractmethod
+    def create_document(self) -> AmrFeatureDocument:
+        """Create an AMR feature document."""
+        pass
 
     def _create_doc(self, index) -> AmrFeatureDocument:
         """Create a paragraph document from a :class:`._NoteIndex` or like
@@ -150,6 +155,9 @@ class SectionDocument(_IndexedDocument):
         """Return the paragraph documents of this section."""
         return map(self._create_doc, self._sec_ix.paras)
 
+    def create_document(self) -> AmrFeatureDocument:
+        return self._create_doc(self._sec_ix)
+
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         self._write_line(f'section {self.id} ({self.name}):', depth, writer)
         self._write_line('paragraphs:', depth, writer)
@@ -177,6 +185,9 @@ class NoteDocument(_IndexedDocument):
     def category(self) -> str:
         """The category of the note (i.e. ``discharge-summary``)."""
         return self._note_ix.category
+
+    def create_document(self) -> AmrFeatureDocument:
+        return self._create_doc(self._note_ix)
 
     def create_sections(self) -> Iterable[SectionDocument]:
         """Return the clinical section documents of this section."""
