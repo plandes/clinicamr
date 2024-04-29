@@ -141,8 +141,6 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         cat: str
         row_ids: List[int]
         for cat, row_ids in by_cat.items():
-            # take only the most recent (sorted in DB layer)
-            row_ids = row_ids[0:1]
             if cat != ds_cat:
                 notes.extend(map(
                     lambda i: self._load_note(adm[str(i)], None, sents, fails),
