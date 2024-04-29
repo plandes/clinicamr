@@ -8,10 +8,11 @@ from typing import Dict, Tuple, Sequence, Iterable
 from dataclasses import dataclass, field
 import logging
 from zensols.persist import Stash
-from zensols.nlp import LexicalSpan, FeatureDocument, FeatureDocumentDecorator
-from zensols.amr import (
-    AmrError, AmrSentence, AmrFeatureSentence, AmrFeatureDocument
+from zensols.nlp import (
+    LexicalSpan, FeatureSentence, FeatureDocument, FeatureDocumentDecorator,
+    FeatureSentenceDecorator
 )
+from zensols.amr import AmrSentence, AmrFeatureSentence, AmrFeatureDocument
 from zensols.amr.annotate import AnnotationFeatureDocumentParser
 from zensols.mimic import ParagraphFactory, Section
 
@@ -46,6 +47,12 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     document.
 
     """
+    sentence_decorators: Sequence[FeatureSentenceDecorator] = field(
+        default=())
+    """A list of decorators that can add, remove or modify features on a
+    document.
+
+    """
     id_format: str = field(
         default='MIMIC3_{note_id}_{sec_id}_{para_id}.{sent_id}')
     """Whether to add the ``id`` AMR metadata field if it does not already
@@ -55,6 +62,11 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
     add_is_header: bool = field(default=True)
     """Whether or not to add the ``is_header`` AMR metadata indicating if the
     sentence is part of one of the section headers.
+
+    """
+    remove_empty_sentences: bool = field(default=True)
+    """Whether to remove empty sentences from paragraphs. If ``True`` empty
+    paragraphs are skipped.
 
     """
     def __post_init__(self):
@@ -97,6 +109,11 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
                 fdoc = self.amr_annotator.annotate(para)
             finally:
                 self.amr_annotator.coref_resolver = cr
+            sdec: FeatureSentenceDecorator
+            for sdec in self.sentence_decorators:
+                sent: FeatureSentence
+                for sent in fdoc.sents:
+                    sdec.decorate(sent)
             dec: FeatureDocumentDecorator
             for dec in self.document_decorators:
                 dec.decorate(fdoc)
@@ -112,6 +129,12 @@ class ClinicAmrParagraphFactory(ParagraphFactory):
         paras: Iterable[FeatureDocument] = self.delegate.create(sec)
         para: FeatureDocument
         for pix, para in enumerate(paras):
+            if self.remove_empty_sentences:
+                para.sents = tuple(filter(
+                    lambda s: len(s.norm.strip()) > 0,
+                    para.sents))
+            if len(para.sents) == 0:
+                continue
             doc: FeatureDocument = None
             try:
                 doc = self._get_doc(sec, pix, para)

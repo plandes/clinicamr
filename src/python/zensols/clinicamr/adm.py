@@ -130,18 +130,19 @@ class AdmissionAmrFactoryStash(ReadOnlyStash):
         ds_cat: str = DischargeSummaryNote.CATEGORY
         by_cat: Dict[str, List[int]] = self.corpus.note_event_persister.\
             get_row_ids_by_category(int(hadm_id), self.keep_notes)
-        ds_notes: Tuple[Note, ...] = tuple(map(
-            lambda i: adm[str(i)], by_cat[ds_cat]))
+        ds_notes: List[int] = by_cat[ds_cat]
         if len(ds_notes) == 0:
             raise MimicError(
                 f'No discharge sumamries for admission: {adm.hadm_id}')
-        ds_notes = sorted(ds_notes, key=lambda n: n.chartdate, reverse=True)
-        ds_note: Note = ds_notes[0]
+        # take only the most recent (sorted in DB layer)
+        ds_note: Note = adm[ds_notes[0]]
         ds_ix: _NoteIndex = self._load_note(
             ds_note, self.keep_summary_sections, sents, fails)
         cat: str
         row_ids: List[int]
         for cat, row_ids in by_cat.items():
+            # take only the most recent (sorted in DB layer)
+            row_ids = row_ids[0:1]
             if cat != ds_cat:
                 notes.extend(map(
                     lambda i: self._load_note(adm[str(i)], None, sents, fails),
