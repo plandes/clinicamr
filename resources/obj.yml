@@ -126,24 +126,8 @@ camr_adm_amr_factory_stash:
   class_name: zensols.clinicamr.adm.AdmissionAmrFactoryStash
   corpus: 'instance: mimic_corpus'
   amr_annotator: 'instance: ${amr_default:doc_parser}'
-  keep_notes:
-    - Discharge summary
-    - Consult
-    - Echo
-    - Physician
-    - Radiology
-  keep_summary_sections:
-    # physicians choice
-    - addendum
-    - discharge-condition
-    - discharge-diagnosis
-    - discharge-disposition
-    - discharge-instructions
-    - facility
-    - hospital-course
-    # curiosity
-    - history-of-present-illness
-    - past-medical-history
+  keep_notes: ${camr_adm_selection:note_categories}
+  keep_summary_sections: ${camr_adm_selection:summary_sections}
 
 camr_adm_amr_cache_stash:
   class_name: zensols.persist.DirectoryStash
