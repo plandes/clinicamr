@@ -1,0 +1,112 @@
+hadm: 151608
+summary:
+    note: 13909 (discharge summary)
+    sections:
+        section 1 (history of present illness):
+        paragraphs:
+            sentences:
+                [N]: The patient is a 65 year old male with hypertension, diabetes mellitus, hypercholesterolemia and a past smoker, who had recent onset of chest pain and a positive stress test.
+                [N]: He was admitted to the Cardiac Medicine service on [**2142-5-23**], for catheterization.
+        section 2 (past medical history):
+        paragraphs:
+            sentences:
+                [N]: 1. Coronary artery disease.
+            sentences:
+                [N]: 2. Diabetes mellitus.
+            sentences:
+                [N]: 3. Renal insufficiency.
+            sentences:
+                [N]: 4. Sleep apnea.
+            sentences:
+                [N]: 5. Hypercholesterolemia.
+        section 5 (hospital course):
+        paragraphs:
+            sentences:
+                [N]: The patient was admitted to the Cardiac Medicine service on [**2142-5-23**], prior to his catheterization for prehydration.
+                [N]: He underwent catheterization which revealed three vessel disease.
+                [N]: Cardiac surgery was consulted and the decision to go to the operating room was made.
+            sentences:
+                [N]: The patient underwent a coronary artery bypass graft times three on [**2142-5-26**], with left internal mammary artery to left anterior descending, saphenous vein graft to OM, saphenous vein graft to posterior descending artery.
+                [N]: He had an uneventful operative course and was transferred to the CSRU.
+            sentences:
+                [T]: He was extubated on the same day.
+                [N]: Postoperatively, his creatinine did rise from baseline of 2.5 to 3.3.
+            sentences:
+                [N]: On postoperative day three, he had an episode of atrial fibrillation for which he was treated with Amiodarone which initially reverted to normal sinus rhythm and then reverted back to atrial fibrillation.
+            sentences:
+                [N]: He was stable for transfer to the floor on postoperative day three and his rhythm had changed from atrial fibrillation to a junctional rhythm at this point.
+                [N]: Subsequently on the floor, he had a smooth postoperative course.
+                [N]: His pacing wires were discontinued on postoperative day four.
+                [N]: He was ambulating well and was cleared by physical therapy.
+                [N]: His pain was under control with p.o. analgesics.
+                [N]: He was ready for discharged on postoperative day six.
+                [N]: He was discharged home.
+        section 8 (discharge instructions):
+        paragraphs:
+            sentences:
+                [N]: [**Last Name (STitle) **] P:
+                [N]: The patient is to follow-up with Dr. [**First Name8 (NamePattern2) **] [**Last Name (NamePattern1) **], primary care physician, [**Name10 (NameIs) **] two weeks and with Dr.
+            sentences:
+                [N]: . [**Last Name (Prefixes) **] in four weeks.
+                [N]: He is being discharged home with VNA for wound check.
+antecedents:
+    note: 71718 (echo)
+    sections:
+        section 0 (patient test information):
+        paragraphs:
+            sentences:
+                [T]: Indication: Left ventricular function.
+            sentences:
+                [N]: He
+                [N]: ight: (in) 71 We ight (lb): 232 BSA (m2): 2.25 m2 BP (mm Hg): 158/70 St
+                [N]: atus: Inpatient Da te/ Time: [**2142-5-25**] at 09:05 Te
+                [N]: st: TTE(Complete) Do
+                [N]: ppler: Complete pulse and color flow Co
+                [N]: ntrast: None Te
+                [N]: echnical Quality: Adequate
+        section 1 (findings):
+        paragraphs:
+            sentences:
+                [T]: LEFT ATRIUM:
+                [T]: The left atrium is moderately dilated.
+            sentences:
+                [N]: RIGHT ATRIUM/ INTERATRIAL SEPTUM:
+                [T]: The right atrium is normal in size.
+            sentences:
+                [T]: LEFT VENTRICLE:
+                [T]: The left ventricular cavity is mildly dilated.
+                [N]: Overall left ventricular systolic function is moderately depressed.
+            sentences:
+                [T]: RIGHT VENTRICLE:
+                [N]: Right ventricular chamber size and free wall motion are normal.
+            sentences:
+                [T]: AORTA:
+                [T]: The aortic root is normal in diameter.
+            sentences:
+                [T]: AORTIC VALVE:
+                [T]: The aortic valve leaflets (3) are mildly thickened.
+                [N]: Trace aortic regurgitation is seen.
+            sentences:
+                [T]: MITRAL VALVE:
+                [N]: The mitral valve appears structurally normal with trivial mitral regurgitation.
+            sentences:
+                [T]: TRICUSPID VALVE:
+                [N]: The tricuspid valve appears structurally normal with trivial tricuspid regurgitation.
+            sentences:
+                [T]: PERICARDIUM:
+                [T]: There is no pericardial effusion.
+        section 2 (conclusions):
+        paragraphs:
+            sentences:
+                [T]: 1.
+                [T]: The left atrium is moderately dilated.
+            sentences:
+                [T]: 2.
+                [T]: The left ventricular cavity is mildly dilated.
+                [N]: Overall left ventricular systolic function is moderately depressed.
+                [N]: Posterior hypokiness to akinesis is present.
+                [T]: Posterolateral hypokinesis is present.
+            sentences:
+                [T]: 3.
+                [T]: The aortic valve leaflets (3) are mildly thickened.
+                [N]: Trace aortic regurgitation is seen.
