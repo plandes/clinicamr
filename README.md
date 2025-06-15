@@ -2,7 +2,6 @@
 
 [![PyPI][pypi-badge]][pypi-link]
 [![Python 3.9][python39-badge]][python39-link]
-[![Build Status][build-badge]][build-link]
 
 This package parses clinical notes in to Abstract Meaning Representation Graphs
 (AMR).  It uses the following packages to create the graphs and features:
@@ -69,8 +68,6 @@ Copyright (c) 2024 - 2025 Paul Landes
 [pypi-badge]: https://img.shields.io/pypi/v/zensols.clinicamr.svg
 [python39-badge]: https://img.shields.io/badge/python-3.9-blue.svg
 [python39-link]: https://www.python.org/downloads/release/python-390
-[build-badge]: https://github.com/plandes/clinicamr/workflows/CI/badge.svg
-[build-link]: https://github.com/plandes/clinicamr/actions
 
 [AMR SPRING parser]: https://github.com/SapienzaNLP/spring
 [MedCAT]: https://github.com/CogStack/MedCAT
