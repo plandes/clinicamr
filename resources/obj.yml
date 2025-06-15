@@ -1,0 +1,139 @@
+# @meta {desc: 'application object config', date: '2024-01-11'}
+
+
+## Overrides
+#
+# keep spaCy entity copy, but add MIMIC mask tokenization (comment out if
+# non-MIMIC source)
+amr_base_doc_parser:
+  components: 'instance: list: mimic_component, mimic_tokenizer_component'
+  token_decorators: 'instance: list: mimic_token_decorator'
+  token_feature_ids: >-
+    eval({'import': ['zensols.nlp as n']}):
+      (n.FeatureToken.FEATURE_IDS | {'mimic_', 'onto_'})
+  # copy document indexes so MIMIC parsed sections, and thus paragraphs, and
+  # later reindex back into the note text
+  document_decorators: 'instance: tuple: camr_cp_idx_decorator'
+
+# use the AMR base doc parser since it does not embed entities so token indexes
+# are not perturbed by multi-word named entities
+mednlp_combine_biomed_doc_parser:
+  delegate: 'instance: amr_base_doc_parser'
+
+mednlp_combine_medcat_doc_parser:
+  delegate: 'instance: amr_base_doc_parser'
+
+mednlp_combine_biomed_medcat_doc_parser:
+  delegate: 'instance: amr_base_doc_parser'
+
+# remove newlines from sentences
+camr_rm_space_decorator:
+  class_name: zensols.nlp.decorate.FilterTokenSentenceDecorator
+  remove_space: true
+
+# recreate token index for mapping CUIs correctly
+camr_reindex_decorator:
+  class_name: zensols.nlp.decorate.UpdateTokenContainerDecorator
+  update_indexes: false
+  update_entity_spans: false
+  reindex: true
+
+# copy character offset of the token within the parent document before re-index
+camr_cp_idx_decorator:
+  class_name: zensols.nlp.decorate.CopyFeatureTokenContainerDecorator
+  feature_ids: [[idx, idx_abs]]
+
+# adds :cui-id CUI attributes
+camr_token_cui_doc_decorator:
+  class_name: zensols.clinicamr.decorator.ClinicTokenAnnotationFeatureDocumentDecorator
+  use_sent_index: false
+  name: cui-id
+  feature_id: cui_
+  feature_format: '{cui_}'
+
+# the medical intermediate parser that strips space; otherwise alignments
+# shifted from MIMIC-III newlines; we don't use this parser in
+# `camr_paragraph_factory` so it keeps new lines for creating medical note
+# sections and the pargraph factory deals with newlines while chunking
+camr_medical_doc_parser:
+  class_name: zensols.nlp.parser.DecoratedFeatureDocumentParser
+  delegate: 'instance: ${mednlp_default:doc_parser}'
+  sentence_decorators: 'instance: tuple: camr_rm_space_decorator'
+  document_decorators: 'instance: tuple: camr_reindex_decorator'
+
+# use the medical parser when creating AmrFeatureDocument instances
+amr_anon_doc_parser:
+  delegate: 'instance: camr_medical_doc_parser'
+  condition:
+    if: 'eval: ${clinicamr_default:annotate_features}'
+    then:
+      document_decorators: >-
+        instance: tuple:
+          camr_token_cui_doc_decorator
+    else:
+      document_decorators: []
+
+
+## Section paragraph
+#
+# whether to map alignments to by (iterated) index position when mapping `ent_`
+# nodes since embedding named entities turned off
+amr_token_ent_doc_decorator:
+  use_sent_index: false
+
+# whether to add `is_header` for sentences in paragraphs that are section
+# headers
+mimic_chunker_paragraph_factory:
+  include_section_headers: false
+
+# stash for parsed and annotated paragraphs
+camr_paragraph_cache_stash:
+  class_name: zensols.persist.DirectoryStash
+  path: 'path: ${clinicamr_default:data_dir}/para-${amr_default:amr_parser}-${amr_default:parse_model}'
+
+# parse paragraph AMR graphs by using default MIMIC-III library chunker
+# paragraph factory
+camr_paragraph_factory:
+  class_name: zensols.clinicamr.parafac.ClinicAmrParagraphFactory
+  delegate: 'instance: mimic_chunker_paragraph_factory'
+  # this only uses the annotator to add AMRs, and does not use the delegate
+  # parser; the document parsing is done by `mednlp_default:doc_parser` set in
+  # `mimic_note_event_persister_parser_stash:doc_parser`
+  amr_annotator: 'instance: ${amr_default:doc_parser}'
+  stash: 'instance: camr_paragraph_cache_stash'
+  add_is_header: ${mimic_chunker_paragraph_factory:include_section_headers}
+
+
+## Application objects
+#
+# this parser is used to remove MIMIC masks as they result in ``<pointer:0>``
+# type tokens from the SPRING parser
+camr_fix_mimic_doc_parser:
+  class_name: zensols.nlp.sparser.SpacyFeatureDocumentParser
+  lang: en
+  model_name: '${lang}_core_web_sm'
+  components: 'instance: list: mimic_component, mimic_tokenizer_component'
+  token_decorators: 'instance: list: mimic_token_decorator'
+
+# spring AMR (THYME) parser
+camr_parser_spring:
+  class_name: zensols.clinicamr.spring.SpringAmrParser
+  client: 'instance: amr_spring_client'
+  doc_parser: 'instance: camr_fix_mimic_doc_parser'
+
+# admission AMR feature document factory stash
+camr_adm_amr_factory_stash:
+  class_name: zensols.clinicamr.adm.AdmissionAmrFactoryStash
+  corpus: 'instance: mimic_corpus'
+  amr_annotator: 'instance: ${amr_default:doc_parser}'
+  keep_notes: ${camr_adm_selection:note_categories}
+  keep_summary_sections: ${camr_adm_selection:summary_sections}
+
+camr_adm_amr_cache_stash:
+  class_name: zensols.persist.DirectoryStash
+  path: 'path: ${clinicamr_default:data_dir}/adm-doc'
+
+camr_adm_amr_stash:
+  class_name: zensols.persist.FactoryStash
+  delegate: 'instance: camr_adm_amr_cache_stash'
+  factory: 'instance: camr_adm_amr_factory_stash'
