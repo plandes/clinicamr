@@ -34,7 +34,7 @@ An extensive changelog is available [here](CHANGELOG.md).
 
 ## Citation
 
-This package and the [docker](./docker) image uses the original [AMR SPRING
+This package and the [amrspring Docker image] uses the original [AMR SPRING
 parser] source code base from the paper *"One SPRING to Rule Them Both:
 Symmetric AMR Semantic Parsing and Generation without a Complex Pipeline"*:
 
@@ -73,3 +73,5 @@ Copyright (c) 2024 - 2025 Paul Landes
 [MedCAT]: https://github.com/CogStack/MedCAT
 [MedSecId]: https://github.com/plandes/mimicsid
 [Zensols Natural Language Parsing]: https://github.com/plandes/nlparse
+
+[amrspring Docker image]: https://github.com/plandes/amrspring?tab=readme-ov-file#docker
