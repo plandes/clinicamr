@@ -139,9 +139,9 @@ class PrototypeApplication(object):
             s.amr.write()
 
     def _tmp(self):
-        pass
+        self.config_factory.config['clinicamr_default'].write()
 
-    def proto(self, run: int = 1):
+    def proto(self, run: int = 0):
         """Used for rapid prototyping."""
         {0: self._tmp,
          1: self._test_load,
