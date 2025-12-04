@@ -5,7 +5,7 @@ from zensols.cli import ConfigurationImporterCliHarness
 
 if (__name__ == '__main__'):
     harness = ConfigurationImporterCliHarness(
-        src_dir_name='src/python',
+        src_dir_name='src',
         package_resource='zensols.clinicamr',
         config_path='etc/clinicamr.conf',
         proto_args={0: 'proto',

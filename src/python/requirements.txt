@@ -1,2 +1,0 @@
-zensols.mimicsid~=1.8.0
-zensols.amr~=0.1.2

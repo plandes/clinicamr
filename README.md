@@ -1,7 +1,9 @@
 # Clincial Domain Abstract Meaning Representation Graphs
 
 [![PyPI][pypi-badge]][pypi-link]
-[![Python 3.9][python39-badge]][python39-link]
+[![Python 3.11][python311-badge]][python311-link]
+[![Python 3.12][python311-badge]][python312-link]
+[![Build Status][build-badge]][build-link]
 
 This package parses clinical notes in to Abstract Meaning Representation Graphs
 (AMR).  It uses the following packages to create the graphs and features:
@@ -66,8 +68,12 @@ Copyright (c) 2024 - 2025 Paul Landes
 [pypi]: https://pypi.org/project/zensols.clinicamr/
 [pypi-link]: https://pypi.python.org/pypi/zensols.clinicamr
 [pypi-badge]: https://img.shields.io/pypi/v/zensols.clinicamr.svg
-[python39-badge]: https://img.shields.io/badge/python-3.9-blue.svg
-[python39-link]: https://www.python.org/downloads/release/python-390
+[python311-badge]: https://img.shields.io/badge/python-3.11-blue.svg
+[python311-link]: https://www.python.org/downloads/release/python-3110
+[python312-badge]: https://img.shields.io/badge/python-3.12-blue.svg
+[python312-link]: https://www.python.org/downloads/release/python-3120
+[build-badge]: https://github.com/plandes/datdesc/workflows/CI/badge.svg
+[build-link]: https://github.com/plandes/datdesc/actions
 
 [AMR SPRING parser]: https://github.com/SapienzaNLP/spring
 [MedCAT]: https://github.com/CogStack/MedCAT

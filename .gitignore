@@ -3,3 +3,6 @@
 /target
 /amr_graph
 /data
+# pixi environments
+.pixi
+/pyproject.toml
