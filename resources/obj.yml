@@ -111,7 +111,7 @@ camr_paragraph_factory:
 camr_fix_mimic_doc_parser:
   class_name: zensols.nlp.sparser.SpacyFeatureDocumentParser
   lang: en
-  model_name: '${lang}_core_web_sm'
+  model_name: '${lang}_core_web_md'
   components: 'instance: list: mimic_component, mimic_tokenizer_component'
   token_decorators: 'instance: list: mimic_token_decorator'
 
