@@ -18,7 +18,8 @@ summary:
             sentences:
                 [N]: 4. Sleep apnea.
             sentences:
-                [N]: 5. Hypercholesterolemia.
+                [T]: 5.
+                [T]: Hypercholesterolemia.
         section 5 (hospital course):
         paragraphs:
             sentences:
@@ -41,14 +42,6 @@ summary:
                 [N]: His pain was under control with p.o. analgesics.
                 [N]: He was ready for discharged on postoperative day six.
                 [N]: He was discharged home.
-        section 8 (discharge instructions):
-        paragraphs:
-            sentences:
-                [N]: [**Last Name (STitle) **] P:
-                [N]: The patient is to follow-up with Dr. [**First Name8 (NamePattern2) **] [**Last Name (NamePattern1) **], primary care physician, [**Name10 (NameIs) **] two weeks and with Dr.
-            sentences:
-                [N]: . [**Last Name (Prefixes) **] in four weeks.
-                [N]: He is being discharged home with VNA for wound check.
 antecedents:
     note: 71718 (echo)
     sections:
@@ -95,7 +88,7 @@ antecedents:
             sentences:
                 [T]: PERICARDIUM:
                 [T]: There is no pericardial effusion.
-        section 2 (conclusions):
+        section 3 (labs imaging):
         paragraphs:
             sentences:
                 [T]: 1.
