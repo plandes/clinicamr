@@ -6,6 +6,7 @@ from io import BytesIO
 import pickle
 import shutil
 import logging
+import sqlite3
 from zensols.db.sqlite import SqliteConnectionManager
 from zensols.persist import persisted
 from zensols.clinicamr import ApplicationFactory
@@ -37,14 +38,23 @@ class TestBase(unittest.TestCase):
             'doc_parser', 'clinicamr_default')
         return config_factory(sec)
 
+    def _get_table_count(self, db_path: str, table_name: str) -> int:
+        if not table_name.isidentifier():
+            raise ValueError(f"Invalid table name: {table_name}")
+        query = f"SELECT COUNT(*) FROM {table_name}"
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.execute(query)
+            (count,) = cursor.fetchone()
+        return count
+
     def _validate_db_exists(self) -> bool:
         self._config_logging()
         mng: SqliteConnectionManager = \
             self.config_factory('mimic_sqlite_conn_manager')
         if not mng.db_file.exists():
-            logger.error('no MIMIC-III database to test with--skipping')
+            logger.warning('no MIMIC-III database to test with--skipping')
             return False
-        return True
+        return self._get_table_count(mng.db_file, 'admissions') > 0
 
     def _clear_cache(self):
         targ_dir = Path('target')

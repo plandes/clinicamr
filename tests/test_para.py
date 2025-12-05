@@ -41,6 +41,8 @@ class TestParagraph(TestBase):
         DEBUG: bool = 0
         WRITE: bool = 0
         hadm_id: str = '134891'
+        if not self._validate_db_exists():
+            return
         stash: Stash = self.config_factory('mimic_corpus').hospital_adm_stash
         adm: HospitalAdmission = stash[hadm_id]
         by_cat: Dict[str, Tuple[Note]] = adm.notes_by_category
