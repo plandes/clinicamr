@@ -9,14 +9,17 @@
    :domain (p / person
               :name (n / name
                        :op1 "Mr."~e.0
-                       :op2 "KnOWNLASTNAME"~e.1)
+                       :op2 "KnOWNLASTNAME"~e.1
+                       :ner "PERSON")
               :source (c / country
                          :name (n2 / name
                                    :op1 "United"~e.4
-                                   :op2 "States"~e.5))
+                                   :op2 "States"~e.5
+                                   :ner "GPE"))
               :age (t / temporal-quantity
                       :quant 87~e.8
-                      :unit (y / year)))
+                      :unit (y / year)
+                      :ner "CARDINAL"))
    :ARG0-of (h / have-03
                :ARG1 (h2 / history~e.13
                          :consist-of (a / and~e.23
@@ -24,11 +27,14 @@
                                                 :name (n3 / name
                                                           :op1 "diastolic"~e.15
                                                           :op2 "chF"~e.16
-                                                          :cui-id "C0018802")
+                                                          :cui-id "'[C0018802]: Congestive heart failure (Disease or Syndrome)'")
                                                 :mod (e / efferent
                                                         :mod (p2 / percentage-entity
-                                                                 :value 65~e.19)))
+                                                                 :value 65~e.19
+                                                                 :ner "PERCENT")))
                                         :op2 (f / fail-01~e.25
                                                 :ARG1 (k / kidney~e.24
-                                                         :cui-id "C0035078")
-                                                :cui-id "C0035078")))))
+                                                         :cui-id "'[C0035078]: Kidney Failure (Disease or Syndrome)'"
+                                                         :ner "ORGAN")
+                                                :cui-id "'[C0035078]: Kidney Failure (Disease or Syndrome)'"))))
+   :ner "ORGANISM")

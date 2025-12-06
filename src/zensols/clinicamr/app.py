@@ -28,8 +28,9 @@ class Application(object):
     """The document parser used for the :meth:`parse` action."""
 
     adm_amr_stash: Stash = field()
-    """A stash that CRUDs instances of :obj:`.AdmissionAmrFeatureDocument`."""
+    """A stash that CRUDs instances of :class:`~.AdmissionAmrFeatureDocument`.
 
+    """
     dumper: 'Dumper' = field()
     """Plots and writes AMR content in human readable formats."""
 

@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class TestBase(unittest.TestCase):
+    WRITE: bool = 1
+    DEBUG: bool = 0
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.maxDiff = sys.maxsize

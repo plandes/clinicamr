@@ -38,8 +38,6 @@ class TestParagraph(TestBase):
             print('_' * 79, file=writer)
 
     def test_parse(self):
-        DEBUG: bool = 0
-        WRITE: bool = 0
         hadm_id: str = '134891'
         if not self._validate_db_exists():
             return
@@ -57,11 +55,11 @@ class TestParagraph(TestBase):
         sec: Section = secs[0]
         paras: Tuple[AmrFeatureDocument] = tuple(sec.paragraphs)
         self.assertEqual(2, len(paras))
-        if DEBUG:
+        if self.DEBUG:
             self._write_paras(paras)
             return
         should_file = 'test-resources/amr-paras.txt'
-        if WRITE:
+        if self.WRITE:
             with open(should_file, 'w') as f:
                 self._write_paras(paras, f)
         with open(should_file) as f:

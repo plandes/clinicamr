@@ -38,9 +38,8 @@ class TestAdmissionGraph(TestBase):
             return f.read()
 
     def _test_adm_graph_create(self):
-        WRITE: bool = 0
         adm: AdmissionAmrFeatureDocument = self._get_adm()
-        if WRITE:
+        if self.WRITE:
             with open(self.should_file, 'w') as f:
                 adm.write(writer=f)
         should: str = self._get_should()
