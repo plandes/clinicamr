@@ -1,0 +1,77 @@
+zensols.clinicamr package
+=========================
+
+Submodules
+----------
+
+zensols.clinicamr.adm module
+----------------------------
+
+.. automodule:: zensols.clinicamr.adm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.app module
+----------------------------
+
+.. automodule:: zensols.clinicamr.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.cli module
+----------------------------
+
+.. automodule:: zensols.clinicamr.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.decorator module
+----------------------------------
+
+.. automodule:: zensols.clinicamr.decorator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.domain module
+-------------------------------
+
+.. automodule:: zensols.clinicamr.domain
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.parafac module
+--------------------------------
+
+.. automodule:: zensols.clinicamr.parafac
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.proto module
+------------------------------
+
+.. automodule:: zensols.clinicamr.proto
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.clinicamr.spring module
+-------------------------------
+
+.. automodule:: zensols.clinicamr.spring
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: zensols.clinicamr
+   :members:
+   :undoc-members:
+   :show-inheritance:
