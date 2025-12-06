@@ -108,4 +108,3 @@ class Application(object):
         output_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path)
         logger.info(f'wrote: {output_path}')
-

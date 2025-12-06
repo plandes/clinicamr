@@ -1,7 +1,6 @@
 """Prototyping module.
 
 """
-from zensols.nlp import FeatureToken
 from zensols.config import ConfigFactory
 from pathlib import Path
 from dataclasses import dataclass, field
@@ -22,13 +21,17 @@ class PrototypeApplication(object):
         else:
             self.config_factory('clear_cli').clear()
 
-    def _test_parse(self):
+    def _test_parse(self, dump: bool = False):
         parser = self.config_factory('amr_anon_doc_parser')
+        parser.clear()
         doc = parser(Path('test-resources/clinical-example.txt').read_text())
         doc.write()
-        t: FeatureToken
-        for t in doc.token_iter():
-            t.write(feature_ids='norm ent_ cui_'.split(), inline=True)
+        if dump:
+            import os
+            from zensols.amr import Dumper
+            dumper: Dumper = self.config_factory('amr_dumper')
+            path: Path = dumper(doc.amr)
+            os.system(path)
 
     def _test_load(self):
         from zensols.util.time import time
@@ -45,6 +48,10 @@ class PrototypeApplication(object):
 
     def proto(self, run: int = 0):
         """Used for rapid prototyping."""
+        if 0:
+            with open('/d/a.yml', 'w') as f:
+                self.config_factory.config.asyaml(writer=f)
+            return
         {0: self._test_parse,
          1: self._test_load,
          }[run]()

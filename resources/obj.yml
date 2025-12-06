@@ -49,7 +49,7 @@ camr_token_cui_doc_decorator:
   use_sent_index: false
   name: cui-id
   feature_id: cui_
-  feature_format: '{cui_}'
+  feature_format: ${clinicamr_default:cui_format}
 
 # the medical intermediate parser that strips space; otherwise alignments
 # shifted from MIMIC-III newlines; we don't use this parser in
@@ -69,7 +69,8 @@ amr_anon_doc_parser:
     then:
       document_decorators: >-
         instance: tuple:
-          camr_token_cui_doc_decorator
+          camr_token_cui_doc_decorator,
+          amr_token_ent_doc_decorator
     else:
       document_decorators: []
 

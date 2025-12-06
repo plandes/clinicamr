@@ -16,7 +16,7 @@ class ClinicTokenAnnotationFeatureDocumentDecorator(
     """Override token feature annotation by adding CUI data.
 
     """
-    feature_format: str = field(default='{pref_name_} ({cui_})')
+    feature_format: str = field(default='[{cui_}]: {pref_name_} ({tui_descs_})')
     """The format used for CUI annotated tokens."""
 
     def _format_feature_value(self, tok: FeatureToken) -> str:
