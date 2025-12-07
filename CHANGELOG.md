@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
-## [0.1.0] - 2025-12-06
+## [0.1.1] - 2025-12-06
+### Changes
+- Remove dependence on conditional YAML configuration.
 
+
+## [0.1.0] - 2025-12-06
 ### Changes
 - Fix and default model's note and section selection to MIMIC.
 - Add more descriptive medical concept data.
@@ -28,7 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/clinicamr/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/plandes/clinicamr/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/plandes/clinicamr/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/plandes/clinicamr/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/plandes/clinicamr/compare/v0.0.0...v0.0.1
 
