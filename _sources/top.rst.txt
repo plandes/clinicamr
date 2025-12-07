@@ -1,0 +1,19 @@
+Clincial Domain Abstract Meaning Representation Graphs
+======================================================
+This package parses clinical notes in to Abstract Meaning Representation Graphs (AMR).
+
+.. toctree::
+   :maxdepth: 3
+   :glob:
+
+   Overview <index.md>
+   doc/*
+   API Reference <api.rst>
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
