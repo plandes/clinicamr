@@ -64,15 +64,7 @@ camr_medical_doc_parser:
 # use the medical parser when creating AmrFeatureDocument instances
 amr_anon_doc_parser:
   delegate: 'instance: camr_medical_doc_parser'
-  condition:
-    if: 'eval: ${clinicamr_default:annotate_features}'
-    then:
-      document_decorators: >-
-        instance: tuple:
-          camr_token_cui_doc_decorator,
-          amr_token_ent_doc_decorator
-    else:
-      document_decorators: []
+  document_decorators: ${clinicamr_default:annotate_document_decorators}
 
 
 ## Section paragraph
