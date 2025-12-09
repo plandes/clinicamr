@@ -7,22 +7,26 @@ MIMIC3_5298_3_0.0
                                   :op1 (d / disease
                                           :name (n / name
                                                    :op1 "Multiple"~e.6
-                                                   :op2 "Myeloma"~e.7))
+                                                   :op2 "Myeloma"~e.7
+                                                   :ner "CANCER"))
                                   :op2 (d2 / disease
                                            :name (n2 / name
                                                      :op1 "vitamin"
                                                      :op2 "C")
-                                           :mod (c / chemo~e.11))
+                                           :mod (c / chemo~e.11
+                                                   :ner "CANCER"))
                                   :op3 (d3 / disease
                                            :name (n3 / name
                                                      :op1 "vitamin"
                                                      :op2 "Auto"~e.13
-                                                     :op3 "SCT"~e.14)))
+                                                     :op3 "SCT"~e.14
+                                                     :ner "ORG")))
                          :ARG2 (o / offspring))
              :age (b / between
                      :op1 (t / temporal-quantity
                              :quant 58~e.0
-                             :unit (y / year))
+                             :unit (y / year)
+                             :ner "CARDINAL")
                      :op2 (t2 / temporal-quantity
                               :quant 27
                               :unit (y2 / year))))
@@ -30,17 +34,20 @@ MIMIC3_5298_3_0.0
              :mod (a2 / acute~e.18)
              :mod (d4 / disease
                       :name (n4 / name
-                                :op1 "CP"~e.21))))
+                                :op1 "CP"~e.21
+                                :ner "ORG"))))
 ________________________________________
 MIMIC3_5298_3_0.1
 Pt was discharged from the oncology service yesterday, when he noticed onset of severe pleuritic chest pain.
 (d / discharge-01~e.2
    :ARG1 (p / person
             :name (n / name
-                     :op1 "Pt"~e.0))
+                     :op1 "Pt"~e.0
+                     :ner "PERSON"))
    :ARG2 (s / service~e.6
             :mod (o / oncology~e.5))
-   :time (y / yesterday~e.7)
+   :time (y / yesterday~e.7
+            :ner "DATE")
    :time (n2 / notice-01~e.11
              :ARG0 p
              :ARG1 (o2 / onset~e.12
@@ -63,11 +70,13 @@ Stated this started in the setting of a new medication for nausea started by his
                                                         :ARG1 (h2 / he)
                                                         :ARG2 (o / oncologist~e.15)))
                                    :time (b / before)
-                                   :time (t2 / today~e.17))
+                                   :time (t2 / today~e.17
+                                             :ner "DATE"))
                       :ARG1-of (m2 / mean-01
                                    :ARG2 (p2 / product
                                              :name (n3 / name
-                                                       :op1 "Zyprexa"~e.19)))))
+                                                       :op1 "Zyprexa"~e.19
+                                                       :ner "SIMPLE_CHEMICAL")))))
    :ARG1-of (s4 / state-01~e.0))
 ________________________________________
 MIMIC3_5298_3_0.3
@@ -103,9 +112,11 @@ No cough, dysuria, oliguria.
    :ARG1 (c / cough-01~e.1
             :polarity -~e.0)
    :ARG2 (a / and
-            :op1 (d / dysuria~e.3)
+            :op1 (d / dysuria~e.3
+                    :ner "GPE")
             :op2 (o / oliguria~e.5
-                    :cui-id "'[C0028961]: Oliguria (Disease or Syndrome)'")))
+                    :cui-id "'[C0028961]: Oliguria (Disease or Syndrome)'"
+                    :ner "GPE")))
 ________________________________________
 MIMIC3_5298_3_0.7
 He states he has never had easy bleeding or bruising and denies history of GI bleeding other than small amounts due to hemhorroids.
@@ -141,10 +152,12 @@ MIMIC3_5298_3_0.8
 To his knowledge, never had brain involvement of his MM.
 (ii / involve-01~e.7
     :polarity -
-    :ARG1 (b / brain~e.6)
+    :ARG1 (b / brain~e.6
+             :ner "ORGAN")
     :ARG2 (p / program
              :name (n / name
-                      :op1 "MM"~e.10)
+                      :op1 "MM"~e.10
+                      :ner "ORG")
              :poss (h / he))
     :ARG1-of (k / know-01~e.2
                 :ARG0 h)
@@ -158,17 +171,21 @@ In the ED, initial vs were: T 99.3P
             :name (n / name
                      :op1 "T"~e.8
                      :op2 99.3~e.9
-                     :op3 "P"))
+                     :op3 "P"
+                     :ner "CANCER"
+                     :ner "CARDINAL"))
    :location (g / government-organization
                 :name n
-                :op1 "ED"~e.2))
+                :op1 "ED"~e.2
+                :ner "ORG"))
 ________________________________________
 MIMIC3_5298_3_1.1
 109BP 123/75 R O2 sat.
 (s / sit-01~e.4
    :ARG1 (s2 / small-molecule
              :name (n / name
-                      :op1 "O2"~e.3)
+                      :op1 "O2"~e.3
+                      :ner "CANCER")
              :mod (s3 / small-molecule
                       :name (n2 / name
                                 :op1 "BP"))
@@ -190,7 +207,9 @@ Had CTA showing PE predominantly in L main PA w/ a small non-occlusive strand in
                                                     :name (n2 / name
                                                               :op1 "L"~e.6
                                                               :op2 "Main"~e.7
-                                                              :op3 "PA"~e.8))
+                                                              :op3 "PA"~e.8
+                                                              :ner "GPE"
+                                                              :ner "ORG"))
                                            :op2 (s3 / strand~e.15
                                                     :mod (s4 / small~e.11)
                                                     :ARG0-of (e / exclusive-02
@@ -199,30 +218,37 @@ Had CTA showing PE predominantly in L main PA w/ a small non-occlusive strand in
                                                                   :name (n3 / name
                                                                             :op1 "R"~e.18
                                                                             :op2 "Main"~e.19
-                                                                            :op3 "PA"~e.20))))
+                                                                            :op3 "PA"~e.20
+                                                                            :ner "GPE"))))
                              :op2 (e2 / extend-01~e.23
                                       :ARG4 (a3 / and
                                                 :op1 (s6 / string
                                                          :name (n4 / name
-                                                                   :op1 "LLL"~e.25))
+                                                                   :op1 "LLL"~e.25
+                                                                   :ner "ORG"))
                                                 :op2 (s7 / string
                                                          :name (n5 / name
-                                                                   :op1 "LUL"~e.27))
+                                                                   :op1 "LUL"~e.27
+                                                                   :ner "ORG"))
                                                 :op3 (b / branch~e.31
-                                                        :mod (l / lingular~e.30)))))
+                                                        :mod (l / lingular~e.30
+                                                                :ner "NORP"))))
+                             :ner "GENE_OR_GENE_PRODUCT")
                      :ARG1-of (p2 / predominate-01~e.4))))
 ________________________________________
 MIMIC3_5298_3_1.3
 2.
 (o / ordinal-entity
-   :value 2~e.0)
+   :value 2~e.0
+   :ner "CARDINAL")
 ________________________________________
 MIMIC3_5298_3_1.4
 smaller PE in the RML and RUL branches.
 (b / be-located-at-91
    :ARG1 (t / thing
             :name (n / name
-                     :op1 "PE"~e.1)
+                     :op1 "PE"~e.1
+                     :ner "GENE_OR_GENE_PRODUCT")
             :ARG1-of (h / have-degree-91
                         :ARG2 (s / small~e.0)
                         :ARG3 (m / more)))
@@ -230,11 +256,13 @@ smaller PE in the RML and RUL branches.
             :op1 (b2 / branch~e.7
                      :part-of (o / organization
                                  :name (n2 / name
-                                           :op1 "RML"~e.4)))
+                                           :op1 "RML"~e.4
+                                           :ner "PRODUCT")))
             :op2 (b3 / branch
                      :part-of (o2 / organization
                                   :name (n3 / name
-                                            :op1 "RUL"~e.6)))))
+                                            :op1 "RUL"~e.6
+                                            :ner "ORG")))))
 ________________________________________
 MIMIC3_5298_3_1.5
 3. flattening of ventricular septum but no bowing into the LV to suggest R heart strain.
@@ -242,7 +270,9 @@ MIMIC3_5298_3_1.5
    :li 3~e.0
    :ARG1 (f / flatten-01~e.2
             :ARG1 (s / septum~e.5
-                     :mod (v / ventricular~e.4)))
+                     :mod (v / ventricular~e.4
+                             :ner "MULTI_TISSUE_STRUCTURE")
+                     :ner "MULTI_TISSUE_STRUCTURE"))
    :ARG2 (b / bowing-01~e.8
             :polarity -~e.7
             :direction (ii / into~e.9
@@ -250,8 +280,10 @@ MIMIC3_5298_3_1.5
                                     :mod (v2 / vital)
                                     :ARG0-of (s3 / suggest-01~e.13
                                                  :ARG1 (s4 / strain-01~e.16
-                                                           :ARG1 (h / heart~e.15)
-                                                           :degree (r / R~e.14)))))))
+                                                           :ARG1 (h / heart~e.15
+                                                                    :ner "ORGAN")
+                                                           :degree (r / R~e.14))))))
+   :ner "CARDINAL")
 ________________________________________
 MIMIC3_5298_3_1.6
 Patient was given a dose of cefepime, morphine for pain, and started on a heparin gtt.
@@ -260,12 +292,17 @@ Patient was given a dose of cefepime, morphine for pain, and started on a hepari
            :ARG1 (d / dose-01~e.4
                     :ARG2 (a2 / and
                               :op1 (c / cefepime~e.6
-                                      :cui-id "'[C0055003]: cefepime (Antibiotic)'")
+                                      :cui-id "'[C0055003]: cefepime (Antibiotic)'"
+                                      :ner "SIMPLE_CHEMICAL")
                               :op2 (m / morphine~e.8
-                                      :purpose (p / pain-01~e.10))))
-           :ARG2 (p2 / patient~e.0))
+                                      :purpose (p / pain-01~e.10)
+                                      :ner "SIMPLE_CHEMICAL")))
+           :ARG2 (p2 / patient~e.0
+                     :ner "ORGANISM"))
    :op2 (s / start-101~e.13
            :ARG1 p2
            :ARG2 (g2 / gtt~e.17
-                     :mod (h / heparin~e.16))))
+                     :mod (h / heparin~e.16
+                             :ner "SIMPLE_CHEMICAL")
+                     :ner "SIMPLE_CHEMICAL")))
 _______________________________________________________________________________

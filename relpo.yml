@@ -34,7 +34,7 @@ project:
     dependencies:
       - 'zensols.dbpg~=1.4.0'
       - 'zensols.mimicsid~=v1.10.1'
-      - 'zensols.amr~=v0.2.6'
+      - 'zensols.amr~=v0.2.8'
       - 'zensols.amrspring~=0.1.0'
   # the program is called on the command line
   has_entry_points: true

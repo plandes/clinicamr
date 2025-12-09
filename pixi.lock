@@ -201,7 +201,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -382,7 +382,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -564,7 +564,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -768,7 +768,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -941,7 +941,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -1115,7 +1115,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -1319,7 +1319,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -1492,7 +1492,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -1666,7 +1666,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -1870,7 +1870,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -2043,7 +2043,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -2217,7 +2217,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/25/61/7aa08eb2521c966d9abec0085040e10f52c269e1acda2e4b821f36f197db/zensols.amr_coref-0.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f5/5b/729a9db0b213ac8f2788de2c889f53c75039b7234e32a575967c9778d075/zensols.dbpg-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/99/f8/c715d4b76e304245fee18b8d4e8d005de75bcb8b3f241e705ecfa55db7a7/zensols.install-1.2.1-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/e7/186360461d74bd9d1ac731e9a3e77269ac7f94c4eb613d34c680cb998d87/zensols_amrspring-0.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/e8/90eeefb21a5d653d345d55eee75ddbdc89c71db9023786e0eed8cc98d649/zensols_datdesc-1.3.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/81/36/04df9df0d5c41c6a7c8838e06eb8563b609e03791a9b4a0d48c9d60ae400/zensols_db-1.4.1-py3-none-any.whl
@@ -9097,10 +9097,10 @@ packages:
   - multidict>=4.0
   - propcache>=0.2.1
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/a7/97/c7fd02eb6cb201a54995badda85f1e036f479b8d7f38a3a1636276326b11/zensols_amr-0.2.6-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/b3/0d/07a47691f10552de9e8b89ca08ad347cdfed931e372fca1007606a3249cf/zensols_amr-0.2.8-py3-none-any.whl
   name: zensols-amr
-  version: 0.2.6
-  sha256: 1f4e74a413760e8105f753e5fc0cc433b164f145ee489f6fb9e32e42ff77ce44
+  version: 0.2.8
+  sha256: 4d36b41b21ab322caf2cd715dcca55ac7f16a71466f8d317ae1eb3bb2b967a7c
   requires_dist:
   - amrlib~=0.8.0
   - cached-property~=1.5.2

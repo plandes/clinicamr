@@ -26,6 +26,20 @@ class TestBase(unittest.TestCase):
         os.environ.pop('CLINICAMRRC', None)
         self._clear_cache()
 
+    def setUp(self):
+        self._suppress_warnings()
+
+    def _suppress_warnings(self):
+        import warnings
+        warnings.filterwarnings(
+            'ignore',
+            category=SyntaxWarning,
+            message='invalid escape sequence.*')
+        warnings.filterwarnings(
+            'ignore',
+            category=UserWarning,
+            message="^'pin_memory' argument is.*")
+
     @property
     @persisted('_config_factory')
     def config_factory(self):
